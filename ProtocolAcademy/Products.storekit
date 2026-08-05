@@ -1,0 +1,79 @@
+{
+  "identifier" : "9F1C4A02-6D3E-4B77-9E51-2C0A7D4F81B3",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : true,
+      "internalID" : "A1B2C3D4",
+      "localizations" : [
+        {
+          "description" : "Hide every banner and promo card. Your progress and unlocked content stay exactly as they are.",
+          "displayName" : "Remove Ads",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.d1vider.protocolacademy.removeads",
+      "referenceName" : "Remove Ads",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "4.99",
+      "familyShareable" : true,
+      "internalID" : "B2C3D4E5",
+      "localizations" : [
+        {
+          "description" : "Unlock all 25 protocols with their full breakdowns, key concepts, guided lessons, and quizzes.",
+          "displayName" : "Full Protocol Library",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.d1vider.protocolacademy.fulllibrary",
+      "referenceName" : "Full Protocol Library",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "5.99",
+      "familyShareable" : true,
+      "internalID" : "C3D4E5F6",
+      "localizations" : [
+        {
+          "description" : "Everything in one purchase: the complete protocol library, all training modules, and no ads.",
+          "displayName" : "Academy Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.d1vider.protocolacademy.pro",
+      "referenceName" : "Academy Pro Bundle",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_documentVersion" : 0,
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      { "current" : null, "enabled" : false, "name" : "Load Products" },
+      { "current" : null, "enabled" : false, "name" : "Purchase" },
+      { "current" : null, "enabled" : false, "name" : "Verification" },
+      { "current" : null, "enabled" : false, "name" : "App Store Sync" },
+      { "current" : null, "enabled" : false, "name" : "Subscription Status" },
+      { "current" : null, "enabled" : false, "name" : "App Transaction" },
+      { "current" : null, "enabled" : false, "name" : "Manage Subscriptions Sheet" },
+      { "current" : null, "enabled" : false, "name" : "Refund Request Sheet" },
+      { "current" : null, "enabled" : false, "name" : "Offer Code Redeem Sheet" }
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

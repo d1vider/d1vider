@@ -1,0 +1,212 @@
+{
+  "category": "wireless",
+  "protocols": [
+    {
+      "id": "wpa3",
+      "name": "Wi-Fi Protected Access 3",
+      "acronym": "WPA3",
+      "category": "wireless",
+      "tier": "free",
+      "difficulty": "core",
+      "readingMinutes": 6,
+      "yearIntroduced": 2018,
+      "ports": ["Layer 2 — no IP ports"],
+      "standards": ["IEEE 802.11-2020", "Wi-Fi Alliance WPA3 Specification", "RFC 7664 (Dragonfly)"],
+      "tagline": "Wi-Fi security that finally makes weak passwords survivable and open networks encrypted.",
+      "overview": "WPA2 protected a network with a shared password, and anyone who captured a device joining could take that handshake offline and guess the password at billions of attempts per second. WPA3 replaces the handshake with Simultaneous Authentication of Equals, a password-authenticated key exchange where each guess requires a fresh network interaction. It also encrypts open networks and gives every session forward secrecy.",
+      "howItWorks": [
+        { "title": "SAE commit exchange", "detail": "Both sides derive an element from the password and exchange commitment values. The Dragonfly key exchange means an observer cannot derive anything that permits offline guessing." },
+        { "title": "SAE confirm", "detail": "Each side proves it derived the same key. A wrong password fails here, and each attempt costs a full exchange with the access point, so guessing is rate-limited by physics." },
+        { "title": "Forward secrecy per session", "detail": "The pairwise master key is fresh for every association, so capturing traffic and later learning the password does not decrypt it." },
+        { "title": "Protected Management Frames", "detail": "Mandatory in WPA3. Management frames are authenticated, which blocks the deauthentication floods used to force reconnections and capture handshakes." },
+        { "title": "Opportunistic Wireless Encryption", "detail": "For open networks, Enhanced Open performs an unauthenticated Diffie-Hellman so traffic is encrypted against passive sniffing even with no password." }
+      ],
+      "keyConcepts": [
+        { "term": "SAE / Dragonfly", "definition": "A password-authenticated key exchange. Its defining property is that a passive observer gains nothing usable for offline password cracking." },
+        { "term": "Offline dictionary attack", "definition": "The WPA2 flaw: capture one four-way handshake and test billions of candidate passwords on a GPU with no further contact with the network." },
+        { "term": "Protected Management Frames", "definition": "Cryptographic protection for deauth and disassociate frames, killing the simplest denial-of-service and handshake-capture technique." },
+        { "term": "Transition mode", "definition": "An access point supporting WPA2 and WPA3 simultaneously for compatibility — which allows a downgrade attack, so pure WPA3 is preferable where devices permit it." }
+      ],
+      "protects": [
+        "Offline cracking of the network password from a captured handshake",
+        "Passive interception on open public networks, through Enhanced Open",
+        "Deauthentication attacks, via mandatory Protected Management Frames",
+        "Retroactive decryption of recorded sessions, through per-session forward secrecy"
+      ],
+      "weaknesses": [
+        "Transition mode reintroduces the WPA2 handshake and its offline attack",
+        "The Dragonblood research found side-channel and downgrade flaws in early implementations",
+        "Anyone with the password can still see their own traffic decrypted — a shared password is a shared trust boundary",
+        "Older devices without WPA3 support force networks to keep WPA2 enabled"
+      ],
+      "realWorldUse": [
+        "Required for Wi-Fi 6 and Wi-Fi 6E certification",
+        "Supported natively by iOS, Android, Windows, and macOS",
+        "Enhanced Open deployed on public Wi-Fi in airports, hotels, and transit systems"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "wpa3-l1",
+            "title": "The WPA2 flaw WPA3 was built to fix",
+            "body": "In WPA2-Personal, the four-way handshake contains enough information to verify a password guess offline. An attacker sits nearby, sends a deauthentication frame to force a device to reconnect, captures the handshake in seconds, and then goes home and tries the entire rockyou wordlist on a GPU. A common password falls in minutes. SAE removes the offline step entirely: verifying a guess requires a live exchange with the access point, which can rate-limit and log it.",
+            "takeaway": "The security question is not how strong the encryption is, but whether an attacker can test guesses without you noticing."
+          },
+          {
+            "id": "wpa3-l2",
+            "title": "Encrypted open networks",
+            "body": "Historically, an open network meant every packet was readable by anyone in range with a wireless card in monitor mode. Enhanced Open, based on Opportunistic Wireless Encryption, performs an unauthenticated Diffie-Hellman exchange when a device joins, so each client has a unique session key and passive sniffing sees nothing. There is no authentication, so an attacker running a fake access point with the same name can still intercept as an active man in the middle — but the trivial passive attack is gone.",
+            "takeaway": "Encryption without authentication stops the eavesdropper but not the impostor. It is still a large improvement over plaintext."
+          },
+          {
+            "id": "wpa3-l3",
+            "title": "Transition mode is a downgrade waiting to happen",
+            "body": "Most networks run WPA2/WPA3 transition mode so older devices can still connect. An attacker forces a client to negotiate WPA2, captures the classic handshake, and the WPA3 protections are irrelevant. The Dragonblood research demonstrated this in practice. If your device inventory allows it, run WPA3-only for sensitive networks and put legacy hardware on a separate, segmented SSID with restricted access.",
+            "takeaway": "A network is as strong as its weakest supported mode, not its strongest advertised one."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "wpa3-q1",
+            "prompt": "What does SAE prevent that the WPA2 four-way handshake allowed?",
+            "options": [
+              "Offline dictionary attacks against a captured handshake",
+              "Encryption of management frames",
+              "Use of long passwords",
+              "Roaming between access points"
+            ],
+            "answerIndex": 0,
+            "explanation": "Each password guess in SAE requires a live exchange with the access point, so an attacker cannot test candidates offline at GPU speed."
+          },
+          {
+            "id": "wpa3-q2",
+            "prompt": "What does Enhanced Open provide on a network with no password?",
+            "options": [
+              "Encryption against passive sniffing, but no authentication of the access point",
+              "Full mutual authentication",
+              "A shared password derived from the SSID",
+              "Nothing — it is a marketing name for open Wi-Fi"
+            ],
+            "answerIndex": 0,
+            "explanation": "An unauthenticated Diffie-Hellman gives each client a unique session key. It stops passive eavesdropping but not an active evil-twin access point."
+          },
+          {
+            "id": "wpa3-q3",
+            "prompt": "Why is WPA2/WPA3 transition mode a security concern?",
+            "options": [
+              "An attacker can force the client to use WPA2 and attack the older handshake",
+              "It disables encryption entirely",
+              "It broadcasts the password in the beacon",
+              "It prevents Protected Management Frames from working on WPA3 clients"
+            ],
+            "answerIndex": 0,
+            "explanation": "Supporting both modes means the weaker one remains available to be negotiated, which is exactly what a downgrade attack exploits."
+          }
+        ]
+      }
+    },
+    {
+      "id": "dot1x",
+      "name": "IEEE 802.1X and EAP",
+      "acronym": "802.1X",
+      "category": "wireless",
+      "tier": "premium",
+      "difficulty": "advanced",
+      "readingMinutes": 6,
+      "yearIntroduced": 2001,
+      "ports": ["EAPOL at layer 2", "RADIUS 1812/UDP behind it"],
+      "standards": ["IEEE 802.1X-2020", "RFC 3748 (EAP)", "RFC 5216 (EAP-TLS)"],
+      "tagline": "Port-based network access control — nothing reaches the network until it authenticates.",
+      "overview": "802.1X turns every switch port and wireless association into a gate. Until a device proves who it is, the port passes nothing but authentication traffic. The protocol itself is only a framework for carrying EAP messages between a supplicant, an authenticator, and an authentication server — the actual security comes from whichever EAP method is chosen, and that choice ranges from excellent to worthless.",
+      "howItWorks": [
+        { "title": "Three roles", "detail": "The supplicant is the device, the authenticator is the switch or access point, and the authentication server is typically RADIUS. The authenticator relays and never makes the decision itself." },
+        { "title": "Port stays closed", "detail": "Before authentication succeeds, the port forwards only EAPOL frames. No DHCP, no IP, no access to anything." },
+        { "title": "EAP method negotiation", "detail": "The server proposes a method — EAP-TLS, PEAP, EAP-TTLS — and the supplicant either supports it or the exchange fails." },
+        { "title": "Method-specific authentication", "detail": "EAP-TLS runs a full mutual TLS handshake with certificates on both sides. PEAP and TTLS build a server-authenticated TLS tunnel and carry a password method inside it." },
+        { "title": "Authorisation applied", "detail": "On success the server returns attributes assigning a VLAN, an ACL, or a quarantine network, and the port opens with that policy." }
+      ],
+      "keyConcepts": [
+        { "term": "Supplicant", "definition": "The client-side software requesting access. Every modern operating system includes one." },
+        { "term": "EAP-TLS", "definition": "Certificate-based mutual authentication and the strongest common method. There is no password to phish or crack." },
+        { "term": "PEAP and EAP-TTLS", "definition": "A TLS tunnel authenticating only the server, with a password method inside. Secure only if the client validates the server certificate." },
+        { "term": "MAC Authentication Bypass", "definition": "A fallback for printers and IoT devices with no supplicant, admitting them by MAC address — trivially spoofable and a standard bypass technique." }
+      ],
+      "protects": [
+        "Unauthorised devices plugged into physical ports or joining wireless networks",
+        "Lateral movement, when combined with dynamic VLAN assignment and segmentation",
+        "User credentials, when EAP-TLS or a correctly validated tunnel is used"
+      ],
+      "weaknesses": [
+        "A supplicant that does not validate the server certificate can be lured into an evil-twin network and give up credentials",
+        "MAC Authentication Bypass is a deliberate hole an attacker can walk through by spoofing a printer's address",
+        "Once a port is authorised, a hub or a device behind an authenticated machine can piggyback unless MACsec is used",
+        "Certificate lifecycle management for EAP-TLS at fleet scale is a real operational burden"
+      ],
+      "realWorldUse": [
+        "WPA2/WPA3-Enterprise wireless in essentially every large organisation",
+        "Wired port security in offices, hospitals, and campuses",
+        "Network access control platforms that quarantine devices failing posture checks"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "dot1x-l1",
+            "title": "The evil twin and certificate validation",
+            "body": "With PEAP, the client builds a TLS tunnel to the RADIUS server and sends a password inside it. If the client does not validate the server's certificate, an attacker can stand up an access point with the same SSID, present any certificate, and the supplicant will happily open a tunnel and hand over the credentials — historically as a crackable MSCHAPv2 challenge-response. This is why enterprise Wi-Fi profiles must be pushed by MDM with the expected certificate authority and server name pinned, not configured by users clicking through a trust prompt.",
+            "takeaway": "A tunnel to an unverified endpoint is a tunnel to the attacker. Certificate validation is the whole security of PEAP."
+          },
+          {
+            "id": "dot1x-l2",
+            "title": "EAP-TLS removes the password entirely",
+            "body": "EAP-TLS gives each device a client certificate and performs mutual authentication. There is no password to phish, no hash to crack offline, and no shared secret to leak. The cost is a PKI: issuing certificates to every laptop and phone, renewing them before expiry, and revoking them on device loss. Modern MDM makes this tractable, and it is the reason EAP-TLS is now the recommended baseline rather than an exotic option.",
+            "takeaway": "Removing passwords from a protocol removes an entire category of attacks — if you can afford the key management."
+          },
+          {
+            "id": "dot1x-l3",
+            "title": "The exceptions are the way in",
+            "body": "Every 802.1X deployment has devices that cannot authenticate: badge readers, label printers, older medical equipment, building sensors. They get admitted by MAC Authentication Bypass, and a MAC address is a value an attacker reads off a sticker and configures on their own laptop in ten seconds. Confine every bypassed device to a tightly restricted VLAN that can reach only what it genuinely needs, and profile the traffic so a laptop pretending to be a printer stands out immediately.",
+            "takeaway": "Attackers study your exception list. Design the exceptions as if they will be abused, because they will be."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "dot1x-q1",
+            "prompt": "What traffic does an unauthenticated 802.1X port allow?",
+            "options": [
+              "Only EAPOL authentication frames",
+              "DHCP and DNS only",
+              "All traffic, with logging",
+              "Nothing at all, including authentication"
+            ],
+            "answerIndex": 0,
+            "explanation": "The port is a gate that passes only the traffic needed to open it. No IP connectivity exists until authorisation succeeds."
+          },
+          {
+            "id": "dot1x-q2",
+            "prompt": "Why must a PEAP supplicant validate the RADIUS server certificate?",
+            "options": [
+              "Otherwise an evil-twin access point can capture the credentials sent inside the tunnel",
+              "Because PEAP does not encrypt the tunnel",
+              "To enable dynamic VLAN assignment",
+              "To allow MAC Authentication Bypass"
+            ],
+            "answerIndex": 0,
+            "explanation": "The tunnel protects credentials from everyone except its endpoint. If the endpoint is the attacker, the tunnel is delivering the credentials to them."
+          },
+          {
+            "id": "dot1x-q3",
+            "prompt": "What is the main weakness of MAC Authentication Bypass?",
+            "options": [
+              "MAC addresses are trivially spoofed",
+              "It requires a client certificate",
+              "It disables VLAN assignment",
+              "It only works on wireless networks"
+            ],
+            "answerIndex": 0,
+            "explanation": "MAB is an identity check based on a value anyone can read and copy, so bypassed devices must be tightly segmented."
+          }
+        ]
+      }
+    }
+  ]
+}

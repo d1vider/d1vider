@@ -1,0 +1,731 @@
+{
+  "category": "identity",
+  "protocols": [
+    {
+      "id": "kerberos",
+      "name": "Kerberos",
+      "acronym": "Kerberos",
+      "category": "identity",
+      "tier": "premium",
+      "difficulty": "advanced",
+      "readingMinutes": 8,
+      "yearIntroduced": 1988,
+      "ports": ["88 (KDC)", "464 (kpasswd)", "749 (admin)"],
+      "standards": ["RFC 4120", "RFC 4121 (GSS-API)", "MS-KILE"],
+      "tagline": "Ticket-based single sign-on from MIT that quietly runs most corporate networks.",
+      "overview": "Kerberos solves a specific problem: how do you authenticate to fifty services without sending your password to any of them, over a network you assume is hostile? The answer is a trusted third party that issues time-limited tickets. It is nearly forty years old, it underpins Active Directory, and its attack techniques — Kerberoasting, Golden Tickets, Pass-the-Ticket — remain the core of enterprise red-team playbooks.",
+      "howItWorks": [
+        { "title": "Authentication Service request", "detail": "The client asks the Key Distribution Center for a Ticket Granting Ticket, proving knowledge of its password by encrypting a timestamp with a key derived from it. Pre-authentication makes this step mandatory." },
+        { "title": "TGT issued", "detail": "The KDC returns a TGT encrypted with the krbtgt account's key — which the client cannot read — plus a session key encrypted with the client's own key." },
+        { "title": "Service ticket request", "detail": "To reach a specific service the client presents the TGT and names the service principal. The KDC returns a service ticket encrypted with that service's key." },
+        { "title": "Service presentation", "detail": "The client sends the service ticket and a fresh authenticator to the service. The service decrypts the ticket with its own key, which proves the KDC issued it — the service never contacts the KDC." },
+        { "title": "Optional mutual authentication", "detail": "The service can return the timestamp from the authenticator, re-encrypted with the session key, proving it could decrypt the ticket and is therefore genuine." }
+      ],
+      "keyConcepts": [
+        { "term": "KDC", "definition": "The Key Distribution Center, comprising the Authentication Service and Ticket Granting Service. In Active Directory every domain controller is a KDC." },
+        { "term": "krbtgt", "definition": "The account whose key encrypts every TGT in the domain. Stealing its hash allows forging tickets for any user — the Golden Ticket attack." },
+        { "term": "SPN", "definition": "Service Principal Name — the identifier a client uses to request a ticket for a particular service on a particular host." },
+        { "term": "Clock skew", "definition": "Authenticators contain timestamps and are rejected beyond a small window, typically five minutes, so replays expire quickly. This is why Kerberos fails when clocks drift." }
+      ],
+      "protects": [
+        "Passwords, which never traverse the network in any form",
+        "Replay of captured authentication exchanges, via timestamps and one-time authenticators",
+        "Service impersonation, when mutual authentication is enabled",
+        "Repeated credential prompting — one TGT covers every service for its lifetime"
+      ],
+      "weaknesses": [
+        "Compromise of the krbtgt key allows forging arbitrary tickets until it is rotated twice",
+        "Kerberoasting: any authenticated user can request a service ticket and crack it offline for the service account password",
+        "Accounts with pre-authentication disabled can be AS-REP roasted without any credentials",
+        "Total dependence on KDC availability and on synchronised clocks",
+        "Legacy RC4 encryption types remain enabled in many domains and are far easier to crack"
+      ],
+      "realWorldUse": [
+        "The default authentication protocol in Active Directory domains",
+        "Hadoop, NFSv4, and enterprise database authentication",
+        "macOS and Linux enterprise single sign-on via GSS-API"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "krb-l1",
+            "title": "Why a ticket beats a password",
+            "body": "Without Kerberos, every service you log into learns your password, which means every service becomes a place your password can leak. Kerberos inverts this: the KDC knows your key, and each service knows only its own. A ticket proves the KDC vouched for you, is bound to one service, and expires in hours. A compromised file server yields a ticket for that file server and nothing else. The trade is that the KDC becomes the single most valuable target in the network.",
+            "takeaway": "Centralising trust reduces the number of places secrets live, and concentrates the consequences of one breach."
+          },
+          {
+            "id": "krb-l2",
+            "title": "Kerberoasting explained",
+            "body": "Any authenticated domain user can ask the KDC for a service ticket for any service principal — that is by design, because authorisation happens at the service, not the KDC. The ticket is encrypted with the service account's password key. An attacker requests tickets for accounts with SPNs, takes them offline, and brute-forces the password with no lockout and no logging on the target. The defence is not to block the request but to make cracking futile: use Group Managed Service Accounts with 120-character machine-generated passwords, and disable RC4.",
+            "takeaway": "When an attacker can take your credential offline, only entropy protects you. Rate limits and lockouts do not apply."
+          },
+          {
+            "id": "krb-l3",
+            "title": "Golden Tickets and why rotation is awkward",
+            "body": "Every TGT is encrypted with the krbtgt account key. An attacker who obtains that hash — typically after gaining domain admin — can mint TGTs for any user, including accounts that do not exist, valid for as long as they like. Changing the password does not fully help, because the KDC accepts the current and previous key. You must rotate krbtgt twice, with enough time between rotations for existing tickets to expire, or you invalidate every session in the domain.",
+            "takeaway": "Recovering from domain compromise is a procedure, not a password reset. Practise it before you need it."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "krb-q1",
+            "prompt": "Why does a service not need to contact the KDC to validate a service ticket?",
+            "options": [
+              "The ticket is encrypted with the service's own key, so decrypting it proves the KDC issued it",
+              "The client signs the ticket with its password",
+              "Services cache every valid ticket in advance",
+              "The ticket contains a public key signature the service verifies offline"
+            ],
+            "answerIndex": 0,
+            "explanation": "Only the KDC and the service share that key, so successful decryption is itself the proof of issuance. This is what makes Kerberos scale."
+          },
+          {
+            "id": "krb-q2",
+            "prompt": "What makes Kerberoasting possible?",
+            "options": [
+              "Any authenticated user can request a service ticket, which is encrypted with the service account's password key",
+              "Service tickets are transmitted unencrypted",
+              "The KDC leaks password hashes on request",
+              "Service accounts have no passwords"
+            ],
+            "answerIndex": 0,
+            "explanation": "Because the request is legitimate, there is nothing to block. The mitigation is high-entropy service account passwords and disabling RC4 encryption types."
+          },
+          {
+            "id": "krb-q3",
+            "prompt": "Why must the krbtgt password be rotated twice after a compromise?",
+            "options": [
+              "The KDC accepts both the current and previous key, so one rotation leaves forged tickets valid",
+              "The first rotation only changes the salt",
+              "Domain controllers replicate the change twice",
+              "It is required to rebuild the certificate chain"
+            ],
+            "answerIndex": 0,
+            "explanation": "Keeping the previous key is what stops a single rotation from invalidating every live ticket. Two rotations, spaced beyond ticket lifetime, are needed to fully evict an attacker."
+          }
+        ]
+      }
+    },
+    {
+      "id": "oauth2",
+      "name": "OAuth 2.0",
+      "acronym": "OAuth 2.0",
+      "category": "identity",
+      "tier": "premium",
+      "difficulty": "core",
+      "readingMinutes": 7,
+      "yearIntroduced": 2012,
+      "ports": ["443 (HTTPS only)"],
+      "standards": ["RFC 6749", "RFC 7636 (PKCE)", "RFC 8252 (Native Apps)", "OAuth 2.1 draft"],
+      "tagline": "Delegated authorisation — how an app gets limited access to your data without your password.",
+      "overview": "OAuth 2.0 answers a narrow question: how can an application act on your behalf at another service without you handing over your password? The answer is a token with a limited scope and lifetime, issued after you approve a consent screen. It is an authorisation framework, not an authentication protocol, and treating it as a login mechanism without OpenID Connect on top has produced a long series of real vulnerabilities.",
+      "howItWorks": [
+        { "title": "Authorisation request", "detail": "The app redirects the browser to the authorisation server with its client ID, requested scopes, a redirect URI, a state value, and a PKCE code challenge." },
+        { "title": "User authenticates and consents", "detail": "The user logs in at the authorisation server — never at the app — and approves the specific scopes requested." },
+        { "title": "Authorisation code returned", "detail": "The server redirects back to the registered redirect URI with a short-lived, single-use code. The code alone is not access." },
+        { "title": "Code exchanged for tokens", "detail": "The app posts the code plus its PKCE code verifier to the token endpoint and receives an access token and usually a refresh token." },
+        { "title": "Token used and refreshed", "detail": "The access token is sent as a bearer credential on API calls. When it expires, the refresh token obtains a new one without user interaction." }
+      ],
+      "keyConcepts": [
+        { "term": "PKCE", "definition": "Proof Key for Code Exchange. The client commits to a random secret up front and must reveal it when redeeming the code, so a stolen code is useless. Mandatory for mobile apps and now recommended for all clients." },
+        { "term": "Scope", "definition": "The specific permissions requested. Least privilege applies: asking for full account access when you need a profile picture is both a security and an approval-rate problem." },
+        { "term": "state parameter", "definition": "An unguessable value echoed back in the redirect, tying the response to the request and preventing cross-site request forgery on the callback." },
+        { "term": "Confidential vs public client", "definition": "A server-side app can keep a client secret; a mobile or single-page app cannot, because anyone can extract it from the binary. Public clients must rely on PKCE." }
+      ],
+      "protects": [
+        "The user's password, which the third-party app never sees",
+        "Scope creep — access is limited to the permissions granted",
+        "Revocability — the user can withdraw one app's access without changing their password",
+        "Authorisation code interception, when PKCE is used"
+      ],
+      "weaknesses": [
+        "Access tokens are bearer credentials: whoever holds one can use it until it expires",
+        "Open redirect flaws in the redirect URI validation allow token theft — exact matching is required",
+        "Using OAuth alone for login is unsafe; the access token says nothing verifiable about who the user is",
+        "The implicit flow returned tokens in the URL fragment and is deprecated for good reason",
+        "Consent fatigue means users approve broad scopes without reading them"
+      ],
+      "realWorldUse": [
+        "Sign in with Google, GitHub, or Microsoft on third-party sites",
+        "Mobile apps obtaining API access on a user's behalf",
+        "Machine-to-machine access using the client credentials grant"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "oauth-l1",
+            "title": "Authorisation is not authentication",
+            "body": "An OAuth access token means this app may call these APIs on behalf of some user. It is not a statement about who that user is, and it is not addressed to your application. Early implementations took a token, called a profile endpoint, and logged in whoever came back — which allowed the confused deputy attack: an attacker obtains a token for their own account at a malicious app, replays it at your app, and your app logs them in as the attacker's identity, or worse, accepts a token minted for a different client entirely. OpenID Connect exists precisely to add an audience-bound, signed identity assertion.",
+            "takeaway": "If you need to know who the user is, use OpenID Connect. If you need to call an API for them, use OAuth. They answer different questions."
+          },
+          {
+            "id": "oauth-l2",
+            "title": "Why PKCE is mandatory on mobile",
+            "body": "A native app cannot hold a client secret — anyone can unpack the binary. Historically, the authorisation code came back through a custom URL scheme, and on older systems any app could register the same scheme and intercept the redirect. With no client secret, the interceptor could redeem the code. PKCE fixes this: the app sends a hash of a random verifier in the initial request, and must present the original verifier to redeem the code. An intercepted code without the verifier is worthless. On iOS, use ASWebAuthenticationSession, which keeps the flow out of any app-controlled web view.",
+            "takeaway": "Never run an OAuth flow inside an embedded WebView you control — the user cannot tell it is not the real login page, and your app can read what they type."
+          },
+          {
+            "id": "oauth-l3",
+            "title": "Redirect URI validation is the crown jewel",
+            "body": "Every OAuth token theft chain of note runs through a redirect. If an authorisation server accepts a redirect URI by prefix match, an attacker registers https://yourapp.com.evil.com or abuses an open redirect on your own domain to bounce the code onward. Registration must be exact-match on the full URI, wildcards must not be permitted, and open redirects anywhere on the registered origin must be treated as an authentication vulnerability rather than a low-severity nuisance.",
+            "takeaway": "Treat every open redirect on your domain as a critical finding when you also run OAuth flows there."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "oauth-q1",
+            "prompt": "What problem does PKCE solve?",
+            "options": [
+              "An intercepted authorisation code cannot be redeemed without the original verifier",
+              "It encrypts the access token in transit",
+              "It replaces the need for HTTPS",
+              "It lets public clients store a client secret safely"
+            ],
+            "answerIndex": 0,
+            "explanation": "PKCE binds the code to a secret held only by the app that started the flow, which is the protection public clients cannot get from a client secret."
+          },
+          {
+            "id": "oauth-q2",
+            "prompt": "Why is an OAuth access token insufficient for logging a user in?",
+            "options": [
+              "It is not bound to your application and makes no verifiable claim about the user's identity",
+              "It expires too quickly",
+              "It cannot be transmitted over HTTPS",
+              "It contains no scopes"
+            ],
+            "answerIndex": 0,
+            "explanation": "Access tokens are for calling APIs. An ID token from OpenID Connect is signed, contains an audience claim naming your client, and is designed to be validated as an identity assertion."
+          },
+          {
+            "id": "oauth-q3",
+            "prompt": "What is the purpose of the state parameter?",
+            "options": [
+              "To bind the callback to the request the user actually started, preventing CSRF",
+              "To carry the requested scopes",
+              "To identify the resource server",
+              "To hold the refresh token"
+            ],
+            "answerIndex": 0,
+            "explanation": "Without state, an attacker can feed a victim's browser a callback containing the attacker's authorisation code, linking the attacker's account to the victim's session."
+          }
+        ]
+      }
+    },
+    {
+      "id": "oidc",
+      "name": "OpenID Connect",
+      "acronym": "OIDC",
+      "category": "identity",
+      "tier": "premium",
+      "difficulty": "core",
+      "readingMinutes": 6,
+      "yearIntroduced": 2014,
+      "ports": ["443 (HTTPS only)"],
+      "standards": ["OpenID Connect Core 1.0", "RFC 7519 (JWT)", "RFC 7515 (JWS)"],
+      "tagline": "An identity layer on OAuth 2.0 that finally made social login safe to implement.",
+      "overview": "OpenID Connect is a thin, well-specified layer on top of OAuth 2.0 that adds the one thing OAuth deliberately left out: a verifiable statement about who the user is. That statement is the ID token, a signed JWT with an audience claim naming your application. It also standardises discovery, so a client can configure itself from a single well-known URL.",
+      "howItWorks": [
+        { "title": "Discovery", "detail": "The client fetches /.well-known/openid-configuration to learn the endpoints, supported algorithms, and the JWKS URI holding the provider's public signing keys." },
+        { "title": "Authorisation request with openid scope", "detail": "The flow is OAuth's authorisation code flow, with the openid scope and usually a nonce added." },
+        { "title": "ID token returned", "detail": "Alongside the access token, the token endpoint returns an ID token: a signed JWT containing issuer, subject, audience, expiry, and the nonce." },
+        { "title": "Validation", "detail": "The client verifies the signature against the JWKS keys, checks that the issuer matches, that the audience equals its own client ID, that the token has not expired, and that the nonce matches the one it sent." },
+        { "title": "UserInfo when needed", "detail": "Additional claims such as email or profile picture can be fetched from the UserInfo endpoint using the access token." }
+      ],
+      "keyConcepts": [
+        { "term": "ID token", "definition": "A signed JWT asserting an authentication event. Unlike an access token it is meant to be read and validated by the client application." },
+        { "term": "Audience claim", "definition": "The aud claim names the client the token was issued for. Checking it is what prevents a token minted for another application being replayed at yours." },
+        { "term": "nonce", "definition": "A value sent in the request and embedded in the ID token, tying the token to this specific authentication attempt and blocking replay." },
+        { "term": "JWKS", "definition": "A published set of the provider's public keys, identified by key ID, allowing signature verification and seamless key rotation." }
+      ],
+      "protects": [
+        "Identity spoofing, through signature and audience validation",
+        "Token replay across applications and across sessions, via aud and nonce",
+        "Password reuse — the user authenticates only at their identity provider",
+        "Configuration drift, since discovery and JWKS handle endpoint and key rotation"
+      ],
+      "weaknesses": [
+        "Accepting the alg header from the token itself allows the none algorithm and HMAC confusion attacks",
+        "Skipping any one of the issuer, audience, expiry, or signature checks defeats the entire scheme",
+        "Compromise of the identity provider compromises every relying application",
+        "Long-lived sessions at the provider mean logout at your app does not end the underlying session"
+      ],
+      "realWorldUse": [
+        "Sign in with Google and Sign in with Apple",
+        "Enterprise single sign-on through Okta, Entra ID, and Auth0",
+        "Kubernetes API server authentication using OIDC identity tokens"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "oidc-l1",
+            "title": "The four checks that matter",
+            "body": "Validating an ID token is four things, and every one of them has been skipped in a real breach. Verify the signature against the provider's published key, matched by key ID. Check the issuer is exactly the provider you expect. Check the audience equals your client ID — this is the check that stops a valid token from another application being replayed at yours. Check expiry, with only a small clock-skew allowance. Miss any single one and an attacker with a token from anywhere can become any user.",
+            "takeaway": "A JWT that is signed correctly but addressed to someone else is not your token. Always check aud."
+          },
+          {
+            "id": "oidc-l2",
+            "title": "Never trust the alg header",
+            "body": "A JWT declares its own signing algorithm in the header, and naive libraries used to honour it. Set alg to none and some parsers accepted an unsigned token outright. Worse, if a provider uses RSA, an attacker could change alg to HS256 and sign with the provider's public key as the HMAC secret — the public key is public, and a library that dispatches on the header would verify it happily. Pin the expected algorithm in your verification code and reject anything else before parsing.",
+            "takeaway": "Never let attacker-controlled data choose how that same data gets validated."
+          },
+          {
+            "id": "oidc-l3",
+            "title": "Sign in with Apple and App Store rules",
+            "body": "Apple's App Review guidelines require that any app offering third-party social login as its only or primary sign-in option must also offer Sign in with Apple, with limited exceptions for apps using their own account system exclusively, education or enterprise apps tied to an existing account, or apps that are clients for a specific non-Apple service. Sign in with Apple is a standard OIDC provider, so the integration mirrors any other — but the private relay email addresses it issues mean your backend must treat email as non-unique and non-permanent, and key the account on the stable subject identifier instead.",
+            "takeaway": "Key user accounts on the OIDC sub claim, never on the email address. Emails change; Apple's relay addresses change more."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "oidc-q1",
+            "prompt": "Which ID token claim prevents a token issued for another application being replayed at yours?",
+            "options": ["aud (audience)", "iat (issued at)", "sub (subject)", "scope"],
+            "answerIndex": 0,
+            "explanation": "The audience claim names the intended client. Without checking it, any validly signed token from the same issuer would be accepted."
+          },
+          {
+            "id": "oidc-q2",
+            "prompt": "Why should the alg header of a JWT never be trusted?",
+            "options": [
+              "An attacker can set it to none or switch RSA to HMAC and forge a token",
+              "It is not covered by the signature at all",
+              "It reveals the provider's private key",
+              "It causes the token to expire early"
+            ],
+            "answerIndex": 0,
+            "explanation": "The algorithm must be pinned by the verifier. Letting the token dictate its own verification method is a self-referential trust failure."
+          },
+          {
+            "id": "oidc-q3",
+            "prompt": "What should a backend use as the permanent identifier for an OIDC user?",
+            "options": [
+              "The sub claim from the identity provider",
+              "The email address",
+              "The display name",
+              "The access token"
+            ],
+            "answerIndex": 0,
+            "explanation": "The subject identifier is stable per provider and per client. Email addresses change, and Apple's private relay addresses in particular are not durable identifiers."
+          }
+        ]
+      }
+    },
+    {
+      "id": "saml",
+      "name": "Security Assertion Markup Language 2.0",
+      "acronym": "SAML 2.0",
+      "category": "identity",
+      "tier": "premium",
+      "difficulty": "advanced",
+      "readingMinutes": 6,
+      "yearIntroduced": 2005,
+      "ports": ["443 (HTTPS)"],
+      "standards": ["OASIS SAML 2.0 Core", "XML Signature (XMLDSig)"],
+      "tagline": "The XML-based enterprise SSO standard that still runs half of corporate single sign-on.",
+      "overview": "SAML predates OAuth and remains deeply embedded in enterprise software. An identity provider issues a digitally signed XML assertion about a user, the browser carries it to a service provider, and the service provider verifies the signature and creates a session. The concept is sound; the difficulty is that verifying XML signatures correctly is genuinely hard, and the resulting parser bugs have produced a long list of authentication bypasses.",
+      "howItWorks": [
+        { "title": "Service provider redirects", "detail": "An unauthenticated user hits the application, which redirects the browser to the identity provider with an AuthnRequest." },
+        { "title": "Identity provider authenticates", "detail": "The IdP authenticates the user by whatever means it chooses — password, MFA, an existing session — outside the SAML protocol." },
+        { "title": "Signed assertion issued", "detail": "The IdP builds an XML assertion containing the subject, conditions such as NotOnOrAfter, an audience restriction, and attribute statements, then signs it." },
+        { "title": "Browser POSTs the assertion", "detail": "An auto-submitting form posts the base64-encoded response to the service provider's Assertion Consumer Service URL." },
+        { "title": "Service provider validates", "detail": "It verifies the signature against the IdP's certificate, checks the audience, the time window, the InResponseTo value, and that the assertion has not been seen before, then establishes a session." }
+      ],
+      "keyConcepts": [
+        { "term": "Assertion", "definition": "The signed XML document stating that a subject authenticated at a time, valid for a window, and intended for a named audience." },
+        { "term": "SP-initiated vs IdP-initiated", "definition": "SP-initiated starts at the application and can be tied to a request identifier. IdP-initiated has no originating request, which removes an important replay defence." },
+        { "term": "XML Signature Wrapping", "definition": "An attack where a valid signed element is retained to satisfy verification while the data the application actually reads is moved elsewhere in the document." },
+        { "term": "Metadata", "definition": "An XML document exchanged between IdP and SP describing endpoints, certificates, and supported bindings. Rotating a signing certificate means updating metadata everywhere." }
+      ],
+      "protects": [
+        "Password sharing with applications — credentials stay at the identity provider",
+        "Centralised policy: MFA and conditional access apply once, for every connected app",
+        "Immediate deprovisioning across all applications when an account is disabled",
+        "Assertion tampering, when signature verification is implemented correctly"
+      ],
+      "weaknesses": [
+        "XML Signature Wrapping and canonicalisation bugs have bypassed authentication in many implementations",
+        "IdP-initiated flows lack InResponseTo and are far more replay-prone",
+        "Comment-injection bugs let attackers truncate a username during parsing to impersonate another account",
+        "Expired or rotated IdP certificates cause hard outages, tempting operators to disable verification",
+        "Verbose and difficult to debug, which encourages copy-pasted and under-validated implementations"
+      ],
+      "realWorldUse": [
+        "Enterprise SSO into Salesforce, Workday, ServiceNow, and thousands of SaaS applications",
+        "University and government federations such as InCommon and eduGAIN",
+        "AWS IAM federated console access"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "saml-l1",
+            "title": "Signature wrapping in one paragraph",
+            "body": "An XML signature says a specific element is authentic, referenced by ID. Verification and application logic are usually separate code paths — the crypto library checks the signed element, then the application reads the assertion by walking the document. If an attacker keeps the original signed assertion where the verifier finds it, but inserts a second, forged assertion where the application's XPath lookup finds it first, verification passes and the application reads attacker-controlled data. The fix is to ensure the exact element that was verified is the same object the application consumes, never a re-query of the document.",
+            "takeaway": "Verify and use the same object. Anything that re-parses between the check and the use is a time-of-check-to-time-of-use bug."
+          },
+          {
+            "id": "saml-l2",
+            "title": "The comment injection bug",
+            "body": "In 2018 researchers found that several SAML libraries mishandled XML comments in the NameID field. A username of admin<!--comment-->@evil.com would be canonicalised for signature verification one way, but the text extraction routine returned only the first text node — admin. The signature was valid over an assertion for an attacker-controlled email address, while the application saw the administrator's username. Multiple major SSO implementations were affected simultaneously, because they all delegated text extraction to libraries with the same subtle behaviour.",
+            "takeaway": "Parsing differentials between two components processing the same bytes are a whole vulnerability class, not a one-off bug."
+          },
+          {
+            "id": "saml-l3",
+            "title": "SAML or OIDC for something new",
+            "body": "For a new integration, OIDC is the better default: JSON instead of XML, a signature format that is far harder to get wrong, native support for mobile and single-page apps, and discovery that handles key rotation automatically. SAML remains necessary because enterprise buyers require it and a great deal of existing software speaks nothing else. If you must implement SAML, use a mature, maintained library, never hand-roll XML processing, and disable IdP-initiated flows unless a customer specifically needs them.",
+            "takeaway": "Choose OIDC for new work; support SAML because your enterprise customers already depend on it."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "saml-q1",
+            "prompt": "What makes XML Signature Wrapping possible?",
+            "options": [
+              "The element that is verified and the element the application reads can be different",
+              "XML signatures use a weak hash function",
+              "Assertions are transmitted unencrypted",
+              "The identity provider signs with a symmetric key"
+            ],
+            "answerIndex": 0,
+            "explanation": "Verification and consumption are separate lookups over a mutable document. Attackers exploit the gap by placing forged data where the application will find it."
+          },
+          {
+            "id": "saml-q2",
+            "prompt": "Why are IdP-initiated flows riskier than SP-initiated ones?",
+            "options": [
+              "There is no InResponseTo value binding the assertion to a request, weakening replay protection",
+              "They do not use signatures",
+              "They send credentials to the service provider",
+              "They require the assertion to be unencrypted"
+            ],
+            "answerIndex": 0,
+            "explanation": "Without an originating request identifier the service provider cannot confirm the assertion answers a login attempt it actually started."
+          },
+          {
+            "id": "saml-q3",
+            "prompt": "For a brand new integration with no legacy requirement, which is generally preferable?",
+            "options": [
+              "OpenID Connect, for simpler tokens and safer validation",
+              "SAML, because XML signatures are stronger",
+              "Either — they have identical security properties",
+              "SAML, because it supports mobile apps better"
+            ],
+            "answerIndex": 0,
+            "explanation": "JWT validation is far less error-prone than XML signature verification, and OIDC was designed with mobile and browser-based clients in mind."
+          }
+        ]
+      }
+    },
+    {
+      "id": "fido2",
+      "name": "FIDO2 and WebAuthn",
+      "acronym": "FIDO2",
+      "category": "identity",
+      "tier": "premium",
+      "difficulty": "core",
+      "readingMinutes": 6,
+      "yearIntroduced": 2019,
+      "ports": ["443 (HTTPS)", "USB/NFC/BLE for roaming authenticators"],
+      "standards": ["W3C WebAuthn Level 3", "FIDO CTAP 2.2"],
+      "tagline": "Public key authentication that is structurally immune to phishing.",
+      "overview": "FIDO2 replaces the shared secret with a key pair generated per website and stored in secure hardware. There is nothing to type, nothing to intercept, and nothing on the server worth stealing. Its defining property is origin binding: the authenticator refuses to sign for a domain other than the one the credential was created for, which makes phishing fail mechanically rather than depending on the user noticing anything.",
+      "howItWorks": [
+        { "title": "Registration", "detail": "The site sends a challenge. The authenticator — Face ID, a security key, a passkey in the keychain — generates a new key pair bound to that origin and returns the public key with an attestation." },
+        { "title": "Server stores the public key", "detail": "The credential ID and public key go into the account record. There is no secret held by the server, so a database breach yields nothing usable." },
+        { "title": "Authentication challenge", "detail": "At login the server sends a fresh random challenge along with the relying party identifier." },
+        { "title": "Origin-bound signing", "detail": "The browser passes the actual origin to the authenticator. If it does not match the credential's relying party ID, the authenticator refuses. Otherwise it signs the challenge, gated by biometric or PIN." },
+        { "title": "Verification", "detail": "The server checks the signature against the stored public key, confirms the challenge, and checks the signature counter for cloning." }
+      ],
+      "keyConcepts": [
+        { "term": "Origin binding", "definition": "Credentials are scoped to a relying party ID. A lookalike domain cannot obtain a signature for the real one, so phishing simply does not produce a usable credential." },
+        { "term": "Passkey", "definition": "A discoverable FIDO2 credential synced across a user's devices through a platform keychain such as iCloud Keychain, removing the account-recovery problem that held back hardware keys." },
+        { "term": "User verification", "definition": "The authenticator confirms the human is present and is the enrolled user via biometrics or a PIN, providing the second factor locally rather than over the network." },
+        { "term": "Attestation", "definition": "An optional statement about the authenticator's make and model, letting high-assurance deployments require certified hardware. Most consumer sites should not request it, for privacy reasons." }
+      ],
+      "protects": [
+        "Phishing — a credential cannot be used on the wrong origin, full stop",
+        "Credential stuffing and password reuse, because there is no password",
+        "Server-side breach exposure, since only public keys are stored",
+        "Real-time man-in-the-middle proxies that defeat one-time codes and push approvals"
+      ],
+      "weaknesses": [
+        "Account recovery is the hard part; a weak email-based fallback reintroduces every phishing risk",
+        "Synced passkeys are only as strong as the platform account protecting the keychain",
+        "Device loss requires enrolled backups or a recovery path planned in advance",
+        "Enterprise deployments must decide whether syncing is acceptable or hardware-bound keys are required"
+      ],
+      "realWorldUse": [
+        "Passkeys on iOS and macOS backed by Face ID or Touch ID and the Secure Enclave",
+        "YubiKeys and equivalent security keys for high-assurance workforce access",
+        "Passwordless sign-in at Google, Microsoft, Apple, GitHub, and a growing number of consumer services"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "fido-l1",
+            "title": "Why this actually stops phishing",
+            "body": "Every earlier second factor is a value the user can be tricked into giving away. A one-time code can be typed into a lookalike site and relayed within seconds. Push approvals can be spammed until someone taps accept. FIDO2 removes the human from the loop: the browser tells the authenticator which origin is asking, and if it is not the origin the credential was created for, the authenticator will not sign. The user cannot make this mistake because there is no step where they hand something over.",
+            "takeaway": "The strongest controls are those a user cannot be socially engineered into bypassing, because there is nothing to hand over."
+          },
+          {
+            "id": "fido-l2",
+            "title": "Passkeys solved adoption, not recovery",
+            "body": "Hardware keys were phishing-proof for a decade and almost nobody used them, because losing one meant losing the account. Passkeys sync through iCloud Keychain or a password manager, so a new phone restores your credentials — which is what made passwordless viable for consumers. The trade is that your platform account now protects every passkey, and its own recovery flow becomes the weakest link. Enterprises that reject that trade use device-bound credentials and accept the enrolment overhead.",
+            "takeaway": "Security that people abandon protects nobody. Passkeys traded a little assurance for a large amount of real-world adoption."
+          },
+          {
+            "id": "fido-l3",
+            "title": "Design the recovery path first",
+            "body": "The most common way a passkey deployment fails is a support flow that resets access after a few personal questions and an email link. An attacker skips the unphishable credential entirely and calls the help desk. Before enabling passkeys, decide what recovery looks like: a second enrolled authenticator, one-time backup codes printed at enrolment, an in-person or video-verified process for high-value accounts. Recovery is the real security boundary once authentication is unphishable.",
+            "takeaway": "Attackers target the weakest available path. Making the front door impenetrable just redirects them to the side entrance."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "fido-q1",
+            "prompt": "Why is WebAuthn resistant to phishing?",
+            "options": [
+              "The authenticator refuses to sign for an origin other than the credential's relying party ID",
+              "The challenge is encrypted end to end",
+              "Users must confirm the domain name manually",
+              "It requires a hardware key that cannot be plugged into an attacker's machine"
+            ],
+            "answerIndex": 0,
+            "explanation": "Origin binding is enforced by the browser and authenticator, not by the user's judgement, so a lookalike domain cannot obtain a valid signature."
+          },
+          {
+            "id": "fido-q2",
+            "prompt": "What does a server store for a WebAuthn credential?",
+            "options": [
+              "A public key and credential ID — nothing secret",
+              "A hashed password and salt",
+              "The user's biometric template",
+              "A symmetric key shared with the authenticator"
+            ],
+            "answerIndex": 0,
+            "explanation": "Biometrics never leave the device, and there is no shared secret. A stolen credential database offers an attacker nothing to authenticate with."
+          },
+          {
+            "id": "fido-q3",
+            "prompt": "What typically becomes the weakest link after passkeys are deployed?",
+            "options": [
+              "The account recovery and help desk process",
+              "The TLS connection to the site",
+              "The signature algorithm used by the authenticator",
+              "The length of the challenge value"
+            ],
+            "answerIndex": 0,
+            "explanation": "Attackers move to whatever remains cheapest. If recovery falls back to email links or knowledge questions, the unphishable credential is bypassed entirely."
+          }
+        ]
+      }
+    },
+    {
+      "id": "radius",
+      "name": "Remote Authentication Dial-In User Service",
+      "acronym": "RADIUS",
+      "category": "identity",
+      "tier": "premium",
+      "difficulty": "core",
+      "readingMinutes": 5,
+      "yearIntroduced": 1991,
+      "ports": ["1812 (auth)", "1813 (accounting)", "2083 (RADSEC/TLS)"],
+      "standards": ["RFC 2865", "RFC 2866", "RFC 6614 (RADSEC)"],
+      "tagline": "The AAA workhorse behind enterprise Wi-Fi and network access control.",
+      "overview": "RADIUS was written for dial-up modem pools and is still, three decades later, how a corporate Wi-Fi network decides whether your laptop may join. It provides authentication, authorisation, and accounting in one protocol, letting hundreds of access points defer every decision to a central server. Its age shows badly in its cryptography, which is why RADIUS over TLS now matters.",
+      "howItWorks": [
+        { "title": "Access-Request", "detail": "A network access server — a Wi-Fi controller, VPN concentrator, or switch — forwards the user's credentials to the RADIUS server with attributes describing the connection." },
+        { "title": "Shared secret protection", "detail": "The User-Password attribute is obscured using MD5 with a shared secret and the request authenticator. The rest of the packet is plaintext." },
+        { "title": "Server decision", "detail": "The server checks a directory such as Active Directory or LDAP and replies with Access-Accept, Access-Reject, or Access-Challenge for multi-step methods." },
+        { "title": "Authorisation attributes", "detail": "An Access-Accept can carry attributes assigning a VLAN, an ACL, or a bandwidth limit, so authorisation rides along with authentication." },
+        { "title": "Accounting", "detail": "Start, interim, and stop records report session duration and data volumes for billing and audit." }
+      ],
+      "keyConcepts": [
+        { "term": "AAA", "definition": "Authentication, Authorisation, and Accounting — who are you, what may you do, and what did you do." },
+        { "term": "Shared secret", "definition": "A per-client password between the access server and the RADIUS server. Short or reused secrets are the classic RADIUS weakness." },
+        { "term": "EAP over RADIUS", "definition": "For enterprise Wi-Fi, RADIUS carries EAP messages between the client and server, so modern methods such as EAP-TLS provide the real security regardless of RADIUS's own age." },
+        { "term": "RADSEC", "definition": "RADIUS transported over TLS on TCP port 2083, which fixes the protocol's plaintext and MD5 problems by wrapping the whole exchange." }
+      ],
+      "protects": [
+        "Centralised credential checking, so access devices never store user passwords",
+        "Per-user network authorisation such as dynamic VLAN assignment",
+        "Session accounting for audit and billing",
+        "The user's actual credentials, when EAP-TLS or PEAP is used inside it"
+      ],
+      "weaknesses": [
+        "Only the password attribute is obfuscated; everything else travels in plaintext",
+        "MD5-based construction is obsolete, and the 2024 BlastRADIUS flaw showed forgery of Access-Accept responses is practical over UDP",
+        "Guessable shared secrets undermine the entire trust relationship",
+        "Runs over UDP with no built-in reliability or ordering guarantees"
+      ],
+      "realWorldUse": [
+        "WPA2 and WPA3 Enterprise Wi-Fi authentication",
+        "VPN concentrator and network device administration login",
+        "Internet service provider subscriber authentication and accounting"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "radius-l1",
+            "title": "A 1991 protocol in a 2020s network",
+            "body": "RADIUS predates the modern threat model entirely. Its password obfuscation is an MD5 stream construction, its integrity checking is weak, and it runs over UDP where responses can be spoofed. The 2024 BlastRADIUS research demonstrated forging an Access-Accept using an MD5 chosen-prefix collision — turning a rejection into an approval. The mitigations are Message-Authenticator enforcement on every packet and, properly, moving to RADIUS over TLS.",
+            "takeaway": "Ubiquity is not validation. Some protocols survive on inertia, and their cryptography needs to be wrapped in something modern."
+          },
+          {
+            "id": "radius-l2",
+            "title": "Why enterprise Wi-Fi is still safe",
+            "body": "If RADIUS cryptography is this weak, why is WPA2-Enterprise considered strong? Because RADIUS acts as a courier, not a cryptosystem. EAP-TLS runs a full TLS handshake between the client and the RADIUS server, tunnelled through RADIUS packets. The actual authentication is protected end to end by TLS, and RADIUS only carries opaque blobs. The weakness matters for the RADIUS server's own decisions and for legacy methods like PAP, not for the EAP exchange inside.",
+            "takeaway": "Layering matters. A weak transport carrying a strong tunnel can still be acceptable — but know exactly which part is doing the work."
+          },
+          {
+            "id": "radius-l3",
+            "title": "Shared secrets are still passwords",
+            "body": "Every access point, switch, and VPN gateway holds a shared secret for the RADIUS server. In practice these are frequently short, identical across all devices, and stored in configuration backups that get emailed around. Anyone who obtains one can impersonate a network access device, submit requests, and use offline attacks against captured traffic. Use long random secrets, unique per device, stored in a secrets manager — and treat a network device backup as credential material.",
+            "takeaway": "A secret shared with fifty devices is a secret shared with everyone who can read any one of them."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "radius-q1",
+            "prompt": "Which part of a RADIUS packet is protected by the shared secret?",
+            "options": [
+              "Only the User-Password attribute — the rest is plaintext",
+              "The entire packet, encrypted with AES",
+              "Only the accounting records",
+              "Nothing; the secret is used only for logging"
+            ],
+            "answerIndex": 0,
+            "explanation": "Usernames, assigned VLANs, and other attributes travel in the clear, which is a large part of why RADSEC exists."
+          },
+          {
+            "id": "radius-q2",
+            "prompt": "In WPA2-Enterprise with EAP-TLS, what actually secures the authentication?",
+            "options": [
+              "A TLS handshake between the client and the RADIUS server, tunnelled inside RADIUS",
+              "RADIUS's MD5 password obfuscation",
+              "The WPA2 pre-shared key",
+              "The access point's own certificate"
+            ],
+            "answerIndex": 0,
+            "explanation": "RADIUS merely transports the EAP messages. The cryptographic work happens inside the TLS tunnel between supplicant and authentication server."
+          },
+          {
+            "id": "radius-q3",
+            "prompt": "What is RADSEC?",
+            "options": [
+              "RADIUS carried over TLS on TCP, fixing the plaintext and integrity weaknesses",
+              "A stronger hash for the shared secret",
+              "A replacement for EAP",
+              "RADIUS with certificate-based user login"
+            ],
+            "answerIndex": 0,
+            "explanation": "Wrapping the whole exchange in TLS addresses the plaintext attributes, the weak integrity check, and the UDP spoofing surface at once."
+          }
+        ]
+      }
+    },
+    {
+      "id": "tacacs",
+      "name": "Terminal Access Controller Access-Control System Plus",
+      "acronym": "TACACS+",
+      "category": "identity",
+      "tier": "premium",
+      "difficulty": "advanced",
+      "readingMinutes": 4,
+      "yearIntroduced": 1993,
+      "ports": ["49/TCP"],
+      "standards": ["RFC 8907"],
+      "tagline": "Cisco's AAA protocol for device administration, with per-command authorisation.",
+      "overview": "Where RADIUS is aimed at network access for end users, TACACS+ is aimed at administrative access to network devices. Its distinguishing feature is that it separates authentication, authorisation, and accounting into independent exchanges, which allows something RADIUS cannot do: authorising every individual command a network engineer types, in real time, against a central policy.",
+      "howItWorks": [
+        { "title": "Separate AAA exchanges", "detail": "Authentication establishes identity; authorisation is queried independently and can be repeated; accounting is a third, distinct flow." },
+        { "title": "Full body encryption", "detail": "The entire packet body is obscured with an MD5-based stream derived from the shared secret, unlike RADIUS which protects only the password field." },
+        { "title": "TCP transport", "detail": "Running over TCP port 49 provides reliable delivery, ordering, and immediate awareness of a dead server." },
+        { "title": "Per-command authorisation", "detail": "The device asks the server before executing each command, so a junior engineer can be permitted show commands while configuration changes are denied." },
+        { "title": "Command accounting", "detail": "Every command executed is logged centrally, producing a precise audit trail of who changed what and when." }
+      ],
+      "keyConcepts": [
+        { "term": "Separated AAA", "definition": "Independent authentication, authorisation, and accounting exchanges — the architectural difference that enables per-command control." },
+        { "term": "Per-command authorisation", "definition": "Real-time policy evaluation for each command, rather than a coarse privilege level assigned at login." },
+        { "term": "Header in the clear", "definition": "The TACACS+ header is not encrypted, so session metadata is observable even though the body is obscured." },
+        { "term": "TACACS+ over TLS", "definition": "RFC 9105 defines running TACACS+ inside TLS, replacing the obsolete MD5 obfuscation with real transport security." }
+      ],
+      "protects": [
+        "Administrative credentials for network infrastructure",
+        "Privilege escalation on devices, through granular command authorisation",
+        "Audit completeness, via per-command accounting",
+        "Packet contents, since the whole body is obscured rather than one field"
+      ],
+      "weaknesses": [
+        "The MD5-based obfuscation is cryptographically obsolete and vulnerable to known-plaintext analysis",
+        "The header is not protected, leaking session metadata",
+        "A single shared secret across a device fleet is a common and serious operational weakness",
+        "Per-command authorisation adds latency and creates a hard dependency on server availability"
+      ],
+      "realWorldUse": [
+        "Administrative login to routers, switches, and firewalls in most large enterprises",
+        "Compliance regimes that require per-command audit trails for infrastructure changes",
+        "Managed service providers segregating customer access on shared equipment"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "tacacs-l1",
+            "title": "Why separating AAA matters",
+            "body": "RADIUS bundles authorisation into the authentication response: you are accepted, and here are your attributes, decided once at login. TACACS+ keeps them apart, so the device can ask a fresh authorisation question at any moment. That is what makes per-command control possible — the server sees an engineer about to run a configuration command and can deny it based on their role, the device, or the time of day, long after the login happened.",
+            "takeaway": "Coupling authorisation to the login event limits you to decisions made at login. Decoupling them buys continuous control."
+          },
+          {
+            "id": "tacacs-l2",
+            "title": "Use each protocol where it fits",
+            "body": "The common design is both: RADIUS for end-user network access, where scale and EAP support matter and per-command control is meaningless, and TACACS+ for administrator access to the devices themselves, where granular authorisation and command auditing are the entire point. Running TACACS+ for thousands of Wi-Fi clients would be needlessly heavy; running RADIUS for device administration gives up the audit trail auditors ask for.",
+            "takeaway": "These protocols are complements, not competitors. The question is who is logging in and to what."
+          },
+          {
+            "id": "tacacs-l3",
+            "title": "Plan for the server being unreachable",
+            "body": "Per-command authorisation means every keystroke depends on a reachable server, which is a problem precisely when you need access most — during a network outage. Every deployment needs a local fallback account with a strong, vaulted, rotated password, and devices configured to fall back only when the servers are genuinely unreachable rather than when they return a reject. Getting that distinction wrong either locks you out of your own network or leaves a bypass an attacker can trigger.",
+            "takeaway": "Centralised authorisation needs a tested break-glass path. Design it deliberately, or you will improvise it during an incident."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "tacacs-q1",
+            "prompt": "What is the main architectural difference between TACACS+ and RADIUS?",
+            "options": [
+              "TACACS+ separates authentication, authorisation, and accounting into independent exchanges",
+              "TACACS+ uses public key cryptography",
+              "RADIUS runs over TCP and TACACS+ over UDP",
+              "TACACS+ does not support accounting"
+            ],
+            "answerIndex": 0,
+            "explanation": "That separation is what allows authorisation to be queried repeatedly, enabling per-command control."
+          },
+          {
+            "id": "tacacs-q2",
+            "prompt": "Which is protected in a TACACS+ packet?",
+            "options": [
+              "The entire body, but not the header",
+              "Only the password field",
+              "The header only",
+              "Nothing — TACACS+ is plaintext"
+            ],
+            "answerIndex": 0,
+            "explanation": "Full body obfuscation is an improvement over RADIUS, but the MD5-based construction is obsolete and the header still leaks metadata."
+          },
+          {
+            "id": "tacacs-q3",
+            "prompt": "What operational risk does per-command authorisation introduce?",
+            "options": [
+              "Loss of administrative access when the AAA server is unreachable",
+              "Passwords being sent in plaintext",
+              "Inability to log commands",
+              "Incompatibility with TCP networks"
+            ],
+            "answerIndex": 0,
+            "explanation": "Every command depends on the server, so a tested local fallback account is mandatory for outage scenarios."
+          }
+        ]
+      }
+    }
+  ]
+}

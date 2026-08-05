@@ -1,0 +1,521 @@
+{
+  "category": "network",
+  "protocols": [
+    {
+      "id": "ssh",
+      "name": "Secure Shell",
+      "acronym": "SSH",
+      "category": "network",
+      "tier": "free",
+      "difficulty": "core",
+      "readingMinutes": 6,
+      "yearIntroduced": 1995,
+      "ports": ["22"],
+      "standards": ["RFC 4251", "RFC 4252", "RFC 4253", "RFC 8709 (Ed25519)"],
+      "tagline": "Encrypted remote administration that replaced Telnet — and quietly became a tunnelling tool.",
+      "overview": "SSH was written in an afternoon in 1995 after a password-sniffing attack at a Finnish university, and it made Telnet and rlogin obsolete almost overnight. It gives you an authenticated, encrypted channel to a remote machine, but the interesting part is the multiplexing: a single SSH connection can carry an interactive shell, file transfers, forwarded TCP ports, and forwarded agent requests at the same time.",
+      "howItWorks": [
+        { "title": "Version exchange and key exchange", "detail": "Both sides announce versions in plaintext, then run a Diffie-Hellman or ECDH exchange to derive session keys. Everything after this is encrypted." },
+        { "title": "Host key verification", "detail": "The server proves ownership of its host key. The client checks it against known_hosts — on first connection there is nothing to compare against, which is the trust-on-first-use gap." },
+        { "title": "Client authentication", "detail": "Public key, password, keyboard-interactive, or GSSAPI. With public key auth, the client signs a challenge that includes the session identifier, binding the signature to this specific connection." },
+        { "title": "Channel multiplexing", "detail": "Once authenticated, the client opens logical channels over the single encrypted connection: a shell, an exec command, an SFTP subsystem, or a forwarded port." },
+        { "title": "Rekeying", "detail": "Long-lived connections periodically renegotiate keys to limit the volume of data protected by any single key." }
+      ],
+      "keyConcepts": [
+        { "term": "Trust on first use", "definition": "The first time you connect, the client cannot verify the host key and asks you to accept it. Most people accept blindly, which is the one genuine window for a man-in-the-middle." },
+        { "term": "Authorized keys", "definition": "A file on the server listing public keys allowed to log in as that user. Appending a key here is a classic persistence technique for attackers." },
+        { "term": "Agent forwarding", "definition": "Lets a remote host use your local key for onward connections. Convenient and dangerous — root on that host can hijack the agent socket while you are connected." },
+        { "term": "Port forwarding", "definition": "Local, remote, and dynamic (SOCKS) tunnels through the SSH connection. A frequent path for exfiltration and for bypassing firewall policy." }
+      ],
+      "protects": [
+        "Credentials and session content against network sniffing",
+        "Tampering with commands or transferred files in transit",
+        "Server impersonation, once the host key is known and pinned"
+      ],
+      "weaknesses": [
+        "Trust-on-first-use makes the initial connection vulnerable unless host keys are distributed out of band",
+        "Password authentication invites credential stuffing — internet-facing port 22 is brute-forced constantly",
+        "Private keys stored unencrypted on disk are a top target for infostealer malware",
+        "Reverse tunnels and agent forwarding can be abused to punch through network segmentation"
+      ],
+      "realWorldUse": [
+        "Nearly all Linux and network device administration",
+        "Git over SSH for repository access",
+        "Automated deployment pipelines and configuration management"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "ssh-l1",
+            "title": "Keys beat passwords, but only if you protect them",
+            "body": "Public key authentication removes the shared secret from the wire entirely — the server stores only your public key, and a database breach of the server yields nothing usable. The catch is that the private key sits in a file on your laptop. If it has no passphrase, any malware that reads your home directory has your access to every server. Use a passphrase, keep the key in the agent, and prefer Ed25519 keys, which are short, fast, and free of the parameter-selection pitfalls of older algorithms.",
+            "takeaway": "Key authentication moves the risk from the network to your endpoint. Protect the endpoint accordingly."
+          },
+          {
+            "id": "ssh-l2",
+            "title": "The host key warning is not noise",
+            "body": "When SSH prints its large warning that the remote host identification has changed, the honest answer is usually that the server was rebuilt. But it is also exactly what an interception attack looks like, and deleting the known_hosts line to make the message go away is a reflex worth breaking. In managed environments, sign host keys with an SSH certificate authority: clients then trust any host key signed by the CA, and rebuilt servers stop generating warnings at all.",
+            "takeaway": "Certificates scale trust decisions that trust-on-first-use cannot."
+          },
+          {
+            "id": "ssh-l3",
+            "title": "SSH as a tunnel is a policy problem",
+            "body": "Dynamic port forwarding turns any SSH login into a SOCKS proxy, and remote forwarding lets an internal host expose a service back out through an outbound connection. Both are legitimate features and both routinely defeat network segmentation. If you run a bastion host, disable forwarding unless it is needed, restrict commands with ForceCommand, and log session activity — the encrypted channel means your network monitoring sees nothing useful.",
+            "takeaway": "A protocol that encrypts everything also blinds your defences. Compensate with controls at the endpoints."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "ssh-q1",
+            "prompt": "What is the trust-on-first-use weakness in SSH?",
+            "options": [
+              "The client cannot verify the host key on the first connection",
+              "The first password is sent in plaintext",
+              "The first session uses weaker encryption",
+              "Keys are only generated after the first login"
+            ],
+            "answerIndex": 0,
+            "explanation": "With nothing in known_hosts to compare against, the client must ask the user to accept the key. An attacker present at that exact moment can substitute their own."
+          },
+          {
+            "id": "ssh-q2",
+            "prompt": "Why is SSH agent forwarding risky?",
+            "options": [
+              "A privileged user on the remote host can use your agent socket while you are connected",
+              "It transmits your private key to the remote host",
+              "It disables host key checking",
+              "It downgrades the encryption algorithm"
+            ],
+            "answerIndex": 0,
+            "explanation": "The key itself never leaves your machine, but the forwarded socket will sign anything requested while the session is open. Root on that host can silently authenticate as you elsewhere."
+          },
+          {
+            "id": "ssh-q3",
+            "prompt": "What is the practical benefit of SSH host certificates over known_hosts?",
+            "options": [
+              "Clients trust any host key signed by the CA, so rebuilt servers do not trigger warnings",
+              "They encrypt the session with a stronger cipher",
+              "They eliminate the need for client authentication",
+              "They allow password login to be disabled"
+            ],
+            "answerIndex": 0,
+            "explanation": "A CA-signed host key scales to large fleets and removes the habit of clicking through identification-changed warnings."
+          }
+        ]
+      }
+    },
+    {
+      "id": "ipsec",
+      "name": "Internet Protocol Security",
+      "acronym": "IPsec",
+      "category": "network",
+      "tier": "free",
+      "difficulty": "core",
+      "readingMinutes": 7,
+      "yearIntroduced": 1995,
+      "ports": ["500/UDP (IKE)", "4500/UDP (NAT-T)", "IP protocol 50 (ESP)"],
+      "standards": ["RFC 4301", "RFC 4303 (ESP)", "RFC 7296 (IKEv2)"],
+      "tagline": "Security built into the IP layer itself, so applications need no changes at all.",
+      "overview": "IPsec protects traffic at layer 3, which means every protocol running above it — TCP, UDP, and anything else — is covered without modification. That is its great strength and the source of its complexity: it has to handle key negotiation, policy databases, NAT traversal, and two different encapsulation modes. It remains the standard for site-to-site VPNs and for securing mobile carrier backhaul.",
+      "howItWorks": [
+        { "title": "IKEv2 phase one", "detail": "The peers run a Diffie-Hellman exchange and authenticate each other with pre-shared keys or certificates, creating a protected control channel called the IKE SA." },
+        { "title": "Child SA negotiation", "detail": "Inside that protected channel they negotiate one or more Child SAs — the actual one-way encryption contexts that will protect data — along with the traffic selectors describing which packets they apply to." },
+        { "title": "ESP encapsulation", "detail": "Encapsulating Security Payload encrypts and authenticates the packet. In transport mode only the payload is protected; in tunnel mode the whole original packet is wrapped inside a new one, hiding the internal addressing." },
+        { "title": "Anti-replay and SPI", "detail": "Each packet carries a Security Parameter Index identifying the SA and a sequence number checked against a sliding window to reject replays." },
+        { "title": "NAT traversal", "detail": "ESP has no ports for a NAT device to rewrite, so when a NAT is detected the peers encapsulate ESP inside UDP port 4500 and send keepalives to hold the mapping open." }
+      ],
+      "keyConcepts": [
+        { "term": "Security Association", "definition": "A one-way agreement covering keys, algorithms, and lifetime. A bidirectional tunnel therefore needs two SAs." },
+        { "term": "Tunnel vs transport mode", "definition": "Tunnel mode wraps the entire IP packet and is used for gateway-to-gateway VPNs. Transport mode protects only the payload between two hosts." },
+        { "term": "AH vs ESP", "definition": "Authentication Header provides integrity without encryption and breaks under NAT. ESP provides both and is what essentially everyone deploys." },
+        { "term": "Perfect Forward Secrecy", "definition": "Optionally rerunning Diffie-Hellman for each Child SA rekey, so compromise of one key does not expose other sessions." }
+      ],
+      "protects": [
+        "All traffic between two networks or hosts, regardless of application",
+        "Internal network topology, when tunnel mode hides original addressing",
+        "Packet injection and replay against the protected flows"
+      ],
+      "weaknesses": [
+        "Configuration complexity leads to mismatched policies and weak legacy algorithm choices",
+        "Aggressive mode in IKEv1 with a pre-shared key exposes an offline-crackable hash — disable it",
+        "Weak or shared pre-shared keys undermine everything above them",
+        "Protocol 50 traffic is blocked by many networks, forcing UDP encapsulation fallbacks"
+      ],
+      "realWorldUse": [
+        "Site-to-site VPNs joining branch offices to a data centre",
+        "iOS and macOS built-in VPN using IKEv2, including Always-On configurations via MDM",
+        "Securing signalling and backhaul inside mobile operator networks"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "ipsec-l1",
+            "title": "Layer 3 security means the app never knows",
+            "body": "The appeal of IPsec is transparency. A legacy application speaking a plaintext protocol from 1988 gets confidentiality and integrity with no code change, because protection happens below the socket. That is also the limitation: the tunnel protects packets between two network endpoints, not between two users. Once a packet leaves the tunnel at the gateway it is plaintext again on the internal network, which is why IPsec complements rather than replaces TLS.",
+            "takeaway": "Ask where the tunnel actually ends. Protection stops at the decryption point, not at the application."
+          },
+          {
+            "id": "ipsec-l2",
+            "title": "Why IKEv2 replaced IKEv1",
+            "body": "IKEv1 had two modes, ambiguous specifications, no standard way to detect a dead peer, and an aggressive mode that leaked an offline-crackable pre-shared key hash. IKEv2 collapsed all of that into a single four-message exchange with built-in liveness checks, standard NAT traversal, and MOBIKE for surviving address changes. That last feature is why IKEv2 is the sensible choice on phones — the tunnel survives moving from Wi-Fi to cellular.",
+            "takeaway": "Protocol version numbers matter. IKEv1 aggressive mode with a shared PSK is still found in production and is still crackable."
+          },
+          {
+            "id": "ipsec-l3",
+            "title": "Pre-shared keys are the usual weak link",
+            "body": "IPsec is cryptographically sound, and most real-world failures come from a group pre-shared key that is short, reused across every branch office, and stored in a wiki. Anyone who obtains it can impersonate a gateway. Certificate-based authentication solves this properly: each peer has its own key, revocation is possible, and there is no shared secret to leak. If PSKs are unavoidable, make them long random strings, unique per peer, and rotate them.",
+            "takeaway": "Strong algorithms cannot compensate for a shared secret that a hundred people can read."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "ipsec-q1",
+            "prompt": "Why is ESP used far more than AH in practice?",
+            "options": [
+              "ESP provides encryption as well as integrity and survives NAT",
+              "AH is not supported by IPv6",
+              "ESP uses fewer CPU cycles",
+              "AH requires certificates"
+            ],
+            "answerIndex": 0,
+            "explanation": "AH authenticates parts of the IP header, so any NAT rewrite invalidates it. ESP also adds confidentiality, which AH lacks entirely."
+          },
+          {
+            "id": "ipsec-q2",
+            "prompt": "What does tunnel mode add over transport mode?",
+            "options": [
+              "It encapsulates the whole original packet, hiding internal addressing",
+              "It compresses the payload",
+              "It removes the need for key exchange",
+              "It works only over IPv6"
+            ],
+            "answerIndex": 0,
+            "explanation": "Tunnel mode wraps the original IP packet inside a new one between gateways, so internal source and destination addresses are not visible on the public path."
+          },
+          {
+            "id": "ipsec-q3",
+            "prompt": "Which IKEv2 feature makes it well suited to mobile devices?",
+            "options": [
+              "MOBIKE, which keeps the tunnel alive across IP address changes",
+              "Aggressive mode",
+              "Its use of AH instead of ESP",
+              "Support for RC4"
+            ],
+            "answerIndex": 0,
+            "explanation": "MOBIKE lets a peer change its address — Wi-Fi to cellular — without renegotiating the tunnel, which is why iOS ships IKEv2 as its native VPN protocol."
+          }
+        ]
+      }
+    },
+    {
+      "id": "wireguard",
+      "name": "WireGuard",
+      "acronym": "WireGuard",
+      "category": "network",
+      "tier": "premium",
+      "difficulty": "core",
+      "readingMinutes": 5,
+      "yearIntroduced": 2016,
+      "ports": ["51820/UDP (default, configurable)"],
+      "standards": ["Noise Protocol Framework", "RFC 7748 (X25519)", "RFC 8439 (ChaCha20-Poly1305)"],
+      "tagline": "A VPN in roughly 4,000 lines of code, with no algorithm negotiation at all.",
+      "overview": "WireGuard is a deliberate reaction to the complexity of IPsec and OpenVPN. It fixes one cipher suite, offers no negotiation, and identifies peers purely by their public keys. The entire implementation is small enough to audit in an afternoon, which is itself the security argument — most VPN vulnerabilities have been implementation bugs in code too large to review.",
+      "howItWorks": [
+        { "title": "Static key identity", "detail": "Every peer has a Curve25519 key pair. A peer's public key is its identity; there are no usernames, certificates, or CAs involved." },
+        { "title": "Noise IK handshake", "detail": "A one-round-trip handshake based on the Noise framework establishes fresh session keys, with the initiator's identity encrypted to the responder's static public key." },
+        { "title": "Cryptokey routing", "detail": "Each peer is configured with the IP ranges it is allowed to use. A packet arriving from a peer with a source outside its allowed IPs is dropped, which merges routing and access control into one table." },
+        { "title": "Silent by default", "detail": "An unauthenticated packet gets no reply at all, so the port does not respond to scanning. To an attacker the service appears not to exist." },
+        { "title": "Timer-driven rekey", "detail": "Sessions rekey automatically after two minutes or a set number of messages, with no negotiation involved." }
+      ],
+      "keyConcepts": [
+        { "term": "Cryptokey routing", "definition": "The binding between a public key and the source addresses that key is permitted to use — simultaneously the routing table and the firewall policy." },
+        { "term": "No cipher agility", "definition": "ChaCha20-Poly1305, Curve25519, BLAKE2s, HKDF — fixed. If one is broken, you deploy a new protocol version rather than negotiate a fallback, which eliminates downgrade attacks." },
+        { "term": "Stealth", "definition": "No response to unauthenticated packets means no reachable attack surface for scanners and no amplification potential." },
+        { "term": "Roaming", "definition": "The peer's endpoint address is updated from whatever authenticated packet arrives last, so a device moving networks simply continues." }
+      ],
+      "protects": [
+        "Confidentiality and integrity of all tunnelled traffic",
+        "Peer impersonation, since identity is the key itself",
+        "Scanning and untargeted attack traffic, because unauthenticated packets are ignored",
+        "Denial of service via a cookie mechanism under load"
+      ],
+      "weaknesses": [
+        "Assigns fixed internal IPs to peers by default, which is a privacy concern for commercial VPN services",
+        "No built-in user authentication, key distribution, or revocation — that is left to external tooling",
+        "The kernel holds peer public keys and last endpoints, so a compromised server reveals who connects",
+        "Being UDP-only, it is easy to block on restrictive networks"
+      ],
+      "realWorldUse": [
+        "Merged into the Linux kernel in version 5.6",
+        "The transport under Tailscale, Mullvad, and many modern VPN products",
+        "Site-to-site links where IPsec configuration overhead is not wanted"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "wg-l1",
+            "title": "Less code is a security property",
+            "body": "OpenVPN plus OpenSSL runs to hundreds of thousands of lines. IPsec implementations are comparable. WireGuard is around four thousand. Almost every serious VPN vulnerability of the last two decades was a memory-safety or state-machine bug rather than a break of the underlying mathematics, and the probability of such a bug scales with the amount of code an attacker can reach. A codebase small enough for one person to read end to end is qualitatively different to audit.",
+            "takeaway": "Attack surface is measured in reachable code, not in features."
+          },
+          {
+            "id": "wg-l2",
+            "title": "Removing negotiation removes downgrades",
+            "body": "Every downgrade attack in TLS history — FREAK, Logjam, POODLE — needed a negotiation step to manipulate. WireGuard has none: both ends implement exactly one cipher suite, so there is nothing to negotiate and nothing to strip. The cost is that changing algorithms means shipping a new protocol version to every peer. That is a deliberate trade: harder migration in exchange for a whole class of attacks that cannot exist.",
+            "takeaway": "Flexibility and attack surface are usually the same thing viewed from different sides."
+          },
+          {
+            "id": "wg-l3",
+            "title": "What WireGuard deliberately leaves out",
+            "body": "There is no user login, no certificate authority, no way to revoke a key other than deleting it from every peer's configuration, and no dynamic address assignment. For a handful of servers that is refreshingly simple. For a company with two thousand laptops it is not a product, and this is exactly the gap that Tailscale and similar systems fill by layering identity, key distribution, and NAT traversal on top of the WireGuard data plane.",
+            "takeaway": "WireGuard is a secure data plane. The control plane — who gets a key and for how long — is your problem to solve."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "wg-q1",
+            "prompt": "What is cryptokey routing?",
+            "options": [
+              "Binding each peer's public key to the source IP ranges it is allowed to use",
+              "Encrypting the routing table before transmission",
+              "Deriving IP addresses from a hash of the public key",
+              "Rotating routes on every rekey"
+            ],
+            "answerIndex": 0,
+            "explanation": "The allowed-IPs list serves as both the outbound route and the inbound access check, so a peer cannot spoof traffic from ranges it was not granted."
+          },
+          {
+            "id": "wg-q2",
+            "prompt": "Why does WireGuard not negotiate cipher suites?",
+            "options": [
+              "To eliminate downgrade attacks and reduce complexity",
+              "Because UDP cannot carry negotiation messages",
+              "To stay compatible with IPsec",
+              "Because it uses the same key for every peer"
+            ],
+            "answerIndex": 0,
+            "explanation": "With one fixed suite there is no negotiation for an attacker to manipulate. Algorithm changes require a protocol version bump instead."
+          },
+          {
+            "id": "wg-q3",
+            "prompt": "What happens when WireGuard receives a packet it cannot authenticate?",
+            "options": [
+              "It silently drops it with no response",
+              "It sends an error message to the sender",
+              "It renegotiates the session keys",
+              "It logs the sender and replies with a cookie"
+            ],
+            "answerIndex": 0,
+            "explanation": "Silence means port scans find nothing and the service cannot be used for amplification. Cookies are only issued to already-authenticated peers when the server is under load."
+          }
+        ]
+      }
+    },
+    {
+      "id": "openvpn",
+      "name": "OpenVPN",
+      "acronym": "OpenVPN",
+      "category": "network",
+      "tier": "premium",
+      "difficulty": "core",
+      "readingMinutes": 5,
+      "yearIntroduced": 2001,
+      "ports": ["1194/UDP (default)", "443/TCP (firewall evasion)"],
+      "standards": ["No RFC — de facto standard", "Uses TLS (RFC 8446) for its control channel"],
+      "tagline": "A userspace VPN built on TLS that can hide inside ordinary HTTPS traffic.",
+      "overview": "OpenVPN takes a different approach from IPsec: rather than living in the kernel network stack, it runs as a userspace daemon using a virtual network interface and wraps its own tunnel protocol around a TLS control channel. That design makes it portable, flexible, and — because it can run over TCP port 443 — very hard for a restrictive network to distinguish from ordinary web traffic.",
+      "howItWorks": [
+        { "title": "TLS control channel", "detail": "A standard TLS handshake with certificates on both sides authenticates the peers and negotiates the keys used for the data channel." },
+        { "title": "Separate data channel", "detail": "Bulk traffic is encrypted with the derived keys rather than through TLS records, keeping per-packet overhead low. Modern versions use AES-GCM." },
+        { "title": "Virtual interface", "detail": "A tun device carries IP packets, or a tap device carries Ethernet frames for bridging. The OS routes into it like any other interface." },
+        { "title": "tls-auth / tls-crypt", "detail": "An extra pre-shared HMAC key wraps control packets, so unauthenticated peers cannot even reach the TLS state machine — and tls-crypt encrypts them, obscuring that this is OpenVPN at all." },
+        { "title": "Push configuration", "detail": "After authentication the server pushes routes, DNS servers, and options to the client, centralising configuration." }
+      ],
+      "keyConcepts": [
+        { "term": "tun vs tap", "definition": "tun operates at layer 3 with IP packets and is the usual choice; tap operates at layer 2 and allows Ethernet bridging at the cost of far more broadcast traffic." },
+        { "term": "tls-crypt", "definition": "Encrypts and authenticates the control channel with a pre-shared key, giving both DoS resistance and protocol obfuscation." },
+        { "term": "TCP meltdown", "definition": "Running a TCP tunnel inside TCP causes two retransmission timers to fight each other under loss, collapsing throughput. Prefer UDP unless you need to evade filtering." },
+        { "term": "Certificate revocation list", "definition": "OpenVPN's mechanism for disabling a client certificate — it must be distributed to servers and actually checked to have any effect." }
+      ],
+      "protects": [
+        "All tunnelled traffic against interception on untrusted networks",
+        "Peer identity via mutual certificate authentication",
+        "Connection metadata, when running on port 443 with tls-crypt"
+      ],
+      "weaknesses": [
+        "Userspace processing means noticeably lower throughput than kernel WireGuard or IPsec",
+        "Large configuration surface with legacy options such as BF-CBC that must be explicitly disabled",
+        "Historically weak defaults in older versions still linger in copied configuration files",
+        "TCP mode suffers from TCP-over-TCP meltdown under packet loss"
+      ],
+      "realWorldUse": [
+        "Widely deployed remote-access VPNs in small and mid-sized businesses",
+        "Consumer VPN services offering an OpenVPN option for restrictive networks",
+        "Embedded in many router firmwares including OpenWrt and pfSense"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "ovpn-l1",
+            "title": "Why port 443 changes everything",
+            "body": "A network that blocks VPNs typically blocks UDP 1194 and IPsec's protocol 50 outright. OpenVPN over TCP 443 looks, to a simple filter, exactly like an HTTPS connection: same port, same TLS handshake shape. With tls-crypt the control channel is encrypted too, so even the OpenVPN-specific packet structure is hidden. This is why OpenVPN persists despite being slower — reachability sometimes beats performance.",
+            "takeaway": "The best protocol is the one that actually connects. Blocked-but-fast is worth nothing."
+          },
+          {
+            "id": "ovpn-l2",
+            "title": "TCP over TCP is a trap",
+            "body": "Tunnelling TCP inside TCP means two independent retransmission and congestion algorithms are managing the same loss event. The inner connection retransmits because it saw a delay, while the outer one is already retransmitting the same data, which compounds the delay further. Throughput collapses in a feedback loop known as TCP meltdown. Use UDP mode by default and switch to TCP only when the network leaves no alternative.",
+            "takeaway": "Reliability layered on reliability is not extra reliability — it is interference."
+          },
+          {
+            "id": "ovpn-l3",
+            "title": "Old configs carry old defaults",
+            "body": "OpenVPN configurations get copied between deployments for years. Files still circulate specifying Blowfish in CBC mode with a 64-bit block, vulnerable to the Sweet32 birthday attack on long-lived connections, or with no tls-auth key at all. Modern OpenVPN negotiates AES-GCM by default, but an explicit legacy cipher line overrides that. Audit inherited configs rather than assuming the defaults you get today apply.",
+            "takeaway": "Copied configuration is technical debt with a security multiplier."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "ovpn-q1",
+            "prompt": "What does tls-crypt add over tls-auth?",
+            "options": [
+              "It encrypts the control channel as well as authenticating it, obscuring the protocol",
+              "It replaces certificates with a pre-shared key",
+              "It enables TCP mode",
+              "It compresses control packets"
+            ],
+            "answerIndex": 0,
+            "explanation": "tls-auth only authenticates control packets. tls-crypt also encrypts them, so a passive observer cannot fingerprint the traffic as OpenVPN."
+          },
+          {
+            "id": "ovpn-q2",
+            "prompt": "Why is UDP mode preferred over TCP mode?",
+            "options": [
+              "To avoid TCP-over-TCP meltdown under packet loss",
+              "Because TCP mode does not support encryption",
+              "Because UDP allows larger packets",
+              "Because TCP mode disables certificate checking"
+            ],
+            "answerIndex": 0,
+            "explanation": "Two nested retransmission algorithms amplify each other's delays. UDP lets the inner TCP connection manage loss on its own."
+          },
+          {
+            "id": "ovpn-q3",
+            "prompt": "What is the main performance drawback of OpenVPN's architecture?",
+            "options": [
+              "Packets are processed in userspace rather than the kernel",
+              "It can only use software encryption",
+              "It requires a new handshake for every packet",
+              "It cannot use hardware AES instructions"
+            ],
+            "answerIndex": 0,
+            "explanation": "Every packet crosses the kernel-userspace boundary through the tun device, adding context switches and copies that kernel-resident WireGuard and IPsec avoid."
+          }
+        ]
+      }
+    },
+    {
+      "id": "sftp",
+      "name": "SSH File Transfer Protocol",
+      "acronym": "SFTP",
+      "category": "network",
+      "tier": "premium",
+      "difficulty": "foundational",
+      "readingMinutes": 4,
+      "yearIntroduced": 2001,
+      "ports": ["22 (as an SSH subsystem)"],
+      "standards": ["draft-ietf-secsh-filexfer (never finalised)", "RFC 4253 (SSH transport)"],
+      "tagline": "File transfer as a subsystem of SSH — not to be confused with FTPS.",
+      "overview": "SFTP is a file access protocol that runs as a subsystem inside an existing SSH connection. Because it inherits SSH's authentication and encryption, there is nothing extra to secure and a single port to open. It is worth being precise about the naming: SFTP, FTPS, and FTP over an SSH tunnel are three different things, and confusing them leads to real misconfigurations.",
+      "howItWorks": [
+        { "title": "Established SSH session", "detail": "The client authenticates over SSH exactly as it would for a shell, then requests the sftp subsystem on a channel." },
+        { "title": "Packet-based file operations", "detail": "Rather than shell commands, SFTP defines structured operations — open, read, write, stat, rename, remove — each with a request identifier so operations can be pipelined." },
+        { "title": "Single channel", "detail": "Unlike FTP there is no separate data connection, so no passive-mode port range and no firewall gymnastics." },
+        { "title": "Attribute preservation", "detail": "Permissions, timestamps, and ownership travel with the file, and partial reads and writes allow resumable transfers." },
+        { "title": "Restricted deployment", "detail": "Servers commonly combine ForceCommand internal-sftp with ChrootDirectory to give a user file access without shell access." }
+      ],
+      "keyConcepts": [
+        { "term": "SFTP vs FTPS", "definition": "SFTP is SSH-based on one port. FTPS is the old FTP protocol wrapped in TLS, with separate control and data connections and awkward firewall behaviour." },
+        { "term": "Subsystem", "definition": "A named service inside SSH. Requesting the sftp subsystem starts the file transfer server instead of a login shell." },
+        { "term": "Chroot jail", "definition": "Confining an SFTP user to a directory subtree so they cannot read the wider filesystem. The chroot target must be root-owned and not writable by the user." },
+        { "term": "Pipelining", "definition": "Multiple outstanding requests on one channel, which is how SFTP achieves reasonable throughput despite its request-response design." }
+      ],
+      "protects": [
+        "File contents and credentials against interception",
+        "Tampering with transferred files in flight",
+        "Server impersonation, through SSH host key verification"
+      ],
+      "weaknesses": [
+        "Anyone with SFTP access has SSH access to that account unless explicitly restricted",
+        "Misconfigured chroot permissions silently cause the SSH daemon to reject the session, prompting insecure workarounds",
+        "Request-response overhead makes it slower than streaming protocols on high-latency links",
+        "The specification was never finalised, so extensions vary between implementations"
+      ],
+      "realWorldUse": [
+        "Business-to-business file exchange, particularly finance and healthcare batch feeds",
+        "Website deployment and content upload",
+        "Automated backup collection from remote systems"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "sftp-l1",
+            "title": "Three protocols, one confusing name",
+            "body": "SFTP runs inside SSH on port 22. FTPS is 1970s FTP with TLS bolted on, using port 21 for control and a range of ports for data, which makes firewall and NAT configuration painful. Plain FTP is unencrypted and should be considered extinct. Vendors describe all three as secure FTP in their documentation, and teams regularly open the wrong ports or believe they have encryption when they do not. Ask which specific protocol, not whether it is secure.",
+            "takeaway": "When someone says secure FTP, make them name the protocol. The differences are operational, not cosmetic."
+          },
+          {
+            "id": "sftp-l2",
+            "title": "Restricting SFTP users properly",
+            "body": "Granting SFTP access grants an SSH account, and by default that account can also run commands and open port forwards. The standard hardening is a Match block in sshd_config setting ForceCommand internal-sftp, ChrootDirectory to a root-owned parent directory, and AllowTcpForwarding no. The chroot ownership rule catches everyone the first time: the chroot target itself must be owned by root and not group- or world-writable, with the user's writable folder one level beneath.",
+            "takeaway": "File transfer access and shell access are different privileges. Separate them explicitly, because the default does not."
+          },
+          {
+            "id": "sftp-l3",
+            "title": "Keys for automation, not passwords",
+            "body": "Scheduled SFTP transfers are one of the most common places a password ends up hardcoded in a script. Use key authentication with a dedicated service account, restrict the key in authorized_keys with from= and command= options so it only works from the expected host for the expected purpose, and rotate on a schedule. If the platform supports it, prefer per-transfer credentials issued by a secrets manager over any long-lived file on disk.",
+            "takeaway": "An automated transfer with a hardcoded password is a credential waiting to be found in version control."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "sftp-q1",
+            "prompt": "What is the key architectural difference between SFTP and FTPS?",
+            "options": [
+              "SFTP runs as an SSH subsystem on one port; FTPS is FTP wrapped in TLS with separate data connections",
+              "SFTP is unencrypted while FTPS is encrypted",
+              "FTPS is newer and replaces SFTP",
+              "SFTP cannot preserve file permissions"
+            ],
+            "answerIndex": 0,
+            "explanation": "The single-connection design is why SFTP is far easier to firewall than FTPS with its dynamic data port range."
+          },
+          {
+            "id": "sftp-q2",
+            "prompt": "Why must an SFTP ChrootDirectory be owned by root and not writable by the user?",
+            "options": [
+              "Otherwise the user could alter the jail structure to escape it, so sshd refuses the session",
+              "Because SFTP cannot write to user-owned directories",
+              "To allow the SSH daemon to log transfers",
+              "Because chroot requires a specific filesystem type"
+            ],
+            "answerIndex": 0,
+            "explanation": "A user-writable chroot root would let the confined user manipulate the jail. The SSH daemon enforces the requirement by refusing to start the session."
+          },
+          {
+            "id": "sftp-q3",
+            "prompt": "What does granting a user SFTP access implicitly grant by default?",
+            "options": [
+              "Full SSH access including shell and port forwarding",
+              "Read-only filesystem access",
+              "Access only to their home directory",
+              "Nothing beyond file transfer"
+            ],
+            "answerIndex": 0,
+            "explanation": "SFTP is a subsystem of SSH, so the account is an SSH account. Restrictions must be configured explicitly with ForceCommand and related options."
+          }
+        ]
+      }
+    }
+  ]
+}

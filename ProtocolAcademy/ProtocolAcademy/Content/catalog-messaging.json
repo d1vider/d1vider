@@ -1,0 +1,526 @@
+{
+  "category": "messaging",
+  "protocols": [
+    {
+      "id": "signal",
+      "name": "Signal Protocol",
+      "acronym": "Signal",
+      "category": "messaging",
+      "tier": "premium",
+      "difficulty": "advanced",
+      "readingMinutes": 7,
+      "yearIntroduced": 2013,
+      "ports": ["443 (HTTPS transport)"],
+      "standards": ["X3DH specification", "Double Ratchet specification", "Sesame (group sessions)"],
+      "tagline": "The end-to-end encryption design behind Signal, WhatsApp, and Messenger — with self-healing keys.",
+      "overview": "The Signal Protocol combines two ideas: an asynchronous key agreement called X3DH that works even when the recipient is offline, and the Double Ratchet, which derives a brand new key for every single message. The result is that compromising a device's current keys reveals almost nothing about past messages and, once the ratchet turns again, nothing about future ones either.",
+      "howItWorks": [
+        { "title": "Prekey bundle published", "detail": "Each user uploads an identity key, a signed prekey, and a batch of one-time prekeys to the server, so anyone can start a session while they are offline." },
+        { "title": "X3DH key agreement", "detail": "The sender performs several Diffie-Hellman operations combining identity keys, the signed prekey, a one-time prekey, and its own ephemeral key, mixing the results into one shared secret." },
+        { "title": "Symmetric-key ratchet", "detail": "A KDF chain advances for each message sent, so every message uses a distinct key that is deleted immediately after use." },
+        { "title": "Diffie-Hellman ratchet", "detail": "Each time the direction of conversation changes, a fresh DH exchange injects new entropy into the chain — this is what heals the session after a compromise." },
+        { "title": "Out-of-order handling", "detail": "Skipped message keys are cached briefly so messages arriving late or out of sequence can still be decrypted without breaking the chain." }
+      ],
+      "keyConcepts": [
+        { "term": "Forward secrecy", "definition": "Message keys are deleted after use, so a device seized today cannot decrypt yesterday's messages." },
+        { "term": "Post-compromise security", "definition": "Sometimes called future secrecy — after an attacker steals key material, the next DH ratchet step locks them out again, provided they stay passive." },
+        { "term": "Deniability", "definition": "Message authentication uses shared symmetric keys, so either party could have produced a valid transcript. Nothing cryptographically proves authorship to a third party." },
+        { "term": "Safety numbers", "definition": "A fingerprint of both identity keys that users can compare out of band to detect a man-in-the-middle at the server." }
+      ],
+      "protects": [
+        "Message content from the service operator and anyone on the network",
+        "Past messages after device compromise, through per-message key deletion",
+        "Future messages after key theft, once the DH ratchet advances",
+        "Server-side impersonation, if users verify safety numbers"
+      ],
+      "weaknesses": [
+        "Endpoint compromise is total — malware on the phone reads messages after decryption",
+        "Metadata such as who talks to whom and when is not hidden by the protocol itself",
+        "Users almost never verify safety numbers, leaving room for key substitution by a malicious server",
+        "Unencrypted cloud backups of chat history undo the guarantees entirely"
+      ],
+      "realWorldUse": [
+        "Signal Messenger, and WhatsApp for all chats by default",
+        "Facebook Messenger and Skype private conversations",
+        "Google Messages RCS end-to-end encryption"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "signal-l1",
+            "title": "Why a new key for every message",
+            "body": "Traditional encrypted messaging negotiates a session key and uses it for the whole conversation. Steal that key and the entire history unlocks. The Double Ratchet derives a fresh key per message from a chain, deleting each one immediately after use. An attacker who extracts the current state gets the messages from that point forward until the next DH ratchet step — not the archive. That reduction in blast radius, from everything to a handful of messages, is the protocol's core achievement.",
+            "takeaway": "Design for compromise. The question is never whether a key can be stolen, but how much it unlocks when it is."
+          },
+          {
+            "id": "signal-l2",
+            "title": "The asynchrony problem X3DH solves",
+            "body": "A Diffie-Hellman exchange normally requires both parties online at once. Messaging is not like that — you send to someone whose phone is off. X3DH solves it by having each user pre-publish a bundle of keys to the server, including one-time prekeys that are deleted after use. A sender combines those with their own keys to derive a shared secret unilaterally and sends the first message immediately. The recipient reconstructs the same secret whenever they come online.",
+            "takeaway": "Much of applied cryptography is adapting protocols that assume an interactive session to the messy reality of offline users."
+          },
+          {
+            "id": "signal-l3",
+            "title": "What end-to-end encryption does not hide",
+            "body": "The protocol protects content. It does not hide that you exchanged 200 messages with a particular contact at 3am, or your contact list, or your IP address. Metadata is often more revealing than content, and it is why Signal invested separately in sealed sender, private contact discovery, and relay features — those are engineering additions around the protocol, not properties of the Double Ratchet. When someone claims a messenger is fully private, ask specifically what the server can still observe.",
+            "takeaway": "End-to-end encryption is a statement about message contents. Metadata protection is a separate, harder engineering problem."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "signal-q1",
+            "prompt": "What does the Diffie-Hellman ratchet provide that the symmetric ratchet alone does not?",
+            "options": [
+              "Post-compromise security — recovery after key material is stolen",
+              "Faster encryption",
+              "Support for group chats",
+              "Compression of message payloads"
+            ],
+            "answerIndex": 0,
+            "explanation": "New DH entropy injected when the conversation direction changes locks out a passive attacker who captured the previous state."
+          },
+          {
+            "id": "signal-q2",
+            "prompt": "What problem does X3DH solve?",
+            "options": [
+              "Establishing a shared secret when the recipient is offline",
+              "Verifying the recipient's identity in person",
+              "Compressing key material for low-bandwidth links",
+              "Preventing metadata collection by the server"
+            ],
+            "answerIndex": 0,
+            "explanation": "Pre-published prekey bundles let a sender derive the shared secret alone, so the first message can be sent without any interaction."
+          },
+          {
+            "id": "signal-q3",
+            "prompt": "Which of these does the Signal Protocol NOT protect?",
+            "options": [
+              "Metadata about who communicated with whom and when",
+              "Message contents in transit",
+              "Past messages after device compromise",
+              "Message integrity"
+            ],
+            "answerIndex": 0,
+            "explanation": "Metadata protection requires separate mechanisms such as sealed sender. The protocol itself secures message content."
+          }
+        ]
+      }
+    },
+    {
+      "id": "emailauth",
+      "name": "SPF, DKIM and DMARC",
+      "acronym": "SPF · DKIM · DMARC",
+      "category": "messaging",
+      "tier": "premium",
+      "difficulty": "core",
+      "readingMinutes": 7,
+      "yearIntroduced": 2015,
+      "ports": ["25 (SMTP)", "53 (DNS for policy lookup)"],
+      "standards": ["RFC 7208 (SPF)", "RFC 6376 (DKIM)", "RFC 7489 (DMARC)"],
+      "tagline": "Three DNS-published mechanisms that together make domain spoofing detectable.",
+      "overview": "SMTP lets any server claim to be sending from any domain, which is why email spoofing was free for thirty years. The modern defence is three layers: SPF says which servers may send for a domain, DKIM signs messages so tampering and forgery are detectable, and DMARC ties both to the visible From address and tells receivers what to do when checks fail. None of the three is sufficient alone.",
+      "howItWorks": [
+        { "title": "SPF authorises senders", "detail": "A TXT record lists the IP addresses and hostnames permitted to send for the domain. The receiver checks the connecting server against it, matching on the envelope sender." },
+        { "title": "DKIM signs the message", "detail": "The sending server signs selected headers and the body with a private key. The public key is published in DNS, so any receiver can verify the signature survived transit unmodified." },
+        { "title": "Alignment is the crucial part", "detail": "DMARC requires the domain that passed SPF or DKIM to align with the domain in the visible From header — closing the gap where a message passes SPF for an attacker's own domain while displaying yours." },
+        { "title": "Policy tells receivers what to do", "detail": "The DMARC record specifies none, quarantine, or reject. Only reject actually stops delivery of spoofed mail." },
+        { "title": "Reports close the loop", "detail": "Aggregate RUA reports show which sources are sending as your domain and whether they pass, which is how you find forgotten legitimate senders before enforcing." }
+      ],
+      "keyConcepts": [
+        { "term": "Envelope vs header From", "definition": "SPF checks the envelope sender, which users never see. DMARC alignment is what connects authentication to the From address displayed in the mail client." },
+        { "term": "Alignment", "definition": "Requiring the authenticated domain to match the visible From domain, in strict or relaxed mode. Without it, SPF and DKIM prove very little about the apparent sender." },
+        { "term": "p=none", "definition": "Monitoring mode. It generates reports without affecting delivery, and a domain left at p=none forever gets no protection at all." },
+        { "term": "Forwarding breakage", "definition": "Mailing lists and forwarders break SPF and often DKIM. ARC records the original authentication result so a trusted forwarder's assessment can be carried forward." }
+      ],
+      "protects": [
+        "Exact-domain spoofing in phishing and business email compromise",
+        "Tampering with message content in transit, through DKIM signatures",
+        "Brand abuse, by making forged mail from your domain rejectable",
+        "Blind spots, through aggregate reporting on who sends as you"
+      ],
+      "weaknesses": [
+        "Lookalike domains and display-name spoofing are untouched — DMARC only protects the exact domain",
+        "A permissive SPF record with broad include statements authorises entire shared platforms",
+        "Forwarding and mailing lists break SPF, which drives premature rollback to p=none",
+        "Enforcement requires a full inventory of legitimate senders, which many organisations never complete"
+      ],
+      "realWorldUse": [
+        "Required by Google and Yahoo for bulk senders since 2024",
+        "Mandated for government domains in the US, UK, and several other jurisdictions",
+        "A standard control in every anti-phishing and business email compromise programme"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "email-l1",
+            "title": "Why SPF alone was never enough",
+            "body": "SPF validates the envelope sender — the address used in the SMTP conversation — which the recipient never sees. An attacker registers their own domain, publishes a perfectly valid SPF record for their own server, and sets the visible From header to your bank. SPF passes, because it was asked about a different domain than the one displayed. DMARC's alignment requirement is the fix: the domain that authenticated must match the one the human reads.",
+            "takeaway": "Verify the thing the user actually sees. Authentication of an invisible field protects nobody."
+          },
+          {
+            "id": "email-l2",
+            "title": "Rolling out DMARC without breaking mail",
+            "body": "Jumping straight to p=reject reliably destroys legitimate mail, because every organisation has forgotten senders — the invoicing SaaS, a marketing platform, a monitoring script on an old server. The standard path is to publish p=none with a reporting address, spend several weeks reading aggregate reports to inventory every source, fix SPF and DKIM for the legitimate ones, then move to quarantine with a percentage rollout, and finally to reject. The reports are the entire point of the monitoring phase.",
+            "takeaway": "Enforcement without an inventory is an outage. Measure first, then enforce, then keep measuring."
+          },
+          {
+            "id": "email-l3",
+            "title": "What DMARC will never stop",
+            "body": "DMARC at p=reject means nobody can send mail claiming to be from yourcompany.com. It does nothing about yourcompany-support.com, yourcompanyhq.net, or a display name reading Your Company Billing on a Gmail address — and those are what most phishing actually uses. DMARC removes the easiest technique and pushes attackers to slightly harder ones. Pair it with lookalike domain monitoring, external-sender banners, and user training on the actual address rather than the display name.",
+            "takeaway": "Closing one attack path redirects attackers rather than stopping them. Know what the next path is."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "email-q1",
+            "prompt": "What does DMARC alignment require?",
+            "options": [
+              "The domain that passed SPF or DKIM must match the visible From domain",
+              "SPF and DKIM must both pass",
+              "The message must be encrypted in transit",
+              "The sending server must have a valid TLS certificate"
+            ],
+            "answerIndex": 0,
+            "explanation": "Alignment is what connects authentication to the address the recipient actually reads. Either SPF or DKIM passing in alignment satisfies DMARC."
+          },
+          {
+            "id": "email-q2",
+            "prompt": "What does a DMARC policy of p=none do?",
+            "options": [
+              "Generates reports without changing how failing mail is handled",
+              "Rejects all unauthenticated mail",
+              "Quarantines suspicious mail",
+              "Disables SPF checking"
+            ],
+            "answerIndex": 0,
+            "explanation": "p=none is monitoring mode. It is a necessary first step and provides no protection if a domain is left there permanently."
+          },
+          {
+            "id": "email-q3",
+            "prompt": "Which attack does DMARC at p=reject NOT prevent?",
+            "options": [
+              "Phishing from a lookalike domain such as yourcompany-support.com",
+              "Exact spoofing of your domain in the From header",
+              "Delivery of forged mail claiming to be from your domain",
+              "Tampering with a DKIM-signed message body"
+            ],
+            "answerIndex": 0,
+            "explanation": "DMARC governs only the exact domain it is published for. Similar-looking domains are entirely outside its scope."
+          }
+        ]
+      }
+    },
+    {
+      "id": "smime",
+      "name": "Secure/Multipurpose Internet Mail Extensions",
+      "acronym": "S/MIME",
+      "category": "messaging",
+      "tier": "premium",
+      "difficulty": "foundational",
+      "readingMinutes": 4,
+      "yearIntroduced": 1995,
+      "ports": ["Independent of transport — carried inside SMTP/IMAP"],
+      "standards": ["RFC 8551", "RFC 5652 (CMS)", "X.509 certificates"],
+      "tagline": "Certificate-based end-to-end email encryption and signing, built into enterprise mail clients.",
+      "overview": "S/MIME encrypts and signs the message itself, so it stays protected while sitting on mail servers rather than only in transit. It uses X.509 certificates from a certificate authority, which makes it a natural fit for organisations that already run a PKI and a poor fit for ad-hoc communication with strangers. Apple Mail on iOS supports it natively, which is why it dominates in enterprise and government mail.",
+      "howItWorks": [
+        { "title": "Certificate enrolment", "detail": "Each user obtains an X.509 certificate binding their email address to a public key, usually issued by a corporate or commercial CA." },
+        { "title": "Signing", "detail": "The client hashes the message and signs it, attaching the signature and the sender's certificate so recipients can verify authorship and integrity." },
+        { "title": "Encryption", "detail": "A random symmetric content key encrypts the body; that key is then encrypted separately to each recipient's public key from their certificate." },
+        { "title": "Certificate discovery", "detail": "Recipient certificates come from directory lookups or from previously received signed messages — you generally must receive a signed message before you can encrypt to someone." },
+        { "title": "Validation", "detail": "The recipient checks the certificate chain, expiry, and revocation status, then verifies the signature and decrypts with their private key." }
+      ],
+      "keyConcepts": [
+        { "term": "Hierarchical trust", "definition": "Trust flows from certificate authorities rather than from personal relationships, which is what makes S/MIME manageable at organisational scale." },
+        { "term": "Key escrow", "definition": "Enterprises typically archive decryption keys so mail remains readable after an employee leaves — a compliance requirement that is fundamentally at odds with strong personal privacy." },
+        { "term": "Triple wrapping", "definition": "Sign, then encrypt, then sign again, so both the content author and the sending entity are provable." },
+        { "term": "EFAIL", "definition": "A 2018 attack class abusing HTML rendering and malleable CBC ciphertext to exfiltrate decrypted content. It drove a move to authenticated encryption modes." }
+      ],
+      "protects": [
+        "Message content at rest on mail servers, not just in transit",
+        "Sender authenticity and message integrity, through digital signatures",
+        "Non-repudiation, since the signature is tied to a CA-issued identity"
+      ],
+      "weaknesses": [
+        "Certificate distribution to external correspondents is awkward in practice",
+        "Losing a private key makes all archived encrypted mail permanently unreadable",
+        "Subject lines and all other headers remain in plaintext",
+        "No forward secrecy — one compromised private key unlocks every message ever sent to that user",
+        "Encrypted content is opaque to server-side malware scanning"
+      ],
+      "realWorldUse": [
+        "Government and defence email systems, often mandated",
+        "Regulated industries needing signed, non-repudiable correspondence",
+        "Built-in support in Apple Mail, Outlook, and most enterprise clients"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "smime-l1",
+            "title": "In transit versus at rest",
+            "body": "TLS between mail servers protects a message on each hop, but every server along the way sees plaintext, and the message sits decrypted in mailbox storage afterwards. S/MIME encrypts the content itself, so the mail provider stores ciphertext and a server breach yields nothing readable. The trade-off is that server-side spam and malware scanning, search indexing, and data loss prevention all stop working — which is precisely why many organisations sign everything but encrypt only selectively.",
+            "takeaway": "End-to-end encryption removes the server's ability to help as well as its ability to read. Decide which you need per message class."
+          },
+          {
+            "id": "smime-l2",
+            "title": "No forward secrecy, ever",
+            "body": "Messaging protocols rotate keys constantly. S/MIME does the opposite: one long-lived key pair encrypts everything sent to you for the certificate's entire life, often years. Compromise that private key and every archived message becomes readable, including years of past correspondence sitting in the recipient's mailbox. This is a structural property of certificate-based email encryption, not an implementation flaw, and it is why key storage on smart cards or in the Secure Enclave matters so much.",
+            "takeaway": "Long-lived keys mean the value of a single compromise grows every day the key stays in use."
+          },
+          {
+            "id": "smime-l3",
+            "title": "Signing is the easier win",
+            "body": "Encryption requires the recipient's certificate before you can even send, which stalls most deployments. Signing requires only your own. A signed message proves authorship and detects tampering, and the signature carries your certificate so recipients can later encrypt to you — bootstrapping the directory naturally. For most organisations, universal signing plus targeted encryption of genuinely sensitive threads is a more achievable posture than mandating encryption everywhere.",
+            "takeaway": "Deploy the half that requires no coordination first. It also builds the infrastructure the other half needs."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "smime-q1",
+            "prompt": "What does S/MIME protect that TLS between mail servers does not?",
+            "options": [
+              "The message content while stored on mail servers",
+              "The connection between the client and the server",
+              "The recipient's IP address",
+              "The DNS lookup for the mail server"
+            ],
+            "answerIndex": 0,
+            "explanation": "TLS protects each hop but leaves plaintext on every server. S/MIME keeps the content encrypted end to end, including at rest."
+          },
+          {
+            "id": "smime-q2",
+            "prompt": "Why does S/MIME lack forward secrecy?",
+            "options": [
+              "One long-lived private key decrypts every message ever sent to that user",
+              "It uses symmetric encryption only",
+              "Certificates expire too quickly",
+              "Signatures are reused across messages"
+            ],
+            "answerIndex": 0,
+            "explanation": "There is no ephemeral key exchange per message, so a single key compromise exposes the entire archive."
+          },
+          {
+            "id": "smime-q3",
+            "prompt": "What remains visible in a fully encrypted S/MIME message?",
+            "options": [
+              "The subject line and all other headers",
+              "Nothing at all",
+              "Only the sender address",
+              "The body but not the attachments"
+            ],
+            "answerIndex": 0,
+            "explanation": "S/MIME encrypts the MIME body. Headers, including the subject, are needed for routing and display and travel in the clear."
+          }
+        ]
+      }
+    },
+    {
+      "id": "openpgp",
+      "name": "OpenPGP",
+      "acronym": "PGP",
+      "category": "messaging",
+      "tier": "premium",
+      "difficulty": "core",
+      "readingMinutes": 5,
+      "yearIntroduced": 1997,
+      "ports": ["Transport independent", "11371 (HKP keyservers)"],
+      "standards": ["RFC 9580", "RFC 4880 (superseded)"],
+      "tagline": "Decentralised encryption with no certificate authority — trust comes from people, not institutions.",
+      "overview": "PGP was written in 1991 as a deliberately anti-institutional design: no central authority decides whose key is genuine, users sign each other's keys directly, and trust propagates through a web of relationships. That model made it the standard for journalists, activists, and developers signing software releases. It also made key management confusing enough that PGP email encryption never achieved mainstream use.",
+      "howItWorks": [
+        { "title": "Key pair generation", "detail": "A primary key establishes identity and certifies subkeys used for signing and encryption, so the primary can be kept offline." },
+        { "title": "Hybrid encryption", "detail": "A random session key encrypts the data; that session key is encrypted to each recipient's public key. Same construction as S/MIME, different trust model." },
+        { "title": "Web of trust", "detail": "Users sign keys they have verified in person and assign ownership trust levels. Your client computes whether an unknown key is reachable through enough trusted signatures." },
+        { "title": "Detached signatures", "detail": "A signature stored separately from the file, which is how software releases and Linux packages are commonly verified." },
+        { "title": "Revocation certificates", "detail": "A pre-generated revocation certificate lets you invalidate a key whose private half you have lost — if you stored the certificate somewhere safe beforehand." }
+      ],
+      "keyConcepts": [
+        { "term": "Web of trust", "definition": "Decentralised validation where each user decides whom to trust to vouch for keys, instead of deferring to a certificate authority." },
+        { "term": "Key signing", "definition": "Cryptographically attesting that a key belongs to a person you verified, historically at in-person key signing parties." },
+        { "term": "Keyserver poisoning", "definition": "Because anyone could append signatures to any key, attackers flooded keys with thousands of signatures, breaking clients that downloaded them. Modern keyservers verify first." },
+        { "term": "Subkeys", "definition": "Separate keys for encryption and signing, certified by an offline primary key so day-to-day compromise does not destroy your identity." }
+      ],
+      "protects": [
+        "Message and file confidentiality without depending on any central authority",
+        "Software release integrity, through detached signatures",
+        "Authorship attribution and non-repudiation",
+        "Data at rest, when used to encrypt files rather than messages"
+      ],
+      "weaknesses": [
+        "No forward secrecy — a compromised private key exposes everything ever encrypted to it",
+        "The user experience is genuinely poor, and key management errors are the norm rather than the exception",
+        "Metadata including recipient key IDs is exposed by default",
+        "The web of trust never scaled beyond technical communities",
+        "EFAIL demonstrated that client-side HTML rendering could exfiltrate decrypted plaintext"
+      ],
+      "realWorldUse": [
+        "Signing Linux distribution packages and repository metadata",
+        "Signing Git commits and tags",
+        "Journalist and whistleblower communication, and security disclosure mailboxes"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "pgp-l1",
+            "title": "Two trust models, one technology",
+            "body": "PGP and S/MIME use nearly identical cryptography and differ almost entirely in who decides a key is genuine. S/MIME asks a certificate authority, which scales inside organisations and requires trusting the CA. PGP asks your social graph, which requires no institution and does not scale to strangers. Neither is objectively better — they encode different assumptions about who you can trust and how many people you need to communicate with.",
+            "takeaway": "The hard problem in public key cryptography has never been the mathematics. It is deciding whose key is really whose."
+          },
+          {
+            "id": "pgp-l2",
+            "title": "Why PGP email never caught on",
+            "body": "Usability research from 1999 onward found repeatedly that ordinary users could not complete basic PGP tasks without errors — accidentally sending in plaintext, encrypting to the wrong key, publishing a private key. Twenty-five years of tooling improvements have not fundamentally changed this, and modern messengers achieved mass encryption adoption by making the whole thing invisible and automatic. PGP's continued success is in a different domain: signing artefacts, where the operator is technical and the workflow is scripted.",
+            "takeaway": "A security tool that expects users to make cryptographic decisions correctly will fail in the general population, however sound the design."
+          },
+          {
+            "id": "pgp-l3",
+            "title": "Use it where it still excels",
+            "body": "Git commit signing, Linux package signing, release artefact verification, and encrypted vulnerability disclosure mailboxes are all places where PGP works well: technically capable operators, keys distributed in advance through a trusted channel, and no requirement to establish trust with a stranger under time pressure. For interpersonal messaging, a modern ratcheting protocol is a better answer. Choosing the right tool per use case matters more than defending or attacking PGP as a whole.",
+            "takeaway": "Judge a tool by its remaining strong use cases, not by whether it won the use case it was originally aimed at."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "pgp-q1",
+            "prompt": "How does PGP differ fundamentally from S/MIME?",
+            "options": [
+              "Trust is decentralised through a web of user signatures rather than certificate authorities",
+              "It uses symmetric encryption only",
+              "It provides forward secrecy",
+              "It encrypts message headers as well as bodies"
+            ],
+            "answerIndex": 0,
+            "explanation": "The cryptographic constructions are similar. The trust model — who vouches for a key — is the real difference."
+          },
+          {
+            "id": "pgp-q2",
+            "prompt": "Why does PGP lack forward secrecy?",
+            "options": [
+              "Data is encrypted to a long-lived public key with no ephemeral exchange per message",
+              "It reuses the same session key for all recipients",
+              "Signatures are computed before encryption",
+              "Keyservers cache decrypted content"
+            ],
+            "answerIndex": 0,
+            "explanation": "Without an ephemeral key agreement per message, compromising the long-term private key exposes every message ever encrypted to it."
+          },
+          {
+            "id": "pgp-q3",
+            "prompt": "Where does PGP remain the strongest choice today?",
+            "options": [
+              "Signing software releases, packages, and Git commits",
+              "Everyday consumer messaging",
+              "Real-time voice encryption",
+              "Web server authentication"
+            ],
+            "answerIndex": 0,
+            "explanation": "Artefact signing involves technical operators and pre-distributed keys, which avoids exactly the usability problems that sank PGP email."
+          }
+        ]
+      }
+    },
+    {
+      "id": "srtp",
+      "name": "Secure Real-time Transport Protocol",
+      "acronym": "SRTP",
+      "category": "messaging",
+      "tier": "premium",
+      "difficulty": "advanced",
+      "readingMinutes": 4,
+      "yearIntroduced": 2004,
+      "ports": ["Dynamic UDP, typically 16384-32767"],
+      "standards": ["RFC 3711", "RFC 5764 (DTLS-SRTP)", "RFC 7714 (AES-GCM)"],
+      "tagline": "Encryption for voice and video that adds almost no overhead per packet.",
+      "overview": "Media streams have unusual requirements: tens of packets per second, strict latency budgets, and tolerance for occasional loss. SRTP protects RTP packets with just a few bytes of overhead and no handshake of its own — key management is delegated entirely to another protocol, usually DTLS. It is what actually encrypts the media in every WebRTC call and most VoIP systems.",
+      "howItWorks": [
+        { "title": "External key management", "detail": "SRTP defines no handshake. DTLS-SRTP, SDES over a signalling channel, or ZRTP supplies the master key." },
+        { "title": "Key derivation", "detail": "Encryption, authentication, and salting keys are derived from the master key, and can be re-derived periodically over a long call." },
+        { "title": "Counter mode encryption", "detail": "AES in counter mode uses the packet's sequence number and SSRC to build the counter block, so packets decrypt independently and loss does not desynchronise anything." },
+        { "title": "Truncated authentication tag", "detail": "A short authentication tag, often 32 or 80 bits, keeps per-packet overhead low. Header fields stay in the clear so routers and mixers can function." },
+        { "title": "Replay protection", "detail": "A sliding window over sequence numbers rejects duplicates, with rollover counters extending the 16-bit sequence space for long calls." }
+      ],
+      "keyConcepts": [
+        { "term": "DTLS-SRTP", "definition": "The WebRTC standard: a DTLS handshake over the media path establishes keys, which SRTP then uses for the packets themselves." },
+        { "term": "SSRC", "definition": "The synchronisation source identifier distinguishing streams within a session, and part of the cryptographic context." },
+        { "term": "Header not encrypted", "definition": "RTP headers remain visible so middleboxes can route and mix. This is a deliberate trade-off that leaks timing and stream structure." },
+        { "term": "SDES", "definition": "Passing SRTP keys through the SDP signalling channel. Secure only if that channel is itself protected — and the signalling server always sees the keys." }
+      ],
+      "protects": [
+        "Confidentiality of voice and video media in transit",
+        "Integrity of media packets, within the limits of the truncated tag",
+        "Replay of captured media packets",
+        "Injection of forged audio or video into an established stream"
+      ],
+      "weaknesses": [
+        "Unencrypted headers leak packet timing and sizes, which can reveal speech patterns with variable bitrate codecs",
+        "SDES key exchange exposes keys to the signalling infrastructure",
+        "Short authentication tags trade integrity strength for bandwidth",
+        "Media servers and conference bridges terminate SRTP, so multi-party calls are rarely end-to-end encrypted"
+      ],
+      "realWorldUse": [
+        "Every WebRTC call in a browser or mobile SDK",
+        "SIP-based enterprise VoIP with TLS signalling and SRTP media",
+        "Video conferencing platforms for the client-to-server media leg"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "srtp-l1",
+            "title": "Why not just run media over TLS",
+            "body": "TLS assumes an ordered reliable stream and adds a record header plus a full authentication tag to every record. For a codec emitting a 20-byte packet every 20 milliseconds, that overhead is a substantial fraction of the bandwidth, and any loss stalls the stream. SRTP encrypts each packet independently using the RTP sequence number as part of the counter, adds a handful of bytes, and lets a lost packet simply be lost. The design follows directly from the traffic pattern.",
+            "takeaway": "Protocol design is shaped by packet size, rate, and loss tolerance as much as by the threat model."
+          },
+          {
+            "id": "srtp-l2",
+            "title": "The conference bridge problem",
+            "body": "A two-party WebRTC call is genuinely end to end. Add a third participant through a media server and, in most architectures, that server decrypts every stream to mix or forward them, then re-encrypts. Anyone with access to the bridge hears everything. This is why claims of end-to-end encrypted group calling deserve scrutiny — real implementations need per-sender keys the server never possesses, which is what SFrame and MLS-based designs provide.",
+            "takeaway": "Ask where decryption happens. In group media, the answer is usually a server in the middle unless specifically designed otherwise."
+          },
+          {
+            "id": "srtp-l3",
+            "title": "Encrypted audio can still leak words",
+            "body": "Variable bitrate codecs produce packet sizes that correlate with the sound being encoded. Researchers have shown that with an unencrypted RTP header exposing packet lengths and timings, phrases can be identified in encrypted VoIP with meaningful accuracy. Mitigations include constant bitrate mode or padding, both of which cost bandwidth. It is a good reminder that encryption protects content, while the shape of the traffic is a separate channel entirely.",
+            "takeaway": "Traffic analysis defeats encryption without breaking it. Packet size and timing are data too."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "srtp-q1",
+            "prompt": "How does SRTP obtain its keys?",
+            "options": [
+              "From an external mechanism such as DTLS-SRTP — it defines no handshake of its own",
+              "From a built-in Diffie-Hellman exchange",
+              "From a pre-shared password entered by the user",
+              "From the RTP header of the first packet"
+            ],
+            "answerIndex": 0,
+            "explanation": "SRTP is purely a packet protection format. Separating key management is what keeps it small and flexible."
+          },
+          {
+            "id": "srtp-q2",
+            "prompt": "Why are RTP headers left unencrypted in SRTP?",
+            "options": [
+              "So routers, mixers, and media servers can process streams without the keys",
+              "Because encrypting them would break the checksum",
+              "To reduce CPU usage on mobile devices",
+              "Because they contain no useful information"
+            ],
+            "answerIndex": 0,
+            "explanation": "It is a deliberate trade-off for network functionality, and it does leak timing and stream structure to observers."
+          },
+          {
+            "id": "srtp-q3",
+            "prompt": "In a typical multi-party video call, where does media get decrypted?",
+            "options": [
+              "At the media server or conference bridge that mixes or forwards streams",
+              "Only on participant devices",
+              "At the DNS resolver",
+              "Nowhere — SRTP is always end to end"
+            ],
+            "answerIndex": 0,
+            "explanation": "Standard SFU and MCU architectures terminate SRTP, so group calls are only end-to-end encrypted with an additional layer such as SFrame."
+          }
+        ]
+      }
+    }
+  ]
+}

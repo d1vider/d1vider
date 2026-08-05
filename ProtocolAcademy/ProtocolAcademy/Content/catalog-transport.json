@@ -1,0 +1,433 @@
+{
+  "category": "transport",
+  "protocols": [
+    {
+      "id": "tls13",
+      "name": "Transport Layer Security 1.3",
+      "acronym": "TLS 1.3",
+      "category": "transport",
+      "tier": "free",
+      "difficulty": "core",
+      "readingMinutes": 7,
+      "yearIntroduced": 2018,
+      "ports": ["443 (HTTPS)", "993 (IMAPS)", "5061 (SIPS)"],
+      "standards": ["RFC 8446", "RFC 8447", "RFC 9325 (BCP)"],
+      "tagline": "The encryption layer nearly every secure connection on the internet rides on.",
+      "overview": "TLS is the protocol that turns an ordinary TCP connection into a private, authenticated channel. Version 1.3 is a deliberate simplification of everything that came before it: the handshake dropped from two round trips to one, every legacy cipher with a known weakness was removed, and forward secrecy became mandatory rather than optional. If you only ever learn one security protocol deeply, make it this one — HTTPS, secure email, most VPN control channels, and the majority of mobile app traffic are all TLS underneath.",
+      "howItWorks": [
+        {
+          "title": "ClientHello with a key share",
+          "detail": "The client opens with its supported cipher suites and, crucially, already includes an ephemeral Diffie-Hellman public key for its best guess at the group the server will pick. This guess is what removes an entire round trip compared to TLS 1.2."
+        },
+        {
+          "title": "ServerHello and immediate encryption",
+          "detail": "The server replies with its own key share. Both sides can now derive a shared secret, so everything after this point in the handshake — including the server's certificate — is already encrypted. In TLS 1.2 the certificate travelled in the clear."
+        },
+        {
+          "title": "Server authentication",
+          "detail": "The server sends its certificate chain and a CertificateVerify: a signature over a transcript hash of the handshake so far, proving it holds the private key matching the certificate. The client validates the chain up to a trusted root and checks the hostname."
+        },
+        {
+          "title": "Finished messages",
+          "detail": "Each side sends a MAC over the full handshake transcript. If an attacker modified any earlier message — for example stripping a strong cipher to force a weak one — the transcripts diverge and the handshake aborts."
+        },
+        {
+          "title": "Application data with AEAD",
+          "detail": "Records are protected with an AEAD cipher (AES-GCM, AES-CCM, or ChaCha20-Poly1305). AEAD provides confidentiality and integrity in one operation, which eliminated the encrypt-then-MAC ordering bugs that plagued earlier versions."
+        }
+      ],
+      "keyConcepts": [
+        { "term": "Forward secrecy", "definition": "Session keys come from ephemeral Diffie-Hellman values that are discarded after the connection. Stealing the server's long-term private key later does not decrypt recorded past traffic." },
+        { "term": "AEAD", "definition": "Authenticated Encryption with Associated Data — a single primitive that encrypts and authenticates together, so there is no way to get the composition order wrong." },
+        { "term": "0-RTT resumption", "definition": "A resumed session can send application data in the very first flight using a pre-shared key. It is fast but replayable, so it must only carry idempotent requests." },
+        { "term": "Downgrade protection", "definition": "The server embeds a sentinel value in its random field when it negotiates an older version, and the transcript MAC covers the negotiation, so forced downgrades are detected." }
+      ],
+      "protects": [
+        "Passive eavesdropping on any network path between client and server",
+        "Active tampering with data in transit — every record is integrity-protected",
+        "Impersonation of the server, provided certificate validation is done correctly",
+        "Retroactive decryption of recorded traffic, thanks to mandatory forward secrecy"
+      ],
+      "weaknesses": [
+        "It authenticates the endpoint, not the content — a compromised server serves malicious data over a perfectly valid TLS connection",
+        "Trust rests on the certificate authority system; a mis-issued certificate from any trusted CA is accepted",
+        "0-RTT data is replayable by design and must never trigger a state change",
+        "Traffic analysis still leaks size, timing, and destination even when contents are hidden"
+      ],
+      "realWorldUse": [
+        "Every https:// page load in a browser",
+        "iOS App Transport Security requires TLS 1.2 or newer for app network calls",
+        "The control channel of most modern VPN and messaging products"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "tls13-l1",
+            "title": "Why one round trip matters",
+            "body": "TLS 1.2 needed two full round trips before the first byte of application data could flow. On a mobile connection with 80 ms of latency, that is 320 ms of pure waiting on every fresh connection. TLS 1.3 folds the key exchange into the very first message by having the client guess the group the server will choose. If the guess is wrong the server sends a HelloRetryRequest and you fall back to two round trips, but browsers guess correctly almost every time because they lead with X25519.",
+            "takeaway": "Security improvements stick when they also make things faster — TLS 1.3 got adopted quickly because it was a performance win, not despite being a security upgrade."
+          },
+          {
+            "id": "tls13-l2",
+            "title": "The cipher suite purge",
+            "body": "TLS 1.2 supported over three hundred cipher suites, including RC4, static RSA key transport, CBC modes vulnerable to padding oracles, and export-grade cryptography left over from 1990s regulation. Nearly every major TLS attack of the 2010s — BEAST, CRIME, POODLE, FREAK, Logjam, Sweet32 — exploited something in that pile. TLS 1.3 ships with five suites, all AEAD, all with forward secrecy. Renegotiation, compression, and custom DH groups were removed outright.",
+            "takeaway": "Removing options is a security feature. Every negotiable weak choice is an attack surface for a downgrade."
+          },
+          {
+            "id": "tls13-l3",
+            "title": "Certificate validation is where apps go wrong",
+            "body": "The protocol is sound; the common failure is application code that skips validation. Disabling certificate checks to get past a self-signed staging certificate, and then shipping that code, is one of the most frequent mobile security defects. On iOS, App Transport Security enforces sane defaults, and any exception you add must be justified in App Review. If you need to trust a specific server key, use certificate pinning through URLSessionDelegate rather than turning validation off.",
+            "takeaway": "A TLS connection with validation disabled offers no protection against an active attacker at all. It is encryption theatre."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "tls13-q1",
+            "prompt": "Why is the server's certificate encrypted during a TLS 1.3 handshake?",
+            "options": [
+              "Because the key exchange completes before the certificate is sent",
+              "Because certificates are considered secret material",
+              "Because the client encrypts it with the CA's public key",
+              "It is not — certificates are always sent in plaintext"
+            ],
+            "answerIndex": 0,
+            "explanation": "Both sides derive the shared secret from the key shares in ClientHello and ServerHello, so handshake encryption is already active when the certificate is transmitted. This hides the identity of the server from passive observers."
+          },
+          {
+            "id": "tls13-q2",
+            "prompt": "What does forward secrecy actually guarantee?",
+            "options": [
+              "Recorded past sessions stay secret even if the long-term key is later stolen",
+              "Future sessions cannot be decrypted by anyone",
+              "The certificate cannot expire mid-session",
+              "Data is encrypted twice for extra safety"
+            ],
+            "answerIndex": 0,
+            "explanation": "Ephemeral key pairs are discarded after each session, so a stolen long-term private key gives an attacker nothing to decrypt archived traffic with."
+          },
+          {
+            "id": "tls13-q3",
+            "prompt": "What is the main risk of accepting 0-RTT early data?",
+            "options": [
+              "An attacker can replay the captured early data",
+              "The data is sent unencrypted",
+              "It disables certificate validation",
+              "It forces a downgrade to TLS 1.2"
+            ],
+            "answerIndex": 0,
+            "explanation": "0-RTT data is not covered by a fresh handshake exchange, so a network attacker can capture and resend it. Only idempotent operations, such as a GET, should be permitted in early data."
+          }
+        ]
+      }
+    },
+    {
+      "id": "https",
+      "name": "HTTP over TLS",
+      "acronym": "HTTPS",
+      "category": "transport",
+      "tier": "free",
+      "difficulty": "foundational",
+      "readingMinutes": 5,
+      "yearIntroduced": 1994,
+      "ports": ["443", "8443 (alternate)"],
+      "standards": ["RFC 2818", "RFC 9110", "RFC 6797 (HSTS)"],
+      "tagline": "HTTP carried inside TLS, plus the browser rules that keep it from being stripped away.",
+      "overview": "HTTPS is not a separate protocol so much as an agreement: run ordinary HTTP inside a TLS tunnel, validate the certificate against the requested hostname, and let the browser enforce a set of rules on top. Those extra rules — HSTS, secure cookies, mixed-content blocking, Certificate Transparency — are what make HTTPS meaningfully safe in a hostile network rather than merely encrypted.",
+      "howItWorks": [
+        { "title": "Scheme selects the port and the tunnel", "detail": "An https:// URL tells the client to open a TLS connection to port 443 and speak HTTP only after the handshake succeeds." },
+        { "title": "Hostname verification", "detail": "The certificate's Subject Alternative Name entries must match the host in the URL. A valid certificate for the wrong hostname is a failure, not a pass." },
+        { "title": "HSTS pins the scheme", "detail": "A Strict-Transport-Security response header tells the browser to refuse plaintext HTTP for that domain for a set period, defeating an attacker who tries to rewrite links to http://." },
+        { "title": "Cookie and content rules", "detail": "Cookies marked Secure are never sent over plaintext; the browser blocks or upgrades sub-resources loaded over HTTP so a single insecure script cannot compromise the page." },
+        { "title": "Certificate Transparency", "detail": "Browsers require certificates to appear in public append-only logs, so a mis-issued certificate for your domain becomes publicly detectable rather than silent." }
+      ],
+      "keyConcepts": [
+        { "term": "SSL stripping", "definition": "An on-path attacker rewrites https links to http on the way to the victim, so the victim never attempts a secure connection. HSTS is the direct countermeasure." },
+        { "term": "Mixed content", "definition": "A secure page pulling in resources over plaintext. Active mixed content such as scripts is blocked outright by modern browsers." },
+        { "term": "HSTS preload", "definition": "A list compiled into the browser itself, so the very first request to a domain is already forced to HTTPS — closing the trust-on-first-use gap." },
+        { "term": "SNI", "definition": "Server Name Indication tells the server which hostname you want before the certificate is chosen. In classic TLS it is plaintext, which leaks the destination site; Encrypted Client Hello is the fix now rolling out." }
+      ],
+      "protects": [
+        "Reading or modifying page content and form submissions in transit",
+        "Session cookie theft on shared or hostile networks",
+        "Injection of ads or malware by intermediaries such as public Wi-Fi portals"
+      ],
+      "weaknesses": [
+        "The first plaintext request before HSTS is known is exploitable unless the domain is preloaded",
+        "The destination hostname leaks through plaintext SNI and DNS unless ECH and encrypted DNS are in use",
+        "A padlock says the connection is secure, not that the site is honest — phishing sites use valid certificates"
+      ],
+      "realWorldUse": [
+        "Required by browsers for features like geolocation, service workers, and HTTP/2",
+        "Required by Apple's App Transport Security for iOS app traffic",
+        "A ranking and trust signal enforced by every major browser vendor"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "https-l1",
+            "title": "The padlock does not mean trustworthy",
+            "body": "Free automated certificate authorities made HTTPS universal, which was an enormous win — and it also means a phishing page at paypa1-login.com has a perfectly valid certificate and a padlock. The padlock is a statement about the transport: nobody in the middle is reading or altering this. It says nothing about who is on the other end being honest. User education that equated the padlock with safety aged very badly.",
+            "takeaway": "HTTPS proves you are talking to the domain in the address bar. Whether that domain deserves your data is a separate question."
+          },
+          {
+            "id": "https-l2",
+            "title": "Why HSTS exists",
+            "body": "Type example.com into a browser and it historically tried http:// first. An attacker on the same coffee-shop network intercepts that plaintext request and simply proxies the real site over HTTPS to themselves while serving you plaintext. You never see a certificate warning because you never attempted a secure connection. HSTS fixes this by making the browser remember: this domain is HTTPS-only, refuse anything else, and do not let the user click through the warning.",
+            "takeaway": "The dangerous moment is the connection you never made securely in the first place, not the one with a visible warning."
+          },
+          {
+            "id": "https-l3",
+            "title": "What HTTPS still leaks",
+            "body": "Encryption hides the path, headers, and body. It does not hide that a connection happened, to which IP address, how large the response was, or — unless Encrypted Client Hello is deployed — which hostname was requested via SNI. Traffic analysis on packet sizes and timing can identify which video someone streamed or which page of a known site they loaded. Treat HTTPS as content confidentiality, not metadata privacy.",
+            "takeaway": "Confidentiality of content and privacy of metadata are different properties. HTTPS delivers the first and only partially the second."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "https-q1",
+            "prompt": "Which attack is HSTS specifically designed to prevent?",
+            "options": [
+              "SSL stripping, where an attacker downgrades the connection to plaintext HTTP",
+              "Cross-site scripting inside the page",
+              "SQL injection against the backend",
+              "Brute-forcing the TLS session key"
+            ],
+            "answerIndex": 0,
+            "explanation": "HSTS instructs the browser to refuse plaintext HTTP for the domain entirely, so a stripping attacker has nothing to downgrade to."
+          },
+          {
+            "id": "https-q2",
+            "prompt": "A site presents a valid certificate and shows a padlock. What has been proven?",
+            "options": [
+              "The connection is private and the server controls the domain in the URL",
+              "The site is operated by a legitimate business",
+              "The site cannot host malware",
+              "The site stores your data encrypted"
+            ],
+            "answerIndex": 0,
+            "explanation": "Domain-validated certificates prove control of the domain and secure the transport. They make no claim about the operator's intentions or their server-side practices."
+          },
+          {
+            "id": "https-q3",
+            "prompt": "What does Certificate Transparency provide?",
+            "options": [
+              "A public append-only log making mis-issued certificates detectable",
+              "Encryption of the certificate during the handshake",
+              "Automatic renewal of expiring certificates",
+              "A faster handshake for repeat visitors"
+            ],
+            "answerIndex": 0,
+            "explanation": "CT logs let domain owners and researchers monitor for certificates issued for their domains that they never requested."
+          }
+        ]
+      }
+    },
+    {
+      "id": "mtls",
+      "name": "Mutual TLS",
+      "acronym": "mTLS",
+      "category": "transport",
+      "tier": "premium",
+      "difficulty": "advanced",
+      "readingMinutes": 6,
+      "yearIntroduced": 1999,
+      "ports": ["443", "8443", "service mesh sidecar ports"],
+      "standards": ["RFC 8446 §4.4.2", "RFC 5280", "SPIFFE/SPIRE"],
+      "tagline": "TLS where the client proves its identity too — the backbone of zero-trust service networks.",
+      "overview": "Ordinary TLS authenticates one side: you learn the server is who it claims to be, and the server has no idea who you are until you log in at the application layer. Mutual TLS closes that gap by having the client present a certificate as well. It has become the default identity mechanism between microservices, because a service can prove what it is cryptographically, without shared secrets or bearer tokens that can be replayed.",
+      "howItWorks": [
+        { "title": "Server requests a client certificate", "detail": "During the handshake the server sends a CertificateRequest, optionally naming which certificate authorities it will accept." },
+        { "title": "Client presents its chain", "detail": "The client sends its own certificate chain, typically issued by a private internal CA rather than a public one." },
+        { "title": "Client proves possession", "detail": "The client sends a CertificateVerify — a signature over the handshake transcript — proving it holds the matching private key rather than merely a copy of a public certificate." },
+        { "title": "Server authorises", "detail": "The server validates the chain, checks revocation, and maps the certificate's subject or SAN to an identity, which then drives access control decisions." },
+        { "title": "Short-lived rotation", "detail": "In service meshes, certificates live for hours rather than years and are rotated automatically, so revocation becomes largely unnecessary — a stolen credential expires on its own." }
+      ],
+      "keyConcepts": [
+        { "term": "Private PKI", "definition": "An internal certificate authority you operate, trusted only by your own systems. Using a public CA for client identity would let anyone with a certificate from that CA authenticate." },
+        { "term": "SPIFFE ID", "definition": "A standard URI-form workload identity such as spiffe://cluster/ns/prod/sa/payments, encoded in the certificate SAN so authorisation policy can reference services by name." },
+        { "term": "Proof of possession", "definition": "Unlike a bearer token, a certificate cannot be used by anyone who merely intercepts it — the private key never leaves the client." },
+        { "term": "Certificate rotation", "definition": "Automated short-lifetime issuance that removes the operational burden of revocation lists and the risk of long-lived stolen keys." }
+      ],
+      "protects": [
+        "Impersonation of a client service by anything without a valid key",
+        "Replay of stolen bearer tokens, since possession of the private key is required",
+        "Lateral movement inside a network, when combined with per-service authorisation policy"
+      ],
+      "weaknesses": [
+        "Certificate lifecycle management is genuinely hard at scale without automation",
+        "Poor fit for consumer end users — installing and protecting client certificates on personal devices is a support nightmare",
+        "Revocation checking is often skipped for latency reasons, which short lifetimes must compensate for",
+        "TLS-terminating load balancers can hide the true client identity unless it is forwarded explicitly"
+      ],
+      "realWorldUse": [
+        "Istio, Linkerd, and Consul service meshes issue and rotate workload certificates automatically",
+        "Kubernetes components authenticate to the API server with client certificates",
+        "Open banking and payment APIs require client certificates for partner authentication"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "mtls-l1",
+            "title": "Bearer tokens versus keys",
+            "body": "An API key or JWT is a bearer credential: whoever holds it can use it. Leak it in a log file, a crash report, or a misconfigured proxy and it is game over until rotation. A client certificate is fundamentally different — the network sees only a public certificate and a signature over data unique to this handshake. Capturing the traffic gives an attacker nothing reusable, because the private key never crosses the wire.",
+            "takeaway": "Proof-of-possession beats bearer credentials wherever you can afford the key management."
+          },
+          {
+            "id": "mtls-l2",
+            "title": "Why service meshes made mTLS practical",
+            "body": "The historic objection to mTLS was operational: issuing, distributing, renewing, and revoking certificates across thousands of services by hand is unsustainable. Service meshes solved it by putting a sidecar proxy next to every workload that fetches a fresh certificate automatically, often valid for only an hour. Rotation becomes routine rather than an incident, and revocation matters far less when the credential expires before an attacker can finish using it.",
+            "takeaway": "The security property was always available. Automation is what made it deployable."
+          },
+          {
+            "id": "mtls-l3",
+            "title": "Authentication is not authorisation",
+            "body": "A valid client certificate answers who is calling. It does not answer whether they are allowed to make this call. A common design flaw is treating any certificate from the internal CA as full access, which means one compromised low-privilege service can reach everything. Map the certificate identity to an explicit policy — this service may call these endpoints — and default to denying anything not listed.",
+            "takeaway": "mTLS gives you a trustworthy identity. You still have to write the rules about what that identity may do."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "mtls-q1",
+            "prompt": "What does the client's CertificateVerify message prove?",
+            "options": [
+              "That the client holds the private key matching its certificate",
+              "That the certificate has not been revoked",
+              "That the client trusts the server's CA",
+              "That the client supports the chosen cipher suite"
+            ],
+            "answerIndex": 0,
+            "explanation": "CertificateVerify is a signature over the handshake transcript. Only the holder of the private key can produce it, which is what turns a public certificate into proof of identity."
+          },
+          {
+            "id": "mtls-q2",
+            "prompt": "Why do service meshes issue certificates with very short lifetimes?",
+            "options": [
+              "It limits the damage from a stolen key and reduces reliance on revocation",
+              "Short certificates use less bandwidth",
+              "Long certificates are rejected by TLS 1.3",
+              "It allows weaker keys to be used safely"
+            ],
+            "answerIndex": 0,
+            "explanation": "If a certificate is valid for an hour, a stolen key becomes useless quickly, which is far more reliable than hoping every peer checks a revocation list."
+          },
+          {
+            "id": "mtls-q3",
+            "prompt": "Why should client certificates come from a private CA rather than a public one?",
+            "options": [
+              "Any certificate from a trusted public CA would otherwise be accepted as a valid client",
+              "Public CAs do not support client certificates",
+              "Private CAs use stronger algorithms",
+              "Public certificates cannot be rotated"
+            ],
+            "answerIndex": 0,
+            "explanation": "Trusting a public CA for client authentication means millions of unrelated certificate holders satisfy your check. A private CA constrains the identity space to workloads you issued."
+          }
+        ]
+      }
+    },
+    {
+      "id": "dtls",
+      "name": "Datagram Transport Layer Security",
+      "acronym": "DTLS",
+      "category": "transport",
+      "tier": "premium",
+      "difficulty": "advanced",
+      "readingMinutes": 5,
+      "yearIntroduced": 2006,
+      "ports": ["443/UDP", "5684 (CoAPS)", "3478 (WebRTC/STUN)"],
+      "standards": ["RFC 9147 (DTLS 1.3)", "RFC 6347 (DTLS 1.2)"],
+      "tagline": "TLS adapted for UDP, where packets arrive out of order — or not at all.",
+      "overview": "TLS assumes a reliable, ordered byte stream, which is exactly what TCP gives it and exactly what UDP does not. DTLS reworks the handshake and record layer to survive loss, reordering, and duplication, so real-time applications that cannot tolerate TCP head-of-line blocking — voice, video, gaming, and constrained IoT devices — can still get authenticated encryption.",
+      "howItWorks": [
+        { "title": "Explicit sequence numbers", "detail": "Each record carries its own epoch and sequence number rather than relying on stream position, so a receiver can decrypt packets that arrive out of order." },
+        { "title": "Handshake retransmission", "detail": "DTLS adds message sequence numbers and timers to handshake messages, because a lost ClientHello would otherwise deadlock the handshake forever." },
+        { "title": "Fragmentation and reassembly", "detail": "Handshake messages larger than the path MTU are fragmented at the DTLS layer instead of relying on IP fragmentation, which is widely dropped by middleboxes." },
+        { "title": "HelloVerifyRequest cookie", "detail": "Before doing expensive cryptography the server sends a stateless cookie the client must echo, proving it can receive at the claimed address. This blocks amplification attacks using spoofed source IPs." },
+        { "title": "Replay window", "detail": "Receivers track a sliding window of recent sequence numbers and drop duplicates, since UDP offers no duplicate suppression of its own." }
+      ],
+      "keyConcepts": [
+        { "term": "Amplification attack", "definition": "A spoofed small request that triggers a large response aimed at a victim. The cookie exchange forces address validation before the server does any work." },
+        { "term": "Head-of-line blocking", "definition": "In TCP, one lost packet stalls everything behind it. For a voice call, a stalled stream is worse than a dropped frame — hence UDP and DTLS." },
+        { "term": "Epoch", "definition": "A counter incremented on each key change, letting a receiver tell which key a delayed packet belongs to." },
+        { "term": "Connection ID", "definition": "An identifier added in DTLS 1.3 that keeps a session alive across an IP or port change, essential for mobile devices switching networks." }
+      ],
+      "protects": [
+        "Eavesdropping on real-time media and telemetry carried over UDP",
+        "Tampering with individual datagrams in flight",
+        "Denial-of-service amplification, via the stateless cookie exchange",
+        "Packet replay, through the receive window"
+      ],
+      "weaknesses": [
+        "Inherits every certificate and trust weakness of TLS",
+        "Loss during the handshake causes retransmission delays that are noticeable in interactive sessions",
+        "Constrained IoT devices often ship with weak pre-shared keys or never update their firmware",
+        "Middlebox handling of UDP is inconsistent, so fallback paths are common and often less secure"
+      ],
+      "realWorldUse": [
+        "WebRTC uses DTLS to establish the keys that SRTP then uses for media",
+        "CoAP over DTLS secures constrained IoT devices",
+        "Cisco AnyConnect and several VPN products use DTLS for the data channel"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "dtls-l1",
+            "title": "Why not just run TLS over TCP",
+            "body": "For a file download, TCP retransmission is exactly what you want. For a live call, it is the opposite: a packet lost 200 ms ago is worthless by the time it arrives, but TCP will hold every later packet hostage until it is redelivered. The call stutters and the buffer grows. UDP lets the application decide that a lost frame should simply be skipped — and DTLS exists so that choosing UDP does not mean giving up encryption.",
+            "takeaway": "Choose the transport based on whether late data is still useful data."
+          },
+          {
+            "id": "dtls-l2",
+            "title": "The cookie exchange stops you becoming a weapon",
+            "body": "UDP source addresses are trivially spoofed. Without protection, an attacker sends a tiny ClientHello with a victim's address as the source, and your server dutifully sends a much larger response to the victim. Thousands of servers doing this become a distributed flood. The HelloVerifyRequest cookie is stateless — the server computes it from the client address and a secret, stores nothing, and only proceeds if the client echoes it back, which requires actually receiving it.",
+            "takeaway": "Any UDP service that answers before validating the source address can be turned into an amplifier against someone else."
+          },
+          {
+            "id": "dtls-l3",
+            "title": "Connection IDs and mobile roaming",
+            "body": "Classic DTLS identifies a session by the four-tuple of source and destination address and port. When a phone moves from Wi-Fi to cellular, that tuple changes and the session dies, forcing a full handshake at the worst possible moment. DTLS 1.3 adds a connection ID carried in the record so the peer can recognise the session regardless of where the packets now come from — the same idea QUIC uses.",
+            "takeaway": "Binding session identity to network addresses breaks on mobile. Modern protocols bind to a cryptographic identifier instead."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "dtls-q1",
+            "prompt": "What problem does the DTLS HelloVerifyRequest cookie solve?",
+            "options": [
+              "Denial-of-service amplification using spoofed source addresses",
+              "Out-of-order packet delivery",
+              "Certificate revocation checking",
+              "Fragmentation of large handshake messages"
+            ],
+            "answerIndex": 0,
+            "explanation": "The cookie forces the client to prove it can receive traffic at the address it claims, before the server spends resources or sends a large response."
+          },
+          {
+            "id": "dtls-q2",
+            "prompt": "Why does DTLS carry explicit sequence numbers in every record?",
+            "options": [
+              "Because UDP can deliver packets out of order, duplicated, or not at all",
+              "To compress the record header",
+              "To identify the certificate authority",
+              "To negotiate the cipher suite"
+            ],
+            "answerIndex": 0,
+            "explanation": "TLS derives record ordering from the TCP stream. With UDP there is no such ordering, so each record must say where it belongs and the receiver must window against replays."
+          },
+          {
+            "id": "dtls-q3",
+            "prompt": "In WebRTC, what is DTLS responsible for?",
+            "options": [
+              "Negotiating the keys that SRTP uses to protect the media",
+              "Encoding the video stream",
+              "Discovering the peer's public IP address",
+              "Compressing the audio channel"
+            ],
+            "answerIndex": 0,
+            "explanation": "WebRTC uses DTLS-SRTP: the DTLS handshake establishes keying material, and SRTP then protects the actual media packets with far lower per-packet overhead."
+          }
+        ]
+      }
+    }
+  ]
+}

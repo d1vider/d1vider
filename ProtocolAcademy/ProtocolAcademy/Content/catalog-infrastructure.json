@@ -1,0 +1,209 @@
+{
+  "category": "infrastructure",
+  "protocols": [
+    {
+      "id": "dnssec",
+      "name": "Domain Name System Security Extensions",
+      "acronym": "DNSSEC",
+      "category": "infrastructure",
+      "tier": "free",
+      "difficulty": "core",
+      "readingMinutes": 6,
+      "yearIntroduced": 2005,
+      "ports": ["53/UDP", "53/TCP", "853 (DNS over TLS)"],
+      "standards": ["RFC 4033", "RFC 4034", "RFC 4035", "RFC 8078"],
+      "tagline": "Digital signatures for DNS answers — authenticity, deliberately without confidentiality.",
+      "overview": "DNS was designed with no security at all: a resolver accepts whatever answer arrives first with a matching transaction ID, which is why cache poisoning was possible for decades. DNSSEC adds cryptographic signatures so a resolver can verify that an answer really came from the zone's owner and was not modified. It is important to be precise about what it does not do: DNSSEC provides authenticity and integrity, never privacy.",
+      "howItWorks": [
+        { "title": "Records are signed", "detail": "Each record set in a zone gets an RRSIG signature produced with the zone's private key. The corresponding public key is published as a DNSKEY record." },
+        { "title": "The chain of trust", "detail": "The parent zone publishes a DS record — a hash of the child's key-signing key — and signs it. The chain runs from the root, whose key is distributed with resolver software, down to the zone in question." },
+        { "title": "Validating resolvers verify", "detail": "A validating resolver walks that chain. If any signature fails or is missing where it should exist, it returns SERVFAIL rather than a possibly forged answer." },
+        { "title": "Authenticated denial", "detail": "NSEC and NSEC3 records prove a name does not exist, so an attacker cannot forge a negative answer. NSEC3 hashes names to hinder zone enumeration." },
+        { "title": "Key rollover", "detail": "Zone-signing keys rotate frequently; key-signing keys rotate rarely and require coordinating a DS record update with the parent registry." }
+      ],
+      "keyConcepts": [
+        { "term": "Cache poisoning", "definition": "Injecting a forged answer into a resolver's cache so every downstream user is directed to an attacker's server. The Kaminsky attack of 2008 made this practical and prompted serious DNSSEC deployment." },
+        { "term": "Chain of trust", "definition": "Signatures link each zone to its parent, all the way to the root key, so trust in one well-known key extends to the whole namespace." },
+        { "term": "Authenticated denial of existence", "definition": "Proving cryptographically that a name does not exist, without which an attacker could simply forge NXDOMAIN responses." },
+        { "term": "DANE", "definition": "Publishing TLS certificate constraints in DNS, secured by DNSSEC — an alternative to relying purely on the public certificate authority system." }
+      ],
+      "protects": [
+        "DNS cache poisoning and forged responses",
+        "On-path tampering with DNS answers",
+        "Forged non-existence responses, via NSEC and NSEC3",
+        "Downgrade of email security policies published in DNS, such as MTA-STS and DANE records"
+      ],
+      "weaknesses": [
+        "Provides no confidentiality whatsoever — queries and answers remain in plaintext",
+        "Operationally unforgiving: an expired signature takes a domain completely offline",
+        "Zone enumeration is possible with NSEC, and NSEC3 hashes can be cracked offline",
+        "Signed responses are larger, which historically enabled DNS amplification attacks",
+        "Adoption remains partial, so most resolvers still accept unsigned answers for most domains"
+      ],
+      "realWorldUse": [
+        "The DNS root zone and most top-level domains are signed",
+        "Required as a foundation for DANE and for reliable MTA-STS and SSHFP records",
+        "Public validating resolvers such as Google Public DNS and Cloudflare 1.1.1.1"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "dnssec-l1",
+            "title": "Authenticity and privacy are different problems",
+            "body": "A frequent misunderstanding is that DNSSEC encrypts DNS. It does not, by design. Every query and answer is still plaintext on the wire, and anyone watching sees exactly which domains you look up. DNSSEC proves the answer is genuine; DNS over TLS and DNS over HTTPS hide the conversation. They are complementary — DoH without validation means a private conversation with a resolver that might be lying, and DNSSEC without DoH means a verifiable answer that everyone can read.",
+            "takeaway": "Ask which property you need. Integrity and confidentiality are solved by different mechanisms."
+          },
+          {
+            "id": "dnssec-l2",
+            "title": "Why DNSSEC deployment is nerve-racking",
+            "body": "Unsigned DNS fails open — a broken record usually still resolves. DNSSEC fails closed: if a signature expires, a key rollover is mishandled, or a DS record does not match, validating resolvers return SERVFAIL and the domain vanishes for a large portion of the internet. There have been high-profile outages at government and financial domains from exactly this. Automate signing and rollovers, monitor signature expiry as a first-class alert, and never treat it as set-and-forget.",
+            "takeaway": "Failing closed is the correct security behaviour and the reason DNSSEC demands operational discipline."
+          },
+          {
+            "id": "dnssec-l3",
+            "title": "What DNSSEC unlocks",
+            "body": "Once DNS answers are trustworthy, DNS becomes a usable place to publish security policy. DANE can pin which certificate a TLS service is allowed to present, reducing reliance on any of the hundreds of trusted certificate authorities. SSHFP records let a client verify an SSH host key on first connection, closing the trust-on-first-use gap. MTA-STS and TLSA records harden mail delivery. None of these are safe without a verified chain of trust underneath.",
+            "takeaway": "Securing the naming layer makes it a trustworthy distribution channel for other security policy."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "dnssec-q1",
+            "prompt": "What does DNSSEC provide?",
+            "options": [
+              "Authenticity and integrity of DNS answers, but not confidentiality",
+              "Encryption of DNS queries and answers",
+              "Anonymity for the querying client",
+              "Faster resolution through signed caching"
+            ],
+            "answerIndex": 0,
+            "explanation": "DNSSEC signs records so forgery is detectable. Hiding the query content requires DNS over TLS or DNS over HTTPS."
+          },
+          {
+            "id": "dnssec-q2",
+            "prompt": "What is the role of the DS record?",
+            "options": [
+              "It is a hash of the child zone's key published and signed by the parent, linking the chain of trust",
+              "It stores the zone's private key",
+              "It proves a name does not exist",
+              "It specifies the signature expiry time"
+            ],
+            "answerIndex": 0,
+            "explanation": "The DS record in the parent is what lets a resolver move down one level of the hierarchy while still verifying signatures."
+          },
+          {
+            "id": "dnssec-q3",
+            "prompt": "What happens when a DNSSEC signature expires?",
+            "options": [
+              "Validating resolvers return SERVFAIL and the domain becomes unreachable for their users",
+              "The answer is returned with a warning flag",
+              "The resolver falls back to unsigned DNS",
+              "Nothing — expiry is advisory"
+            ],
+            "answerIndex": 0,
+            "explanation": "DNSSEC fails closed. This is correct security behaviour and the reason signature expiry must be actively monitored."
+          }
+        ]
+      }
+    },
+    {
+      "id": "snmpv3",
+      "name": "Simple Network Management Protocol version 3",
+      "acronym": "SNMPv3",
+      "category": "infrastructure",
+      "tier": "premium",
+      "difficulty": "foundational",
+      "readingMinutes": 4,
+      "yearIntroduced": 2002,
+      "ports": ["161 (agent)", "162 (traps)"],
+      "standards": ["RFC 3410", "RFC 3414 (USM)", "RFC 3826 (AES)"],
+      "tagline": "Network monitoring that finally added authentication and encryption — thirteen years late.",
+      "overview": "SNMP versions 1 and 2c authenticate with a community string sent in plaintext, and the default string on countless devices was public. Since SNMP can also write configuration, this was a remote administration interface protected by a password everyone knew. Version 3 added a proper user security model with authentication and encryption, and the practical problem is that v2c is still enabled all over the place.",
+      "howItWorks": [
+        { "title": "User-based Security Model", "detail": "Named users each have an authentication key and a separate privacy key, replacing the shared community string entirely." },
+        { "title": "Three security levels", "detail": "noAuthNoPriv is equivalent to the old model; authNoPriv authenticates messages with HMAC; authPriv adds encryption, and is the only level worth deploying." },
+        { "title": "Message integrity and replay defence", "detail": "Each message carries an HMAC and an engine boot count and time value, so replayed or altered messages are rejected." },
+        { "title": "View-based access control", "detail": "VACM restricts which parts of the management information base each user may read or write, so a monitoring account cannot reconfigure the device." },
+        { "title": "Engine ID discovery", "detail": "Keys are localised to a specific device's engine ID, meaning a key stolen from one device cannot be used against another." }
+      ],
+      "keyConcepts": [
+        { "term": "Community string", "definition": "The v1/v2c credential — a plaintext shared password, commonly left as public or private, and readable by anyone on the path." },
+        { "term": "authPriv", "definition": "The security level providing both authentication and encryption. Anything less should be treated as unauthenticated." },
+        { "term": "MIB and OID", "definition": "The Management Information Base is a tree of manageable values, each addressed by an object identifier." },
+        { "term": "Key localisation", "definition": "Deriving a device-specific key from the user's passphrase and the device engine ID, limiting the blast radius of a compromised device." }
+      ],
+      "protects": [
+        "Device credentials and monitoring data in transit",
+        "Unauthorised configuration changes via SNMP SET operations",
+        "Replay of captured management messages",
+        "Over-broad access, through view-based access control"
+      ],
+      "weaknesses": [
+        "SNMPv2c remains enabled on a large share of production devices for compatibility",
+        "SNMP over UDP is a well-known reflection and amplification vector when exposed to the internet",
+        "Weak passphrases with older MD5 or DES options remain configurable on many platforms",
+        "Read access alone leaks a detailed map of the network to an attacker"
+      ],
+      "realWorldUse": [
+        "Network monitoring platforms polling interface counters and device health",
+        "Trap-based alerting for hardware faults and link state changes",
+        "Capacity planning and performance baselining across infrastructure"
+      ],
+      "training": {
+        "lessons": [
+          {
+            "id": "snmp-l1",
+            "title": "Read-only is not harmless",
+            "body": "Teams often reason that SNMP read access is low risk because nothing can be changed. But a read-only walk of a router returns interface names and addresses, routing tables, ARP caches, connected device inventories, software versions, and uptime. That is a complete reconnaissance package for an attacker: the network map, the patch level, and a list of what to attack next. Treat SNMP read access as sensitive, restrict it by source address, and never expose it beyond the management network.",
+            "takeaway": "Information disclosure is a real vulnerability class. Reconnaissance is the first phase of every intrusion."
+          },
+          {
+            "id": "snmp-l2",
+            "title": "Why v2c persists",
+            "body": "SNMPv3 is more complex to configure: users, engine IDs, key localisation, and access views instead of one string pasted into a monitoring tool. Some older devices support v3 poorly or not at all. So v2c stays enabled for compatibility, and because it is UDP the community string is sniffable and requests are spoofable. If you cannot remove v2c, restrict it to a management VLAN with strict access control lists, make the community string long and random, and set it read-only.",
+            "takeaway": "Legacy support is a security decision. Make it explicitly, with compensating controls, rather than by default."
+          },
+          {
+            "id": "snmp-l3",
+            "title": "SNMP as a DDoS amplifier",
+            "body": "An internet-exposed SNMP agent answering a small GetBulk request with a large response is an amplifier: an attacker spoofs the victim's source address and thousands of devices flood them. SNMP reflection attacks have produced very large volumetric floods. The rule is simple and absolute — SNMP has no business being reachable from the internet. Bind agents to management interfaces, filter UDP 161 at the edge, and verify with an external scan rather than assuming.",
+            "takeaway": "Any UDP service reachable from the internet that answers more than it is asked will eventually be used against someone else."
+          }
+        ],
+        "quiz": [
+          {
+            "id": "snmp-q1",
+            "prompt": "What is the security problem with SNMPv2c?",
+            "options": [
+              "The community string is a plaintext shared password sent with every request",
+              "It uses expired certificates",
+              "It runs over TCP without encryption",
+              "It cannot read device counters"
+            ],
+            "answerIndex": 0,
+            "explanation": "Anyone on the path can read the community string, and defaults like public were left in place on enormous numbers of devices."
+          },
+          {
+            "id": "snmp-q2",
+            "prompt": "Which SNMPv3 security level should be used in production?",
+            "options": ["authPriv", "noAuthNoPriv", "authNoPriv", "Any — they are equivalent"],
+            "answerIndex": 0,
+            "explanation": "authPriv provides both message authentication and encryption. Lower levels leave data readable or messages forgeable."
+          },
+          {
+            "id": "snmp-q3",
+            "prompt": "Why is read-only SNMP access still sensitive?",
+            "options": [
+              "It exposes a detailed map of the network, software versions, and connected devices",
+              "It allows configuration changes",
+              "It transmits the device's private keys",
+              "It disables logging on the device"
+            ],
+            "answerIndex": 0,
+            "explanation": "Reconnaissance data materially accelerates an attack, which is why SNMP should never be reachable outside the management network."
+          }
+        ]
+      }
+    }
+  ]
+}
