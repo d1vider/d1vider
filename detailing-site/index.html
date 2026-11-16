@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interior Detailing — Book Online</title>
+  <meta name="description" content="Mobile interior detailing for cars and home furniture. See prices and book a time.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav wrap">
+      <span class="brand" data-bind="name"></span>
+      <a class="nav-cta" href="#book">Book now</a>
+    </nav>
+    <div class="wrap hero-body">
+      <p class="eyebrow" data-bind="area"></p>
+      <h1 data-bind="tagline"></h1>
+      <p class="lead">See exactly what each service costs, pick a free day and time, and send your booking request in under a minute.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#prices">See prices</a>
+        <a class="btn btn-ghost" href="#book">Pick a time</a>
+      </div>
+      <ul class="hero-facts" id="hero-facts"></ul>
+    </div>
+  </header>
+
+  <main>
+    <section id="prices" class="wrap section">
+      <div class="section-head">
+        <h2>Services &amp; prices</h2>
+        <p>Tap <strong>Add</strong> on anything you need. You can mix car and home services in one visit.</p>
+      </div>
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div id="service-list" class="service-grid"></div>
+
+      <div class="addons-block">
+        <h3>Add-ons</h3>
+        <div id="addon-list" class="addon-grid"></div>
+      </div>
+    </section>
+
+    <section id="book" class="section book-section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Book your visit</h2>
+          <p>Choose a day, pick a start time, and send the request. I'll message you to confirm.</p>
+        </div>
+
+        <div class="book-layout">
+          <div class="book-main">
+            <div class="card step">
+              <div class="step-title"><span class="step-num">1</span> Pick a day</div>
+              <div class="cal-head">
+                <button class="icon-btn" id="cal-prev" aria-label="Previous month">‹</button>
+                <strong id="cal-label"></strong>
+                <button class="icon-btn" id="cal-next" aria-label="Next month">›</button>
+              </div>
+              <div class="cal-grid cal-dow" aria-hidden="true">
+                <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+              </div>
+              <div class="cal-grid" id="cal-days"></div>
+              <div class="cal-legend">
+                <span><i class="dot dot-open"></i>Available</span>
+                <span><i class="dot dot-full"></i>Booked / day off</span>
+              </div>
+            </div>
+
+            <div class="card step">
+              <div class="step-title"><span class="step-num">2</span> Pick a start time</div>
+              <p class="muted" id="slot-hint">Pick a day first.</p>
+              <div class="slots" id="slots"></div>
+            </div>
+
+            <div class="card step">
+              <div class="step-title"><span class="step-num">3</span> Your details</div>
+              <form id="details" class="form" novalidate>
+                <label>Full name<input name="name" autocomplete="name" required></label>
+                <label>Phone<input name="phone" type="tel" autocomplete="tel" required></label>
+                <label class="full">Address (where I'll be working)<input name="address" autocomplete="street-address" required></label>
+                <label class="full">Vehicle make/model, fabric type, stains, pets… (optional)<textarea name="notes" rows="3"></textarea></label>
+              </form>
+            </div>
+          </div>
+
+          <aside class="book-side">
+            <div class="card summary" id="summary">
+              <h3>Your booking</h3>
+              <ul class="cart" id="cart"></ul>
+              <div id="cart-empty" class="muted">Nothing added yet. <a href="#prices">Browse services</a>.</div>
+              <dl class="totals">
+                <div><dt>Estimated time</dt><dd id="sum-time">—</dd></div>
+                <div><dt>When</dt><dd id="sum-when">—</dd></div>
+                <div class="grand"><dt>Estimated total</dt><dd id="sum-total">—</dd></div>
+              </dl>
+              <p class="error" id="form-error" role="alert"></p>
+              <button class="btn btn-primary block" id="send-wa">Send request on WhatsApp</button>
+              <button class="btn btn-ghost block" id="send-email">Send by email instead</button>
+              <p class="fine">No payment now. You pay after the job is done.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap section">
+      <div class="section-head"><h2>Good to know</h2></div>
+      <ul class="notes" id="notes"></ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <strong data-bind="name"></strong>
+      <span><a id="foot-phone"></a> · <a id="foot-email"></a></span>
+    </div>
+  </footer>
+
+  <div class="sticky-bar" id="sticky-bar">
+    <span id="sticky-text"></span>
+    <a class="btn btn-primary" href="#book">Continue</a>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
