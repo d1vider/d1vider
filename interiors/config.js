@@ -33,7 +33,7 @@ window.BUSINESS = {
   // ---------- ANTI-SPAM (Cloudflare Turnstile) ----------
   // Paste your Turnstile *Site Key* here to turn on the "are you human" check.
   // Leave empty to keep it off. (The *Secret Key* goes in the Google script, never here.)
-  turnstileSiteKey: "",
+  turnstileSiteKey: "0x4AAAAAAGD4JJrfq1bobDoD",
 
   // ---------- DEPOSIT ----------
   currency: "$",
