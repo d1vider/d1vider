@@ -28,7 +28,7 @@ window.BUSINESS = {
   // Paste your Google Apps Script "Web app" URL here (see README, step "Google Calendar").
   // When set: the calendar shows your real free/busy times from Google Calendar,
   // and every booking request is added to your calendar automatically.
-  calendarApiUrl: "",
+  calendarApiUrl: "https://script.google.com/macros/s/AKfycbx0dazkCuiWoh8byf6ysv5DO0M8u0iex6pcObTabuPhgXwu9QudvwycvWgW6KzLr0YItA/exec",
 
   // ---------- DEPOSIT ----------
   currency: "$",
