@@ -1,158 +1,221 @@
 /*
  * ============================================================
- *  YOUR BUSINESS SETTINGS — edit this file, nothing else needed
+ *  REDLINE INTERIORS — business settings
+ *  Edit this file to change anything clients see.
+ *  Text written as { es: "...", en: "..." } shows in the
+ *  language the client picks (Spanish is the default).
  * ============================================================
- *  Everything clients see (name, prices, working days, hours,
- *  blocked times) comes from here. Save, re-upload, done.
  */
 window.BUSINESS = {
-  name: "Fresh Interior Detailing",            // <- your business name
-  tagline: "Mobile interior detailing for cars & home furniture",
-  area: "Serving your city & surrounding areas", // <- where you work
+  name: "Redline Interiors",
+  tagline: {
+    es: "Detallado interior a domicilio para autos y muebles",
+    en: "Mobile interior detailing for cars & home furniture",
+  },
+  area: {
+    es: "Área Metropolitana, Puerto Rico",
+    en: "San Juan Metro Area, Puerto Rico",
+  },
+  defaultLang: "es",
 
-  // Where booking requests are sent. Use digits only for WhatsApp,
-  // with country code and no "+" (e.g. "15551234567").
-  whatsapp: "15550000000",                     // <- your WhatsApp number
-  email: "bookings@example.com",               // <- your booking email
-  phoneDisplay: "+1 (555) 000-0000",           // <- shown on the page
+  // ---------- CONTACT ----------
+  whatsapp: "17879100777",          // country code 1 + number, digits only
+  phoneDisplay: "(787) 910-0777",
+  email: "",                        // add once you have your domain email; the email button stays hidden until then
 
+  // ---------- GOOGLE CALENDAR ----------
+  // Paste your Google Apps Script "Web app" URL here (see README, step "Google Calendar").
+  // When set: the calendar shows your real free/busy times from Google Calendar,
+  // and every booking request is added to your calendar automatically.
+  calendarApiUrl: "",
+
+  // ---------- DEPOSIT ----------
   currency: "$",
+  deposit: 100,                     // never more than the job total
+  depositMethods: {
+    es: "ATH Móvil al (787) 910-0777",
+    en: "ATH Móvil to (787) 910-0777",
+  },
+  depositHoursToPay: 24,
 
-  // ---------- SCHEDULE ----------
-  // 0 = Sunday, 1 = Monday ... 6 = Saturday
-  workingDays: [1, 2, 3, 4, 5, 6],             // Mon–Sat
+  // ---------- SCHEDULE (Puerto Rico time) ----------
+  utcOffsetHours: -4,               // Puerto Rico is UTC-4 all year (no daylight saving)
+  workingDays: [1, 2, 3, 4, 5, 6],  // 0 = Sun ... 6 = Sat
   dayStart: "08:00",
   dayEnd: "18:00",
-  slotStepMinutes: 30,       // how often start times are offered
-  bufferMinutes: 30,         // travel / setup time between jobs
-  bookAheadDays: 45,         // how far ahead clients can book
-  minNoticeHours: 24,        // no same-day surprise bookings
+  slotStepMinutes: 30,
+  bufferMinutes: 45,                // travel time between jobs
+  bookAheadDays: 45,
+  minNoticeHours: 24,
+  daysOff: ["2026-12-24", "2026-12-25", "2026-12-31", "2027-01-01", "2027-01-06"],
+  // Only needed if you are NOT using Google Calendar:
+  booked: [],
 
-  // Whole days you're not working (holidays, vacation)
-  daysOff: ["2026-12-24", "2026-12-25", "2026-12-31", "2027-01-01"],
-
-  // Times you're already booked. Add a line each time you confirm a job,
-  // so clients can't pick that time. Format: date, from, to (24h).
-  booked: [
-    { date: "2026-11-18", from: "09:00", to: "13:00" },
-    { date: "2026-11-20", from: "13:00", to: "17:00" },
+  // ---------- SERVICE AREA ----------
+  municipalities: [
+    "San Juan", "Bayamón", "Carolina", "Guaynabo", "Cataño",
+    "Trujillo Alto", "Toa Baja", "Toa Alta",
   ],
 
+  // ---------- ABOUT ----------
+  about: {
+    es: [
+      "Soy un apasionado de los carros y un detallista en crecimiento. Redline Interiors nació de algo simple: me gusta ver un interior quedar como nuevo, y me gusta todavía más ver la cara del cliente cuando abre la puerta.",
+      "Trabajo a domicilio en el Área Metropolitana con equipo de extracción, vapor y productos seguros para tu familia y tus mascotas. Cada trabajo lo hago yo mismo, con calma y atención al detalle, sin prisa y sin atajos.",
+      "Estoy empezando y cada cliente cuenta. Si algo no queda como esperabas, dímelo y lo arreglo.",
+    ],
+    en: [
+      "I'm a car enthusiast and an up-and-coming interior detailer. Redline Interiors started from something simple: I love seeing an interior come back to life, and I love seeing the owner's face when they open the door even more.",
+      "I come to you anywhere in the San Juan metro area with extraction, steam and products that are safe for your family and pets. I do every job myself, carefully and without shortcuts.",
+      "I'm building this business one client at a time, so every job counts. If something isn't right, tell me and I'll make it right.",
+    ],
+  },
+  aboutPoints: {
+    es: ["Servicio a domicilio", "Productos seguros para niños y mascotas", "Precio claro antes de empezar"],
+    en: ["I come to you", "Kid- and pet-safe products", "Clear price before I start"],
+  },
+
+  // Before/after photos. Put image files in an "images" folder next to this file,
+  // then add lines like: { src: "images/civic-before-after.jpg", caption: { es: "...", en: "..." } }
+  gallery: [],
+
   // ---------- SERVICES & PRICES ----------
-  // Each service has options (size/type). price = per item when perItem is true.
-  // minutes = how long the job takes you (used to find free time slots).
   categories: [
     {
       id: "car",
-      title: "Car Interior",
-      icon: "🚗",
+      title: { es: "Interior de Auto", en: "Car Interior" },
       services: [
         {
           id: "car-basic",
-          name: "Basic Interior Clean",
-          desc: "Full vacuum, dashboard & console wipe-down, door panels, interior glass, floor mats.",
+          name: { es: "Limpieza Interior Básica", en: "Basic Interior Clean" },
+          desc: {
+            es: "Aspirado completo, limpieza de tablero y consola, paneles de puertas, cristales interiores y alfombras.",
+            en: "Full vacuum, dashboard & console wipe-down, door panels, interior glass, floor mats.",
+          },
+          perItem: true,
           options: [
-            { label: "Sedan / Coupe", price: 80, minutes: 90 },
-            { label: "SUV / Truck", price: 100, minutes: 105 },
-            { label: "Minivan / 3-row", price: 120, minutes: 120 },
+            { label: { es: "Sedán / Coupé", en: "Sedan / Coupe" }, price: 80, minutes: 90 },
+            { label: { es: "SUV / Pickup", en: "SUV / Truck" }, price: 100, minutes: 105 },
+            { label: { es: "Minivan / 3 filas", en: "Minivan / 3-row" }, price: 120, minutes: 120 },
           ],
         },
         {
           id: "car-full",
-          name: "Full Interior Detail",
-          desc: "Everything in Basic, plus hot-water extraction of seats & carpets, steam-cleaned vents & crevices, leather clean & condition.",
+          name: { es: "Detallado Interior Completo", en: "Full Interior Detail" },
+          desc: {
+            es: "Todo lo de la básica, más extracción con agua caliente de asientos y alfombras, vapor en ventilas y rincones, y limpieza e hidratación de cuero.",
+            en: "Everything in Basic, plus hot-water extraction of seats & carpets, steam-cleaned vents & crevices, leather clean & condition.",
+          },
           popular: true,
+          perItem: true,
           options: [
-            { label: "Sedan / Coupe", price: 180, minutes: 210 },
-            { label: "SUV / Truck", price: 220, minutes: 240 },
-            { label: "Minivan / 3-row", price: 250, minutes: 270 },
+            { label: { es: "Sedán / Coupé", en: "Sedan / Coupe" }, price: 180, minutes: 210 },
+            { label: { es: "SUV / Pickup", en: "SUV / Truck" }, price: 220, minutes: 240 },
+            { label: { es: "Minivan / 3 filas", en: "Minivan / 3-row" }, price: 250, minutes: 270 },
           ],
         },
         {
           id: "car-shampoo",
-          name: "Seats & Carpet Shampoo",
-          desc: "Deep extraction of fabric seats, carpets and mats. Lifts stains, spills and ground-in dirt.",
+          name: { es: "Champú de Asientos y Alfombras", en: "Seats & Carpet Shampoo" },
+          desc: {
+            es: "Extracción profunda de asientos de tela, alfombras y mats. Saca manchas, derrames y sucio pegado.",
+            en: "Deep extraction of fabric seats, carpets and mats. Lifts stains, spills and ground-in dirt.",
+          },
+          perItem: true,
           options: [
-            { label: "Sedan / Coupe", price: 110, minutes: 120 },
-            { label: "SUV / Truck", price: 130, minutes: 135 },
-            { label: "Minivan / 3-row", price: 150, minutes: 150 },
+            { label: { es: "Sedán / Coupé", en: "Sedan / Coupe" }, price: 110, minutes: 120 },
+            { label: { es: "SUV / Pickup", en: "SUV / Truck" }, price: 130, minutes: 135 },
+            { label: { es: "Minivan / 3 filas", en: "Minivan / 3-row" }, price: 150, minutes: 150 },
           ],
         },
       ],
     },
     {
       id: "home",
-      title: "Home Furniture",
-      icon: "🛋️",
+      title: { es: "Muebles del Hogar", en: "Home Furniture" },
       services: [
         {
           id: "sofa",
-          name: "Sofa / Couch Cleaning",
-          desc: "Hot-water extraction or low-moisture clean depending on fabric. Cushions, arms, back and skirt.",
+          name: { es: "Sofá / Mueble", en: "Sofa / Couch" },
+          desc: {
+            es: "Extracción con agua caliente o limpieza de baja humedad según la tela. Cojines, brazos, espaldar y faldón.",
+            en: "Hot-water extraction or low-moisture clean depending on fabric. Cushions, arms, back and skirt.",
+          },
           popular: true,
+          perItem: true,
           options: [
-            { label: "Loveseat (2 seats)", price: 90, minutes: 75 },
-            { label: "Sofa (3 seats)", price: 120, minutes: 90 },
-            { label: "Sectional (5–6 seats)", price: 190, minutes: 150 },
+            { label: { es: "Loveseat (2 puestos)", en: "Loveseat (2 seats)" }, price: 90, minutes: 75 },
+            { label: { es: "Sofá (3 puestos)", en: "Sofa (3 seats)" }, price: 120, minutes: 90 },
+            { label: { es: "Seccional (5–6 puestos)", en: "Sectional (5–6 seats)" }, price: 190, minutes: 150 },
           ],
         },
         {
           id: "armchair",
-          name: "Armchair / Recliner",
-          desc: "Deep clean of a single upholstered chair or recliner.",
+          name: { es: "Butaca / Reclinable", en: "Armchair / Recliner" },
+          desc: { es: "Limpieza profunda de una butaca o reclinable tapizado.", en: "Deep clean of a single upholstered chair or recliner." },
           perItem: true,
           options: [
-            { label: "Armchair", price: 45, minutes: 40 },
-            { label: "Recliner", price: 60, minutes: 50 },
+            { label: { es: "Butaca", en: "Armchair" }, price: 45, minutes: 40 },
+            { label: { es: "Reclinable", en: "Recliner" }, price: 60, minutes: 50 },
           ],
         },
         {
           id: "mattress",
-          name: "Mattress Cleaning",
-          desc: "Vacuum, stain treatment, extraction and deodorising. Both sides on request.",
+          name: { es: "Colchón", en: "Mattress" },
+          desc: {
+            es: "Aspirado, tratamiento de manchas, extracción y desodorizado. Ambos lados si lo pides.",
+            en: "Vacuum, stain treatment, extraction and deodorising. Both sides on request.",
+          },
           perItem: true,
           options: [
-            { label: "Single / Twin", price: 70, minutes: 45 },
-            { label: "Double / Queen", price: 90, minutes: 60 },
-            { label: "King", price: 110, minutes: 70 },
+            { label: { es: "Individual / Twin", en: "Single / Twin" }, price: 70, minutes: 45 },
+            { label: { es: "Full / Queen", en: "Full / Queen" }, price: 90, minutes: 60 },
+            { label: { es: "King", en: "King" }, price: 110, minutes: 70 },
           ],
         },
         {
           id: "rug",
-          name: "Area Rug Cleaning",
-          desc: "On-site deep clean for synthetic and wool-blend rugs.",
+          name: { es: "Alfombra de Área", en: "Area Rug" },
+          desc: { es: "Limpieza profunda en sitio para alfombras sintéticas y de mezcla de lana.", en: "On-site deep clean for synthetic and wool-blend rugs." },
           perItem: true,
           options: [
-            { label: "Small (up to 5×7 ft)", price: 70, minutes: 45 },
-            { label: "Large (up to 8×10 ft)", price: 110, minutes: 75 },
+            { label: { es: "Pequeña (hasta 5×7 pies)", en: "Small (up to 5×7 ft)" }, price: 70, minutes: 45 },
+            { label: { es: "Grande (hasta 8×10 pies)", en: "Large (up to 8×10 ft)" }, price: 110, minutes: 75 },
           ],
         },
         {
           id: "dining",
-          name: "Dining Chairs",
-          desc: "Upholstered seat (and back) cleaning, priced per chair.",
+          name: { es: "Sillas de Comedor", en: "Dining Chairs" },
+          desc: { es: "Limpieza del asiento (y espaldar) tapizado, por silla.", en: "Upholstered seat (and back) cleaning, priced per chair." },
           perItem: true,
           options: [
-            { label: "Seat only", price: 15, minutes: 12 },
-            { label: "Seat & back", price: 25, minutes: 18 },
+            { label: { es: "Solo asiento", en: "Seat only" }, price: 15, minutes: 12 },
+            { label: { es: "Asiento y espaldar", en: "Seat & back" }, price: 25, minutes: 18 },
           ],
         },
       ],
     },
   ],
 
-  // Extras clients can add to any booking
   addOns: [
-    { id: "pet", name: "Pet hair removal", price: 40, minutes: 30 },
-    { id: "odor", name: "Odour treatment / deodorise", price: 50, minutes: 30 },
-    { id: "stain", name: "Heavy stain treatment", price: 35, minutes: 20 },
-    { id: "protect", name: "Fabric protector coating", price: 45, minutes: 20 },
+    { id: "pet", name: { es: "Remoción de pelo de mascota", en: "Pet hair removal" }, price: 40, minutes: 30 },
+    { id: "odor", name: { es: "Tratamiento de olores", en: "Odour treatment" }, price: 50, minutes: 30 },
+    { id: "stain", name: { es: "Manchas difíciles", en: "Heavy stain treatment" }, price: 35, minutes: 20 },
+    { id: "protect", name: { es: "Protector de telas", en: "Fabric protector coating" }, price: 45, minutes: 20 },
   ],
 
-  notes: [
-    "Prices are starting rates. Heavily soiled items may cost more. I'll confirm the final price before starting.",
-    "I come to you. Please have access to a power outlet and (for cars) a spot to park nearby.",
-    "Your booking is a request until I confirm it by message, usually within a few hours.",
-    "Need to cancel or move? Please give at least 24 hours' notice.",
-  ],
+  notes: {
+    es: [
+      "Los precios son tarifas base. Si algo está muy sucio puede costar más, y te confirmo el precio final antes de empezar.",
+      "Voy a donde estés. Solo necesito acceso a un enchufe y, para autos, un sitio cerca donde estacionar.",
+      "Tu cita queda separada cuando recibo el depósito. El depósito se descuenta del total.",
+      "¿Necesitas cancelar o mover la cita? Avísame con al menos 24 horas y te devuelvo el depósito o lo paso a la nueva fecha.",
+    ],
+    en: [
+      "Prices are starting rates. Heavily soiled items may cost more, and I'll confirm the final price before starting.",
+      "I come to you. I just need access to a power outlet and, for cars, a spot to park nearby.",
+      "Your time is secured once I receive the deposit. The deposit comes off your total.",
+      "Need to cancel or move? Give me at least 24 hours' notice and I'll refund the deposit or move it to your new date.",
+    ],
+  },
 };
