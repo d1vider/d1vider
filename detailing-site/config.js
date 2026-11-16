@@ -97,9 +97,9 @@ window.BUSINESS = {
           },
           perItem: true,
           options: [
-            { label: { es: "Sedán / Coupé", en: "Sedan / Coupe" }, price: 100, minutes: 90 },
-            { label: { es: "SUV / Pickup", en: "SUV / Truck" }, price: 130, minutes: 105 },
-            { label: { es: "Minivan / 3 filas", en: "Minivan / 3-row" }, price: 150, minutes: 120 },
+            { label: { es: "Sedán / Coupé", en: "Sedan / Coupe" }, price: 90, minutes: 90 },
+            { label: { es: "SUV / Pickup", en: "SUV / Truck" }, price: 115, minutes: 105 },
+            { label: { es: "Minivan / 3 filas", en: "Minivan / 3-row" }, price: 135, minutes: 120 },
           ],
         },
         {
@@ -112,9 +112,9 @@ window.BUSINESS = {
           popular: true,
           perItem: true,
           options: [
-            { label: { es: "Sedán / Coupé", en: "Sedan / Coupe" }, price: 210, minutes: 210 },
-            { label: { es: "SUV / Pickup", en: "SUV / Truck" }, price: 250, minutes: 240 },
-            { label: { es: "Minivan / 3 filas", en: "Minivan / 3-row" }, price: 280, minutes: 270 },
+            { label: { es: "Sedán / Coupé", en: "Sedan / Coupe" }, price: 195, minutes: 210 },
+            { label: { es: "SUV / Pickup", en: "SUV / Truck" }, price: 235, minutes: 240 },
+            { label: { es: "Minivan / 3 filas", en: "Minivan / 3-row" }, price: 265, minutes: 270 },
           ],
         },
         {
@@ -126,9 +126,9 @@ window.BUSINESS = {
           },
           perItem: true,
           options: [
-            { label: { es: "Sedán / Coupé", en: "Sedan / Coupe" }, price: 140, minutes: 120 },
-            { label: { es: "SUV / Pickup", en: "SUV / Truck" }, price: 160, minutes: 135 },
-            { label: { es: "Minivan / 3 filas", en: "Minivan / 3-row" }, price: 180, minutes: 150 },
+            { label: { es: "Sedán / Coupé", en: "Sedan / Coupe" }, price: 125, minutes: 120 },
+            { label: { es: "SUV / Pickup", en: "SUV / Truck" }, price: 145, minutes: 135 },
+            { label: { es: "Minivan / 3 filas", en: "Minivan / 3-row" }, price: 165, minutes: 150 },
           ],
         },
       ],
@@ -147,9 +147,9 @@ window.BUSINESS = {
           popular: true,
           perItem: true,
           options: [
-            { label: { es: "Loveseat (2 puestos)", en: "Loveseat (2 seats)" }, price: 110, minutes: 75 },
-            { label: { es: "Sofá (3 puestos)", en: "Sofa (3 seats)" }, price: 150, minutes: 90 },
-            { label: { es: "Seccional (5–6 puestos)", en: "Sectional (5–6 seats)" }, price: 220, minutes: 150 },
+            { label: { es: "Loveseat (2 puestos)", en: "Loveseat (2 seats)" }, price: 100, minutes: 75 },
+            { label: { es: "Sofá (3 puestos)", en: "Sofa (3 seats)" }, price: 135, minutes: 90 },
+            { label: { es: "Seccional (5–6 puestos)", en: "Sectional (5–6 seats)" }, price: 205, minutes: 150 },
           ],
         },
         {
@@ -158,8 +158,8 @@ window.BUSINESS = {
           desc: { es: "Limpieza profunda de una butaca o reclinable tapizado.", en: "Deep clean of a single upholstered chair or recliner." },
           perItem: true,
           options: [
-            { label: { es: "Butaca", en: "Armchair" }, price: 65, minutes: 40 },
-            { label: { es: "Reclinable", en: "Recliner" }, price: 80, minutes: 50 },
+            { label: { es: "Butaca", en: "Armchair" }, price: 55, minutes: 40 },
+            { label: { es: "Reclinable", en: "Recliner" }, price: 70, minutes: 50 },
           ],
         },
         {
@@ -171,9 +171,9 @@ window.BUSINESS = {
           },
           perItem: true,
           options: [
-            { label: { es: "Individual / Twin", en: "Single / Twin" }, price: 90, minutes: 45 },
-            { label: { es: "Full / Queen", en: "Full / Queen" }, price: 110, minutes: 60 },
-            { label: { es: "King", en: "King" }, price: 140, minutes: 70 },
+            { label: { es: "Individual / Twin", en: "Single / Twin" }, price: 80, minutes: 45 },
+            { label: { es: "Full / Queen", en: "Full / Queen" }, price: 100, minutes: 60 },
+            { label: { es: "King", en: "King" }, price: 125, minutes: 70 },
           ],
         },
         {
@@ -182,8 +182,8 @@ window.BUSINESS = {
           desc: { es: "Limpieza profunda en sitio para alfombras sintéticas y de mezcla de lana.", en: "On-site deep clean for synthetic and wool-blend rugs." },
           perItem: true,
           options: [
-            { label: { es: "Pequeña (hasta 5×7 pies)", en: "Small (up to 5×7 ft)" }, price: 90, minutes: 45 },
-            { label: { es: "Grande (hasta 8×10 pies)", en: "Large (up to 8×10 ft)" }, price: 140, minutes: 75 },
+            { label: { es: "Pequeña (hasta 5×7 pies)", en: "Small (up to 5×7 ft)" }, price: 80, minutes: 45 },
+            { label: { es: "Grande (hasta 8×10 pies)", en: "Large (up to 8×10 ft)" }, price: 125, minutes: 75 },
           ],
         },
         {
@@ -192,8 +192,8 @@ window.BUSINESS = {
           desc: { es: "Limpieza del asiento (y espaldar) tapizado, por silla.", en: "Upholstered seat (and back) cleaning, priced per chair." },
           perItem: true,
           options: [
-            { label: { es: "Solo asiento", en: "Seat only" }, price: 35, minutes: 12 },
-            { label: { es: "Asiento y espaldar", en: "Seat & back" }, price: 45, minutes: 18 },
+            { label: { es: "Solo asiento", en: "Seat only" }, price: 25, minutes: 12 },
+            { label: { es: "Asiento y espaldar", en: "Seat & back" }, price: 35, minutes: 18 },
           ],
         },
       ],
@@ -201,10 +201,10 @@ window.BUSINESS = {
   ],
 
   addOns: [
-    { id: "pet", name: { es: "Remoción de pelo de mascota", en: "Pet hair removal" }, price: 60, minutes: 30 },
-    { id: "odor", name: { es: "Tratamiento de olores", en: "Odour treatment" }, price: 70, minutes: 30 },
-    { id: "stain", name: { es: "Manchas difíciles", en: "Heavy stain treatment" }, price: 55, minutes: 20 },
-    { id: "protect", name: { es: "Protector de telas", en: "Fabric protector coating" }, price: 65, minutes: 20 },
+    { id: "pet", name: { es: "Remoción de pelo de mascota", en: "Pet hair removal" }, price: 50, minutes: 30 },
+    { id: "odor", name: { es: "Tratamiento de olores", en: "Odour treatment" }, price: 60, minutes: 30 },
+    { id: "stain", name: { es: "Manchas difíciles", en: "Heavy stain treatment" }, price: 45, minutes: 20 },
+    { id: "protect", name: { es: "Protector de telas", en: "Fabric protector coating" }, price: 55, minutes: 20 },
   ],
 
   notes: {
