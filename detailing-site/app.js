@@ -32,7 +32,6 @@
 
   // ---------- static text ----------
   document.querySelectorAll("[data-bind]").forEach((el) => (el.textContent = B[el.dataset.bind]));
-  document.title = `${B.name} — Prices & Booking`;
   const workNames = B.workingDays.map((d) => ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d]);
   $("#hero-facts").innerHTML = [
     `🗓️ ${workNames.length === 7 ? "Every day" : workNames.join(", ")}`,
