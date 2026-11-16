@@ -35,6 +35,8 @@
       doneBody: (when, dep, hrs) => `Tu hora del <strong>${when}</strong> está separada. Envía el depósito de <strong>${dep}</strong> en las próximas ${hrs} horas para confirmarla:`,
       doneWaBtn: "Enviar comprobante por WhatsApp", doneWaAgain: "Abrir WhatsApp otra vez", doneAgain: "Hacer otra reserva",
       kInfo: "Info", goodToKnow: "Bueno saber", continue: "Continuar",
+      nextTitle: "Próxima fecha libre", nextPick: "Escoger este día", fromLabel: "Desde", hoursLabel: "Horario",
+      nextNone: "No quedan fechas libres en las próximas semanas. Escríbeme por WhatsApp y buscamos espacio.",
       items: (n) => `${n} ${n === 1 ? "servicio" : "servicios"}`, about: "aprox.",
       msgHi: (n) => `¡Hola! Quiero separar una cita con ${n}.`, msgServices: "Servicios:", msgAddon: "Extra",
       msgTotal: "Total estimado", msgDeposit: "Depósito", msgName: "Nombre", msgPhone: "Teléfono", msgAddr: "Dirección", msgNotes: "Notas",
@@ -71,6 +73,8 @@
       doneBody: (when, dep, hrs) => `Your time on <strong>${when}</strong> is on hold. Send the <strong>${dep}</strong> deposit within ${hrs} hours to confirm it:`,
       doneWaBtn: "Send deposit receipt on WhatsApp", doneWaAgain: "Open WhatsApp again", doneAgain: "Make another booking",
       kInfo: "Info", goodToKnow: "Good to know", continue: "Continue",
+      nextTitle: "Next open date", nextPick: "Pick this day", fromLabel: "From", hoursLabel: "Hours",
+      nextNone: "No open dates in the next few weeks. Send me a WhatsApp and we'll find a slot.",
       items: (n) => `${n} item${n === 1 ? "" : "s"}`, about: "about",
       msgHi: (n) => `Hi! I'd like to book with ${n}.`, msgServices: "Services:", msgAddon: "Add-on",
       msgTotal: "Estimated total", msgDeposit: "Deposit", msgName: "Name", msgPhone: "Phone", msgAddr: "Address", msgNotes: "Notes",
@@ -125,10 +129,10 @@
     document.querySelectorAll("[data-c]").forEach((el) => (el.textContent = L(B[el.dataset.c])));
     document.querySelectorAll("[data-lang]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.lang === lang));
     $("#hero-facts").innerHTML = [
-      `<b>●</b> ${S().factDays} · ${fmtTime(toMin(B.dayStart))} – ${fmtTime(toMin(B.dayEnd))}`,
-      `<b>●</b> ${esc(S().factHome)}`,
-      `<b>●</b> ${esc(L(B.area))}`,
-    ].map((t) => `<li>${t}</li>`).join("");
+      `${S().factDays} · ${fmtTime(toMin(B.dayStart))} – ${fmtTime(toMin(B.dayEnd))}`,
+      esc(S().factHome),
+      "ATH Móvil · PayPal · " + esc(S().payCash),
+    ].map((t) => `<li class="chip">${t}</li>`).join("");
     $("#notes").innerHTML = L(B.notes).map((n) => `<li>${esc(n)}</li>`).join("");
     $("#about-text").innerHTML = L(B.about).map((p) => `<p>${esc(p)}</p>`).join("");
     $("#about-points").innerHTML = L(B.aboutPoints).map((p) => `<li>${esc(p)}</li>`).join("");
@@ -432,8 +436,39 @@
     const el = $("#toast"); el.textContent = text; el.classList.add("show");
     clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 1800);
   }
+  // ---------- hero: next open date ----------
+  function nextOpening() {
+    const today = todayPR();
+    for (let i = 0; i <= B.bookAheadDays; i++) {
+      const ds = addDays(today, i), s = slotsFor(ds);
+      if (s.length) return { date: ds, time: s[0] };
+    }
+    return null;
+  }
+  function renderNext() {
+    const n = nextOpening(), box = $("#next-slot"); if (!box) return;
+    const wd = (ds) => capital(utcDate(ds).toLocaleDateString(locale(), { weekday: "long", timeZone: "UTC" }));
+    const md = (ds) => utcDate(ds).toLocaleDateString(locale(), { day: "numeric", month: "long", timeZone: "UTC" });
+    box.innerHTML = n
+      ? `<span class="next-day">${esc(wd(n.date))}</span><span class="next-date">${esc(md(n.date))}</span><span class="next-time">${fmtTime(n.time)}</span>`
+      : `<p class="muted">${esc(S().nextNone)}</p>`;
+    $("#next-pick").hidden = !n;
+    $("#next-pick").dataset.date = n ? n.date : "";
+    const prices = B.categories.flatMap((c) => c.services.flatMap((s) => s.options.map((o) => o.price)));
+    $("#from-price").textContent = money(Math.min(...prices));
+    $("#hero-deposit").textContent = money(B.deposit);
+    $("#hero-hours").textContent = `${fmtTime(toMin(B.dayStart))}–${fmtTime(toMin(B.dayEnd))}`;
+  }
+  $("#next-pick").addEventListener("click", (e) => {
+    const ds = e.currentTarget.dataset.date; if (!ds) return;
+    const d = utcDate(ds);
+    state.date = ds; state.time = null; state.month = { y: d.getUTCFullYear(), m: d.getUTCMonth() };
+    update();
+    $("#book").scrollIntoView({ behavior: "smooth" });
+  });
+
   function update() {
-    renderServices(); renderAddOns(); renderCart(); renderCalendar(); renderSlots();
+    renderServices(); renderAddOns(); renderCart(); renderCalendar(); renderSlots(); renderNext();
     if (state.cart.length || state.date) { const e = $("#form-error"); if (!e.querySelector("a")) e.textContent = ""; }
   }
   renderStatic(); update(); loadBusy();

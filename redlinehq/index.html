@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="es" data-lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>RedlineHQ</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="RedlineHQ: detallado interior a domicilio, tecnología y desarrollo web en el Área Metropolitana de Puerto Rico.">
+  <meta property="og:title" content="RedlineHQ">
+  <meta property="og:description" content="Redline Interiors · Redline Technologies · Redline Portfolio. Área Metropolitana, PR.">
+  <meta property="og:image" content="assets/img/og.jpg">
+  <meta name="theme-color" content="#08090b">
+  <link rel="icon" href="assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <script>try{var l=localStorage.getItem("lang");if(l)document.documentElement.dataset.lang=l}catch(e){}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/redline.css">
+  <style>
+    /* hub: hero with the emblem as a live tachometer, then three service "buttons" */
+    .hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(24px, 4vw, 56px); align-items: center; padding-block: clamp(40px, 6vw, 80px) clamp(28px, 4vw, 48px); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+    .hero h1 .red { color: var(--red-hot); text-shadow: 0 0 34px var(--red-glow); }
+
+    .emblem { position: relative; width: 100%; max-width: 620px; justify-self: center; aspect-ratio: 1347 / 1107; }
+    .emblem img, .emblem svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .emblem img { filter: drop-shadow(0 30px 60px rgba(227, 22, 29, 0.28)); }
+    .gauge .tick { stroke: var(--cyber); stroke-width: 4; stroke-linecap: round; }
+    .gauge .tick.major { stroke: #cfd5da; stroke-width: 6; }
+    .gauge .tick.hot { stroke: var(--red-hot); }
+    .gauge .num { fill: #cfd5da; font: 600 34px var(--mono); text-anchor: middle; dominant-baseline: middle; }
+    .gauge .num.hot { fill: var(--red-hot); }
+    .gauge .unit { fill: var(--cyber); font: 600 24px var(--mono); letter-spacing: 3px; text-anchor: middle; }
+    .gauge .zone { fill: none; stroke: var(--red); stroke-width: 10; filter: drop-shadow(0 0 10px var(--red-glow)); }
+    .needle { transform-box: view-box; transform-origin: 633px 554px; transform: rotate(328deg); animation: sweep 2.4s cubic-bezier(.3,.7,.2,1) 0.3s both; }
+    .needle line { stroke: var(--red-hot); stroke-width: 10; stroke-linecap: round; filter: drop-shadow(0 0 12px var(--red-glow)); }
+    .needle .cap { fill: #1b1e23; stroke: #cfd5da; stroke-width: 5; }
+    @keyframes sweep {
+      0% { transform: rotate(195deg); }
+      55% { transform: rotate(343deg); }
+      72% { transform: rotate(322deg); }
+      86% { transform: rotate(332deg); }
+      100% { transform: rotate(328deg); }
+    }
+
+    .services { padding-block: clamp(24px, 4vw, 40px) clamp(56px, 8vw, 96px); }
+    .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .tile {
+      position: relative; display: flex; flex-direction: column; gap: 14px; padding: 26px;
+      color: var(--text); text-decoration: none; overflow: hidden; isolation: isolate;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .tile::before { /* soft red light that wakes up on hover */
+      content: ""; position: absolute; inset: auto -20% -60% -20%; height: 80%; z-index: -1;
+      background: radial-gradient(closest-side, rgba(227, 22, 29, 0.28), transparent); opacity: 0; transition: opacity 0.25s;
+    }
+    .tile::after { /* the redline: sweeps across the bottom edge */
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+      background: linear-gradient(90deg, var(--cyber) 0 70%, var(--red-hot) 70%);
+      transform: scaleX(0.18); transform-origin: left; transition: transform 0.45s cubic-bezier(.2,.8,.2,1);
+    }
+    .tile:hover, .tile:focus-visible { transform: translateY(-4px); border-color: rgba(255, 60, 66, 0.45); box-shadow: 0 24px 60px -30px var(--red-glow); }
+    .tile:hover::before, .tile:focus-visible::before { opacity: 1; }
+    .tile:hover::after, .tile:focus-visible::after { transform: scaleX(1); }
+    .tile-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .icon { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; background: var(--bg-2); border: 1px solid var(--line-2); color: var(--red-hot); }
+    .icon svg { width: 28px; height: 28px; }
+    .tile h3 { font-size: 26px; font-style: italic; }
+    .tile h3 small { display: block; font: 600 12px/1.4 var(--mono); font-style: normal; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+    .tile p { margin: 0; color: #c3c9cf; }
+    .specs { list-style: none; margin: 0; padding: 14px 0 0; border-top: 1px solid var(--line); display: grid; gap: 8px; font: 500 13.5px/1.4 var(--mono); color: var(--muted); }
+    .specs li { display: flex; gap: 10px; }
+    .specs li::before { content: ""; flex: 0 0 auto; width: 8px; height: 2px; background: var(--red); margin-top: 9px; }
+    .tile-cta { margin-top: auto; padding-top: 8px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; }
+    .tile-cta .go { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--red); color: var(--white); box-shadow: 0 8px 22px -8px var(--red-glow); }
+
+    .contact { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; padding: clamp(24px, 4vw, 44px); align-items: center; }
+    .contact h2 { font-style: italic; }
+    .contact p { color: var(--muted); margin: 12px 0 0; max-width: 46ch; }
+    .lines { display: grid; gap: 10px; }
+    .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: var(--r); background: var(--bg-2); border: 1px solid var(--line); min-width: 0; }
+    .line .label { font: 600 11px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px; }
+    .line strong { font-weight: 600; overflow-wrap: anywhere; }
+    .copy { flex: 0 0 auto; font: 600 12px/1 var(--mono); color: var(--text); background: var(--glass); border: 1px solid var(--line-2); border-radius: 8px; padding: 8px 10px; cursor: pointer; }
+    .copy:hover { border-color: var(--cyber); }
+
+    @media (max-width: 960px) {
+      .tiles { grid-template-columns: 1fr; }
+      .tile { padding: 22px; }
+    }
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+      .emblem { max-width: 480px; order: -1; }
+      .contact { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html" aria-label="RedlineHQ"><img src="assets/img/wordmark.webp" alt="RedlineHQ" width="640" height="211"></a>
+      <span class="crumb">HQ</span>
+      <nav class="nav-links" aria-label="Secciones">
+        <a href="interiors/index.html">Interiors</a>
+        <a href="tech/index.html">Technologies</a>
+        <a href="portfolio/index.html">Portfolio</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Idioma / Language"><button data-lang="es" aria-pressed="true">ES</button><button data-lang="en" aria-pressed="false">EN</button></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap hero">
+      <div>
+        <p class="kicker">RedlineHQ · <span data-site="area">Área Metropolitana, Puerto Rico</span></p>
+        <h1>
+          <span lang="es">Cada trabajo, hasta la <span class="red">línea roja.</span></span>
+          <span lang="en">Every job, taken to the <span class="red">redline.</span></span>
+        </h1>
+        <p class="lead">
+          <span lang="es">Tres servicios bajo una misma marca: detallado interior a domicilio, soluciones de tecnología y un portafolio con el trabajo terminado.</span>
+          <span lang="en">Three services under one brand: mobile interior detailing, tech solutions, and a portfolio of finished work.</span>
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-red" href="interiors/index.html#book"><span lang="es">Reservar detallado</span><span lang="en">Book a detail</span> <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="#services"><span lang="es">Ver servicios</span><span lang="en">See services</span></a>
+        </div>
+        <div class="hero-meta">
+          <span class="chip"><span class="dot"></span><span lang="es">Aceptando citas</span><span lang="en">Taking bookings</span></span>
+          <span class="chip">18.47°N 66.11°W</span>
+          <span class="chip">ES / EN</span>
+        </div>
+      </div>
+
+      <div class="emblem">
+        <img src="assets/img/emblem.webp" alt="Logo de Redline" width="900" height="740">
+        <svg class="gauge" viewBox="0 0 1347 1107" aria-hidden="true">
+          <g id="ticks"></g>
+          <text class="unit" x="633" y="650">×1000 r/min</text>
+          <g class="needle">
+            <line x1="600" y1="554" x2="985" y2="554"></line>
+            <circle class="cap" cx="633" cy="554" r="30"></circle>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <div class="tach" aria-hidden="true"></div>
+
+    <section id="services" class="wrap services">
+      <div class="section-head">
+        <p class="kicker"><span lang="es">Servicios</span><span lang="en">Services</span></p>
+        <h2><span lang="es">Escoge a dónde vas.</span><span lang="en">Pick where you're headed.</span></h2>
+      </div>
+
+      <div class="tiles">
+        <a class="tile panel" href="interiors/index.html">
+          <div class="tile-top">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h3.2a2 2 0 0 1 2 2.2L10.6 12H17a2.5 2.5 0 0 1 2.5 2.5V17H8.4a2.4 2.4 0 0 1-2.4-2.3z"/><path d="M8.5 17v3.5M17 17v3.5M4 20.5h17"/></svg>
+            </span>
+            <span class="chip"><span class="dot"></span><span lang="es">Reservas en línea</span><span lang="en">Book online</span></span>
+          </div>
+          <h3><small>Redline</small>Interiors</h3>
+          <p><span lang="es">Detallado interior a domicilio para autos y muebles del hogar.</span><span lang="en">Mobile interior detailing for cars and home furniture.</span></p>
+          <ul class="specs">
+            <li><span><span lang="es">Autos desde</span><span lang="en">Cars from</span> <span id="from-car">$90</span></span></li>
+            <li><span lang="es">Sofás, colchones, alfombras y sillas</span><span lang="en">Sofas, mattresses, rugs and chairs</span></li>
+            <li><span lang="es">Depósito por ATH Móvil o PayPal</span><span lang="en">Deposit by ATH Móvil or PayPal</span></li>
+          </ul>
+          <div class="tile-cta"><span lang="es">Reservar cita</span><span lang="en">Book a visit</span><span class="go" aria-hidden="true"><span class="arrow">→</span></span></div>
+        </a>
+
+        <a class="tile panel" href="tech/index.html">
+          <div class="tile-top">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 2.5V6M15 2.5V6M9 18v3.5M15 18v3.5M2.5 9H6M2.5 15H6M18 9h3.5M18 15h3.5"/></svg>
+            </span>
+            <span class="chip red"><span lang="es">Cotización gratis</span><span lang="en">Free quote</span></span>
+          </div>
+          <h3><small>Redline</small>Technologies</h3>
+          <p><span lang="es">Consultoría, PCs a la medida y desarrollo de páginas web.</span><span lang="en">Consulting, custom PC builds and website development.</span></p>
+          <ul class="specs">
+            <li><span lang="es">Consultoría para casa y negocio</span><span lang="en">Tech consulting for home and business</span></li>
+            <li><span lang="es">PCs gaming y de trabajo, armadas y probadas</span><span lang="en">Gaming and work PCs, built and tested</span></li>
+            <li><span lang="es">Páginas web con dominio y email</span><span lang="en">Websites with domain and email</span></li>
+          </ul>
+          <div class="tile-cta"><span lang="es">Pedir cotización</span><span lang="en">Get a quote</span><span class="go" aria-hidden="true"><span class="arrow">→</span></span></div>
+        </a>
+
+        <a class="tile panel" href="portfolio/index.html">
+          <div class="tile-top">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="14" height="13" rx="2"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4H19a2 2 0 0 1 2 2v10.5a1.5 1.5 0 0 1-1.5 1.5H17"/><path d="m3 16 4-4 3.5 3.5L13 13l4 4"/></svg>
+            </span>
+            <span class="chip"><span id="project-count">3</span><span lang="es">proyectos</span><span lang="en">projects</span></span>
+          </div>
+          <h3><small>Redline</small>Portfolio</h3>
+          <p><span lang="es">Prueba del trabajo: antes y después, builds y proyectos web.</span><span lang="en">Proof of work: before and afters, builds and web projects.</span></p>
+          <ul class="specs">
+            <li><span lang="es">Fotos de antes y después</span><span lang="en">Before and after photos</span></li>
+            <li><span lang="es">PCs armadas</span><span lang="en">Finished PC builds</span></li>
+            <li><span lang="es">Páginas y sistemas web</span><span lang="en">Websites and web systems</span></li>
+          </ul>
+          <div class="tile-cta"><span lang="es">Ver proyectos</span><span lang="en">See the work</span><span class="go" aria-hidden="true"><span class="arrow">→</span></span></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="wrap" style="padding-bottom: clamp(56px, 8vw, 96px)">
+      <div class="panel contact">
+        <div>
+          <p class="kicker"><span lang="es">Contacto</span><span lang="en">Contact</span></p>
+          <h2><span lang="es">¿Tienes algo en mente?</span><span lang="en">Got something in mind?</span></h2>
+          <p><span lang="es">Escribe por WhatsApp o email con lo que necesitas: una cita de detallado, una PC nueva o una página web.</span><span lang="en">Send a WhatsApp or email with what you need: a detailing visit, a new PC or a website.</span></p>
+        </div>
+        <div class="lines">
+          <a class="btn btn-red block" data-wa data-wa-es="¡Hola RedlineHQ! Quiero información sobre:" data-wa-en="Hi RedlineHQ! I'd like info about:" href="https://wa.me/17879100777">WhatsApp <span class="arrow" aria-hidden="true">→</span></a>
+          <div class="line" data-copy-wrap><div><span class="label"><span lang="es">Teléfono / WhatsApp</span><span lang="en">Phone / WhatsApp</span></span><strong data-site="phone">(787) 910-0777</strong></div><button class="copy" data-copy="phone"><span lang="es">Copiar</span><span lang="en">Copy</span></button></div>
+          <div class="line" data-copy-wrap><div><span class="label">Email</span><strong data-site="email">citas@redlinehq.work</strong></div><button class="copy" data-copy="email"><span lang="es">Copiar</span><span lang="en">Copy</span></button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="index.html"><img src="assets/img/wordmark.webp" alt="RedlineHQ" width="640" height="211"></a>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="interiors/index.html">Redline Interiors</a>
+        <a href="tech/index.html">Redline Technologies</a>
+        <a href="portfolio/index.html">Redline Portfolio</a>
+      </nav>
+      <span>© <span data-year>2026</span> RedlineHQ · redlinehq.work</span>
+    </div>
+  </footer>
+
+  <script src="assets/site.js"></script>
+  <script src="interiors/config.js"></script>
+  <script src="portfolio/projects.js"></script>
+  <script>
+    // tachometer face inside the emblem: 0–8 ×1000 r/min, redline from 6.5
+    (function () {
+      const NS = "http://www.w3.org/2000/svg", cx = 633, cy = 554, R = 385, A0 = 195, PER = 18.75, RED = 6.5;
+      const g = document.getElementById("ticks");
+      const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+      const pt = (deg, r) => [cx + r * Math.cos(deg * Math.PI / 180), cy + r * Math.sin(deg * Math.PI / 180)];
+      const [zx0, zy0] = pt(A0 + RED * PER, R + 16), [zx1, zy1] = pt(A0 + 8 * PER, R + 16);
+      g.appendChild(el("path", { class: "zone", d: `M${zx0} ${zy0} A${R + 16} ${R + 16} 0 0 1 ${zx1} ${zy1}` }));
+      for (let v = 0; v <= 8; v += 0.5) {
+        const a = A0 + v * PER, major = v % 1 === 0, hot = v >= RED;
+        const [x1, y1] = pt(a, R), [x2, y2] = pt(a, R - (major ? 38 : 20));
+        g.appendChild(el("line", { class: `tick${major ? " major" : ""}${hot ? " hot" : ""}`, x1, y1, x2, y2 }));
+        if (major) { const [tx, ty] = pt(a, R - 72); const t = el("text", { class: `num${hot ? " hot" : ""}`, x: tx, y: ty }); t.textContent = v; g.appendChild(t); }
+      }
+    })();
+    // live numbers from the other sections
+    (function () {
+      try {
+        const car = window.BUSINESS.categories.find((c) => c.id === "car");
+        const min = Math.min(...car.services.flatMap((s) => s.options.map((o) => o.price)));
+        document.getElementById("from-car").textContent = window.BUSINESS.currency + min;
+      } catch (e) {}
+      try { document.getElementById("project-count").textContent = window.PROJECTS.length; } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

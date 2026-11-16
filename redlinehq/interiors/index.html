@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es" data-lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Redline Interiors</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="Detallado interior a domicilio para autos y muebles en el Área Metropolitana de Puerto Rico. Precios y citas en línea.">
+  <meta property="og:title" content="Redline Interiors">
+  <meta property="og:description" content="Detallado interior a domicilio · Área Metropolitana, PR. Mira precios y separa tu cita.">
+  <meta property="og:image" content="../assets/img/og.jpg">
+  <meta name="theme-color" content="#08090b">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <script>try{var l=localStorage.getItem("lang");if(l)document.documentElement.dataset.lang=l}catch(e){}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/redline.css">
+  <link rel="stylesheet" href="interiors.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="RedlineHQ"><img src="../assets/img/wordmark.webp" alt="RedlineHQ" width="640" height="211"></a>
+      <span class="crumb">Interiors</span>
+      <nav class="nav-links" aria-label="Secciones">
+        <a href="index.html" aria-current="page">Interiors</a>
+        <a href="../tech/index.html">Technologies</a>
+        <a href="../portfolio/index.html">Portfolio</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Idioma / Language"><button data-lang="es">ES</button><button data-lang="en">EN</button></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap hero" id="top">
+      <div class="hero-copy">
+        <p class="kicker">Redline Interiors · <span data-c="area"></span></p>
+        <h1 data-c="tagline"></h1>
+        <p class="lead" data-t="lead"></p>
+        <div class="hero-actions">
+          <a class="btn btn-red" href="#book"><span data-t="pickTime"></span> <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="#prices" data-t="seePrices"></a>
+        </div>
+        <ul class="hero-facts" id="hero-facts"></ul>
+      </div>
+
+      <aside class="panel next" aria-live="polite">
+        <div class="next-head">
+          <span class="kicker" data-t="nextTitle"></span>
+          <span class="live" id="cal-status"></span>
+        </div>
+        <div id="next-slot" class="next-slot"></div>
+        <dl class="next-grid">
+          <div><dt data-t="fromLabel"></dt><dd id="from-price">—</dd></div>
+          <div><dt data-t="depositNow"></dt><dd id="hero-deposit">—</dd></div>
+          <div><dt data-t="hoursLabel"></dt><dd id="hero-hours">—</dd></div>
+        </dl>
+        <button class="btn btn-red block" id="next-pick"><span data-t="nextPick"></span> <span class="arrow" aria-hidden="true">→</span></button>
+      </aside>
+    </section>
+
+    <div class="tach" aria-hidden="true"></div>
+
+    <section id="prices" class="wrap section">
+      <div class="section-head">
+        <p class="kicker" data-t="kPrices"></p>
+        <h2 data-t="pricesTitle"></h2>
+        <p data-t="pricesSub"></p>
+      </div>
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div id="service-list" class="service-grid"></div>
+      <div class="addons-block">
+        <h3 data-t="addOns"></h3>
+        <div id="addon-list" class="addon-grid"></div>
+      </div>
+    </section>
+
+    <section id="about" class="wrap">
+      <div class="panel about">
+        <div class="about-emblem"><img src="../assets/img/emblem.webp" alt="" width="900" height="740" loading="lazy"></div>
+        <div class="about-copy">
+          <p class="kicker" data-t="kAbout"></p>
+          <h2 data-t="aboutTitle"></h2>
+          <div id="about-text" class="about-text"></div>
+          <ul class="about-points" id="about-points"></ul>
+        </div>
+      </div>
+      <div id="gallery" class="gallery"></div>
+    </section>
+
+    <section id="book" class="wrap section">
+      <div class="section-head">
+        <p class="kicker" data-t="kBook"></p>
+        <h2 data-t="bookTitle"></h2>
+        <p data-t="bookSub"></p>
+      </div>
+
+      <div class="book-layout">
+        <div class="book-main">
+          <div class="panel step">
+            <div class="step-title"><span class="step-num">1</span> <span data-t="step1"></span></div>
+            <div class="cal-head">
+              <button class="icon-btn" id="cal-prev" aria-label="‹">‹</button>
+              <strong id="cal-label"></strong>
+              <button class="icon-btn" id="cal-next" aria-label="›">›</button>
+            </div>
+            <div class="cal-grid cal-dow" id="cal-dow" aria-hidden="true"></div>
+            <div class="cal-grid" id="cal-days"></div>
+            <div class="cal-legend">
+              <span><i class="dot dot-open"></i><span data-t="legendOpen"></span></span>
+              <span><i class="dot dot-full"></i><span data-t="legendFull"></span></span>
+            </div>
+          </div>
+
+          <div class="panel step">
+            <div class="step-title"><span class="step-num">2</span> <span data-t="step2"></span></div>
+            <p class="muted" id="slot-hint"></p>
+            <div class="slots" id="slots"></div>
+          </div>
+
+          <div class="panel step">
+            <div class="step-title"><span class="step-num">3</span> <span data-t="step3"></span></div>
+            <form id="details" class="form" novalidate>
+              <label class="field" for="f-name"><span data-t="fName"></span><input id="f-name" name="name" autocomplete="name" required maxlength="80"></label>
+              <label class="field" for="f-phone"><span data-t="fPhone"></span><input id="f-phone" name="phone" type="tel" autocomplete="tel" required maxlength="30"></label>
+              <label class="field full" for="f-address"><span data-t="fAddress"></span><input id="f-address" name="address" autocomplete="street-address" required maxlength="160"></label>
+              <label class="field" for="town"><span data-t="fTown"></span><select name="town" id="town" required></select></label>
+              <label class="field full" for="f-notes"><span data-t="fNotes"></span><textarea id="f-notes" name="notes" rows="3" maxlength="600"></textarea></label>
+              <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+            </form>
+          </div>
+        </div>
+
+        <aside class="book-side">
+          <div class="panel summary" id="summary">
+            <h3 data-t="yourBooking"></h3>
+            <ul class="cart" id="cart"></ul>
+            <div id="cart-empty" class="muted"><span data-t="cartEmpty"></span> <a href="#prices" data-t="browse"></a></div>
+            <dl class="totals">
+              <div><dt data-t="estTime"></dt><dd id="sum-time">—</dd></div>
+              <div><dt data-t="when"></dt><dd id="sum-when">—</dd></div>
+              <div class="grand"><dt data-t="estTotal"></dt><dd id="sum-total">—</dd></div>
+              <div class="dep"><dt data-t="depositNow"></dt><dd id="sum-deposit">—</dd></div>
+              <div><dt data-t="balance"></dt><dd id="sum-balance">—</dd></div>
+            </dl>
+            <p class="error" id="form-error" role="alert"></p>
+            <div id="send-actions">
+              <button class="btn btn-red block" id="send" data-t="send"></button>
+              <button class="btn btn-ghost block" id="send-email" data-t="sendEmail"></button>
+              <p class="fine"></p>
+              <div class="paychips" id="paychips"></div>
+            </div>
+            <div id="done" class="done" hidden></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="wrap section notes-section">
+      <div class="section-head"><p class="kicker" data-t="kInfo"></p><h2 data-t="goodToKnow"></h2></div>
+      <ul class="notes" id="notes"></ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="../index.html"><img src="../assets/img/wordmark.webp" alt="RedlineHQ" width="640" height="211"></a>
+      <span><span data-c="area"></span> · <a id="foot-phone"></a><span id="foot-email-wrap"> · <a id="foot-email"></a></span></span>
+      <span>© <span data-year>2026</span> RedlineHQ · redlinehq.work</span>
+    </div>
+  </footer>
+
+  <div class="sticky-bar" id="sticky-bar">
+    <span id="sticky-text"></span>
+    <a class="btn btn-red" href="#book" data-t="continue"></a>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="../assets/site.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

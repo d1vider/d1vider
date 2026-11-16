@@ -7,7 +7,7 @@ One-page site (Spanish + English) where clients see your prices, pick a free day
 | File | What it is |
 |---|---|
 | `config.js` | **Your settings.** Name, logo, prices, hours, towns, deposit, payments, About text, photos. The only file you normally edit. |
-| `index.html`, `styles.css`, `app.js` | The page itself. |
+| `index.html`, `interiors.css`, `app.js` | The page itself. Shared colours, fonts, nav and logo come from `../assets/`. |
 | `google-calendar/Code.gs` | The free connector: emails you each booking with an Apple Calendar invite and keeps the page's free times up to date. |
 
 ## How a booking works
@@ -49,6 +49,6 @@ The calendar on the page now shows "● Horarios en vivo" (live times).
 
 **Limits:** repeating events (e.g. "every Monday") in the Redline calendar only block their first time, so use one-off events there. Google allows about 100 emails a day on a free account, which is plenty.
 
-## Put it online for free (GitHub Pages)
+## Putting it online
 
-Repo **Settings → Pages → Deploy from a branch**, pick the branch and `/ (root)`, then Save. The site will be at `https://<username>.github.io/<repo>/detailing-site/`.
+This page is one section of the RedlineHQ site. See `../README.md` for how the whole site goes live on **redlinehq.work**; this page will be at **redlinehq.work/interiors/**.
