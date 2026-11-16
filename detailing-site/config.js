@@ -36,7 +36,7 @@ window.BUSINESS = {
   // How clients can pay. Deposit: ATH Móvil or PayPal. Balance: any of the three.
   payments: {
     athMovil: "(787) 910-0777",
-    paypal: "",                     // your paypal.me name, e.g. "redlinepr" for paypal.me/redlinepr
+    paypal: "jcnussa",              // your paypal.me name, e.g. "redlinepr" for paypal.me/redlinepr
     cash: true,
   },
   depositHoursToPay: 24,
