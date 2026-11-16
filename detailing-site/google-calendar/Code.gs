@@ -16,7 +16,7 @@ const SETTINGS = {
   MODE: 'apple',                       // 'apple' or 'google'
   ICLOUD_CALENDAR_URL: '',             // apple mode: paste the webcal://... link from iCloud here
   GOOGLE_CALENDAR_ID: 'primary',       // google mode: 'primary' = your main Google Calendar
-  NOTIFY_EMAIL: '',                    // where bookings are emailed; empty = this Google account's Gmail
+  NOTIFY_EMAIL: 'citas@redlinehq.work', // where bookings are emailed (empty = this Google account's Gmail)
   BUSINESS_NAME: 'Redline Interiors',
   TIMEZONE: 'America/Puerto_Rico',
   BUFFER_MINUTES: 45,                  // keep equal to bufferMinutes in config.js

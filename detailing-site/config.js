@@ -22,7 +22,7 @@ window.BUSINESS = {
   // ---------- CONTACT ----------
   whatsapp: "17879100777",          // country code 1 + number, digits only
   phoneDisplay: "(787) 910-0777",
-  email: "",                        // add once you have your domain email; the email button stays hidden until then
+  email: "citas@redlinehq.work",
 
   // ---------- GOOGLE CALENDAR ----------
   // Paste your Google Apps Script "Web app" URL here (see README, step "Google Calendar").
