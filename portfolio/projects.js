@@ -24,7 +24,7 @@ window.PROJECTS = [
     },
     tags: ["HTML / CSS / JS", { es: "Bilingüe", en: "Bilingual" }, "GitHub Pages"],
     image: "img/redlinehq.webp",
-    link: "../index.html",
+    link: "../",
     linkLabel: { es: "Ver sitio", en: "View site" },
   },
   {
@@ -38,7 +38,7 @@ window.PROJECTS = [
     },
     tags: [{ es: "Citas", en: "Bookings" }, "Apple Calendar", "ATH Móvil", "PayPal"],
     image: "img/interiors.webp",
-    link: "../interiors/index.html",
+    link: "../interiors/",
     linkLabel: { es: "Probar el sistema", en: "Try it" },
   },
   {
