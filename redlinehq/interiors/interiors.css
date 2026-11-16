@@ -121,6 +121,7 @@
 .totals .dep dt, .totals .dep dd { color: var(--red-hot); font-weight: 700; }
 .error { color: var(--red-hot); font-weight: 600; font-size: 14px; min-height: 1em; margin: 8px 0 0; }
 .error a { color: inherit; }
+.err-code { color: var(--muted); font: 500 12px/1 var(--mono); }
 .btn.block + .btn.block { margin-top: 10px; }
 #send-actions .btn.block:first-child { margin-top: 6px; }
 .fine { font-size: 13px; color: var(--muted); text-align: center; margin: 12px 0 0; }

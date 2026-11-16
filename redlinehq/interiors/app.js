@@ -420,7 +420,8 @@
       else if (j.error === "taken") { state.time = null; await loadBusy(); $("#form-error").textContent = S().errTaken; }
       else throw new Error(j.error);
     } catch (e) {
-      $("#form-error").innerHTML = `${esc(S().errNet)} <a href="${waUrl()}" target="_blank" rel="noopener">WhatsApp</a>`;
+      const code = e && e.message ? e.message : "network";
+      $("#form-error").innerHTML = `${esc(S().errNet)} <a href="${waUrl()}" target="_blank" rel="noopener">WhatsApp</a> <small class="err-code">(${esc(code)})</small>`;
     } finally {
       btn.disabled = false; btn.textContent = S().send;
     }
