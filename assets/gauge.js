@@ -3,7 +3,7 @@
  * Coordinates match assets/img/ring.webp (1120 × 1120, centre 560,560).
  * 0–8 ×1000 r/min over 270°, redline from 6.5.
  *
- *   redlineGauge(svgElement, { value: 7.4, animate: true })
+ *   redlineGauge(svgElement, { value: 0.7, animate: true })
  */
 (function () {
   "use strict";
@@ -34,7 +34,7 @@
   `;
 
   window.redlineGauge = function (svg, opts) {
-    const o = Object.assign({ value: 7.4, animate: false }, opts || {});
+    const o = Object.assign({ value: 0.7, animate: false }, opts || {});
     svg.setAttribute("viewBox", "0 0 1120 1120");
     svg.innerHTML = "";
     el("style", {}, svg).textContent = STYLE;
@@ -69,13 +69,13 @@
 
     const set = (v) => {
       needle.setAttribute("transform", `rotate(${angle(v)} ${CX} ${CY})`);
-      read.textContent = String(Math.round((v * 1000) / 50) * 50).padStart(4, "0");
+      read.textContent = String(Math.round((v * 1000) / 50) * 50);
     };
     const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!o.animate || reduce) { set(o.value); return; }
 
-    // rev: 0 → 8 (just past redline) → settle on the target with a little bounce
-    const keys = [[0, 0], [0.5, 7.92], [0.68, 6.7], [0.82, 7.3], [1, o.value]];
+    // rev: 0 → into the redline → drop back and settle at idle with a little bounce
+    const keys = [[0, 0], [0.42, 7.92], [0.5, 7.6], [0.82, o.value - 0.25], [0.92, o.value + 0.15], [1, o.value]];
     const ease = (t) => 1 - Math.pow(1 - t, 3);
     const DUR = 2400, start = performance.now() + 250;
     set(0);

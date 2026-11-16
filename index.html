@@ -229,8 +229,8 @@
   <script src="portfolio/projects.js"></script>
   <script src="assets/gauge.js"></script>
   <script>
-    // the RPM meter revs up to the redline when the page opens
-    redlineGauge(document.getElementById("meter"), { value: 7.4, animate: true });
+    // the RPM meter revs into the redline when the page opens, then settles at idle
+    redlineGauge(document.getElementById("meter"), { value: 0.7, animate: true });
     // live numbers from the other sections
     (function () {
       try {
