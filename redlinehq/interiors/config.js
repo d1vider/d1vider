@@ -30,6 +30,11 @@ window.BUSINESS = {
   // and every booking request is added to your calendar automatically.
   calendarApiUrl: "https://script.google.com/macros/s/AKfycbx0dazkCuiWoh8byf6ysv5DO0M8u0iex6pcObTabuPhgXwu9QudvwycvWgW6KzLr0YItA/exec",
 
+  // ---------- ANTI-SPAM (Cloudflare Turnstile) ----------
+  // Paste your Turnstile *Site Key* here to turn on the "are you human" check.
+  // Leave empty to keep it off. (The *Secret Key* goes in the Google script, never here.)
+  turnstileSiteKey: "",
+
   // ---------- DEPOSIT ----------
   currency: "$",
   deposit: 100,                     // never more than the job total

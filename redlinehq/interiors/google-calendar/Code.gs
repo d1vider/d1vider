@@ -146,6 +146,19 @@ function doPost(e) {
     const b = JSON.parse(e.postData.contents);
     if (b.website) return json_({ ok: true });                         // bot filled the hidden field
 
+    // Anti-spam: once a TURNSTILE_SECRET is saved in Project Settings → Script Properties,
+    // every request must carry a valid Cloudflare Turnstile token from the booking page.
+    const tsSecret = props_().getProperty('TURNSTILE_SECRET');
+    if (tsSecret) {
+      const check = UrlFetchApp.fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'post', muteHttpExceptions: true,
+        payload: { secret: tsSecret, response: String(b.turnstile || '') },
+      });
+      let passed = false;
+      try { passed = JSON.parse(check.getContentText()).success === true; } catch (e) {}
+      if (!passed) return json_({ ok: false, error: 'captcha' });
+    }
+
     const cache = CacheService.getScriptCache();
     const count = Number(cache.get('reqs') || 0);
     if (count >= SETTINGS.MAX_REQUESTS_PER_HOUR) return json_({ ok: false, error: 'busy' });
