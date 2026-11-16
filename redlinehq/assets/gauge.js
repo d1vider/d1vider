@@ -1,6 +1,6 @@
 /*
  * Redline tachometer face, drawn inside the logo ring.
- * Coordinates match assets/img/ring.webp (1266 × 1107, centre 552,554).
+ * Coordinates match assets/img/ring.webp (1120 × 1120, centre 560,560).
  * 0–8 ×1000 r/min over 270°, redline from 6.5.
  *
  *   redlineGauge(svgElement, { value: 7.4, animate: true })
@@ -8,7 +8,7 @@
 (function () {
   "use strict";
   const NS = "http://www.w3.org/2000/svg";
-  const CX = 552, CY = 554, R = 425, A0 = 135, PER = 33.75, RED = 6.5, MAX = 8;
+  const CX = 560, CY = 560, R = 425, A0 = 135, PER = 33.75, RED = 6.5, MAX = 8;
   const el = (n, a, parent) => {
     const e = document.createElementNS(NS, n);
     for (const k in a) e.setAttribute(k, a[k]);
@@ -35,7 +35,7 @@
 
   window.redlineGauge = function (svg, opts) {
     const o = Object.assign({ value: 7.4, animate: false }, opts || {});
-    svg.setAttribute("viewBox", "0 0 1266 1107");
+    svg.setAttribute("viewBox", "0 0 1120 1120");
     svg.innerHTML = "";
     el("style", {}, svg).textContent = STYLE;
     const defs = el("defs", {}, svg);
