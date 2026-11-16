@@ -60,8 +60,8 @@ window.BUSINESS = {
   // ---------- ABOUT ----------
   about: {
     es: [
-      "Soy un apasionado de los carros y un detallista en crecimiento. Redline Interiors nació de algo simple: me gusta ver un interior quedar como nuevo, y me gusta todavía más ver la cara del cliente cuando abre la puerta.",
-      "Trabajo a domicilio en el Área Metropolitana con equipo de extracción, vapor y productos seguros para tu familia y tus mascotas. Cada trabajo lo hago yo mismo, con calma y atención al detalle, sin prisa y sin atajos.",
+      "Me apasionan los carros y estoy creciendo como detallista. Redline Interiors nació de algo simple: me gusta ver un interior quedar como nuevo, y me gusta todavía más ver la cara del cliente cuando abre la puerta.",
+      "Trabajo a domicilio en el Área Metropolitana con equipo de extracción, vapor y productos seguros para tu familia y tus mascotas. Cada trabajo lo hago personalmente, con calma y atención al detalle, sin prisa y sin atajos.",
       "Estoy empezando y cada cliente cuenta. Si algo no queda como esperabas, dímelo y lo arreglo.",
     ],
     en: [
