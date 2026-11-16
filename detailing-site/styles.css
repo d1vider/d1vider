@@ -207,6 +207,15 @@ small { display: block; color: var(--muted); font-size: 13px; font-weight: 400; 
 .done p { color: var(--muted); font-size: 15px; margin: 0 0 6px; text-align: left; }
 .done p strong { color: var(--text); }
 .error a { color: inherit; }
+.paychips { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+.paychips b { border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 999px; padding: 3px 10px; font-weight: 600; }
+.pay-opts { display: grid; gap: 8px; margin: 12px 0; text-align: left; }
+.pay-opt { display: flex; justify-content: space-between; align-items: center; gap: 10px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 14px; font-size: 15px; color: var(--text); text-decoration: none; }
+.pay-opt span:last-child { color: var(--muted); font-size: 13px; text-align: right; }
+.pay-name { font-weight: 800; }
+.pay-link { border-color: var(--brand); }
+.pay-link strong { color: var(--brand); }
+.logo { height: 34px; width: auto; display: block; }
 
 @media (max-width: 860px) {
   .book-layout { grid-template-columns: 1fr; }

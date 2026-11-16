@@ -25,12 +25,14 @@
       yourBooking: "Tu cita", cartEmpty: "No has añadido nada.", browse: "Ver servicios",
       estTime: "Tiempo estimado", when: "Cuándo", estTotal: "Total estimado", depositNow: "Depósito para separar", balance: "Balance el día del servicio",
       send: "Solicitar cita", sending: "Enviando…", sendEmail: "Enviar por email",
-      fine: (dep, how) => `Depósito de ${dep} por ${how}. Se descuenta del total.`,
+      fine: (dep) => `Depósito de ${dep} por ATH Móvil o PayPal. Se descuenta del total.`,
+      payWith: "Pagos", payCash: "Efectivo", payPaypalAsk: "Te envío el enlace por WhatsApp", payBtn: (d) => `Pagar ${d} con PayPal`,
+      payBalance: (bal) => `El balance de <strong>${bal}</strong> se paga el día del servicio en efectivo, ATH Móvil o PayPal.`,
       errCart: "Añade al menos un servicio.", errDay: "Escoge un día.", errTime: "Escoge una hora.",
       errFields: "Llena tu nombre, teléfono, dirección y pueblo.", errTaken: "Alguien acaba de separar esa hora. Escoge otra, por favor.",
       errNet: "No se pudo enviar la solicitud. Envíamela por WhatsApp:",
       doneTitleApi: "¡Solicitud recibida!", doneTitleWa: "¡Casi listo!",
-      doneBody: (when, dep, how, hrs, bal) => `Tu hora del <strong>${when}</strong> está separada. Envía el depósito de <strong>${dep}</strong> por <strong>${how}</strong> en las próximas ${hrs} horas para confirmarla. El balance de ${bal} se paga el día del servicio.`,
+      doneBody: (when, dep, hrs) => `Tu hora del <strong>${when}</strong> está separada. Envía el depósito de <strong>${dep}</strong> en las próximas ${hrs} horas para confirmarla:`,
       doneWaBtn: "Enviar comprobante por WhatsApp", doneWaAgain: "Abrir WhatsApp otra vez", doneAgain: "Hacer otra reserva",
       kInfo: "Info", goodToKnow: "Bueno saber", continue: "Continuar",
       items: (n) => `${n} ${n === 1 ? "servicio" : "servicios"}`, about: "aprox.",
@@ -59,12 +61,14 @@
       yourBooking: "Your booking", cartEmpty: "Nothing added yet.", browse: "Browse services",
       estTime: "Estimated time", when: "When", estTotal: "Estimated total", depositNow: "Deposit to book", balance: "Balance on service day",
       send: "Request booking", sending: "Sending…", sendEmail: "Send by email instead",
-      fine: (dep, how) => `${dep} deposit by ${how}. It comes off your total.`,
+      fine: (dep) => `${dep} deposit by ATH Móvil or PayPal. It comes off your total.`,
+      payWith: "Payment", payCash: "Cash", payPaypalAsk: "I'll send you the link on WhatsApp", payBtn: (d) => `Pay ${d} with PayPal`,
+      payBalance: (bal) => `The <strong>${bal}</strong> balance is paid on the day of service by cash, ATH Móvil or PayPal.`,
       errCart: "Add at least one service.", errDay: "Pick a day.", errTime: "Pick a start time.",
       errFields: "Please fill in your name, phone, address and town.", errTaken: "Someone just booked that time. Please pick another.",
       errNet: "Couldn't send the request. Please send it on WhatsApp instead:",
       doneTitleApi: "Request received!", doneTitleWa: "Almost done!",
-      doneBody: (when, dep, how, hrs, bal) => `Your time on <strong>${when}</strong> is on hold. Send the <strong>${dep}</strong> deposit by <strong>${how}</strong> within ${hrs} hours to confirm it. The ${bal} balance is paid on the day of service.`,
+      doneBody: (when, dep, hrs) => `Your time on <strong>${when}</strong> is on hold. Send the <strong>${dep}</strong> deposit within ${hrs} hours to confirm it:`,
       doneWaBtn: "Send deposit receipt on WhatsApp", doneWaAgain: "Open WhatsApp again", doneAgain: "Make another booking",
       kInfo: "Info", goodToKnow: "Good to know", continue: "Continue",
       items: (n) => `${n} item${n === 1 ? "" : "s"}`, about: "about",
@@ -132,6 +136,9 @@
       ? `<h3>${esc(S().galleryTitle)}</h3><div class="gallery-grid">${B.gallery.map((g) =>
           `<figure><img src="${esc(g.src)}" alt="${esc(L(g.caption) || "")}" loading="lazy"><figcaption>${esc(L(g.caption) || "")}</figcaption></figure>`).join("")}</div>`
       : "";
+    if (B.logo) document.querySelectorAll(".brand").forEach((el) => (el.innerHTML = `<img class="logo" src="${esc(B.logo)}" alt="${esc(B.name)}">`));
+    const pays = ["ATH Móvil", "PayPal"].concat(B.payments.cash ? [S().payCash] : []);
+    $("#paychips").innerHTML = `<span>${S().payWith}:</span>` + pays.map((p) => `<b>${esc(p)}</b>`).join("");
     const fp = $("#foot-phone"); fp.textContent = B.phoneDisplay; fp.href = `tel:+${B.whatsapp}`;
     $("#foot-email-wrap").hidden = !B.email; $("#send-email").hidden = !B.email;
     if (B.email) { const fe = $("#foot-email"); fe.textContent = B.email; fe.href = `mailto:${B.email}`; }
@@ -230,7 +237,7 @@
     $("#sum-deposit").textContent = has ? money(t.deposit) : money(B.deposit);
     $("#sum-balance").textContent = has ? money(t.balance) : "—";
     $("#sum-when").textContent = whenText();
-    document.querySelector('#send-actions .fine').textContent = S().fine(money(B.deposit), L(B.depositMethods));
+    document.querySelector('#send-actions .fine').textContent = S().fine(money(B.deposit));
     $("#sticky-bar").classList.toggle("show", has && !state.sent);
     $("#sticky-text").textContent = has ? `${S().items(state.cart.reduce((n, c) => n + c.qty, 0))} · ${money(t.price)}` : "";
   }
@@ -366,7 +373,14 @@
     d.innerHTML = `
       <div class="done-icon">✓</div>
       <h4>${viaApi ? S().doneTitleApi : S().doneTitleWa}</h4>
-      <p>${S().doneBody(esc(state.sent.when), money(t.deposit), esc(L(B.depositMethods)), B.depositHoursToPay, money(t.balance))}</p>
+      <p>${S().doneBody(esc(state.sent.when), money(t.deposit), B.depositHoursToPay)}</p>
+      <div class="pay-opts">
+        <div class="pay-opt"><span class="pay-name">ATH Móvil</span><strong>${esc(B.payments.athMovil)}</strong></div>
+        ${B.payments.paypal
+          ? `<a class="pay-opt pay-link" href="https://paypal.me/${encodeURIComponent(B.payments.paypal)}/${t.deposit}USD" target="_blank" rel="noopener"><span class="pay-name">PayPal</span><strong>${S().payBtn(money(t.deposit))} →</strong></a>`
+          : `<div class="pay-opt"><span class="pay-name">PayPal</span><span>${S().payPaypalAsk}</span></div>`}
+      </div>
+      ${t.balance > 0 ? `<p>${S().payBalance(money(t.balance))}</p>` : ""}
       <a class="btn btn-primary block" href="${state.sent.wa}" target="_blank" rel="noopener">${viaApi ? S().doneWaBtn : S().doneWaAgain}</a>
       <button class="btn btn-ghost block" id="again">${S().doneAgain}</button>`;
     $("#sticky-bar").classList.remove("show");
