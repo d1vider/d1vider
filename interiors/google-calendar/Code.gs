@@ -22,7 +22,7 @@ const SETTINGS = {
   BUFFER_MINUTES: 45,                  // keep equal to bufferMinutes in config.js
   HOLD_HOURS: 48,                      // apple mode: a request blocks its time this long, until you add it to your calendar
   MAX_DAYS_AHEAD: 90,
-  MAX_REQUESTS_PER_HOUR: 15,           // simple spam guard
+  MAX_REQUESTS_PER_HOUR: 30,           // simple spam guard
 };
 
 // ---------------------------------------------------------------- helpers
@@ -154,7 +154,7 @@ function doPost(e) {
     const str = (v, max) => String(v || '').trim().slice(0, max);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(b.date) || !/^\d{2}:\d{2}$/.test(b.start)) return json_({ ok: false, error: 'invalid' });
     const minutes = Number(b.minutes);
-    if (!(minutes >= 10 && minutes <= 900)) return json_({ ok: false, error: 'invalid' });
+    if (!(minutes >= 10 && minutes <= 2880)) return json_({ ok: false, error: 'invalid' });   // up to 2 days of work
     const name = str(b.name, 80), phone = str(b.phone, 30), address = str(b.address, 160), town = str(b.town, 40);
     if (!name || !phone || !address) return json_({ ok: false, error: 'invalid' });
 
