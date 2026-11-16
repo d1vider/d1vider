@@ -29,6 +29,7 @@
       payWith: "Pagos", payCash: "Efectivo", payPaypalAsk: "Te envío el enlace por WhatsApp", payBtn: (d) => `Pagar ${d} con PayPal`,
       payBalance: (bal) => `El balance de <strong>${bal}</strong> se paga el día del servicio en efectivo, ATH Móvil o PayPal.`,
       errCart: "Añade al menos un servicio.", errDay: "Escoge un día.", errTime: "Escoge una hora.",
+      tooBig: (dur, max) => `Este trabajo toma ${dur}, más del máximo de ${max} por cita. Quita algunos servicios o escríbeme por WhatsApp y lo dividimos en dos visitas.`,
       errFields: "Llena tu nombre, teléfono, dirección y pueblo.", errTaken: "Alguien acaba de separar esa hora. Escoge otra, por favor.",
       errNet: "No se pudo enviar la solicitud. Envíamela por WhatsApp:",
       doneTitleApi: "¡Solicitud recibida!", doneTitleWa: "¡Casi listo!",
@@ -67,6 +68,7 @@
       payWith: "Payment", payCash: "Cash", payPaypalAsk: "I'll send you the link on WhatsApp", payBtn: (d) => `Pay ${d} with PayPal`,
       payBalance: (bal) => `The <strong>${bal}</strong> balance is paid on the day of service by cash, ATH Móvil or PayPal.`,
       errCart: "Add at least one service.", errDay: "Pick a day.", errTime: "Pick a start time.",
+      tooBig: (dur, max) => `This job takes ${dur}, over the ${max} limit per booking. Remove a few services, or send me a WhatsApp and we'll split it into two visits.`,
       errFields: "Please fill in your name, phone, address and town.", errTaken: "Someone just booked that time. Please pick another.",
       errNet: "Couldn't send the request. Please send it on WhatsApp instead:",
       doneTitleApi: "Request received!", doneTitleWa: "Almost done!",
@@ -297,12 +299,14 @@
     state.date = b.dataset.date; state.time = null; update();
   });
 
+  const MAX_JOB = B.maxJobMinutes || 900;   // longest job one booking can hold
   function renderSlots() {
     const hint = $("#slot-hint"), box = $("#slots");
     if (!state.date) { hint.textContent = S().slotPickDay; box.innerHTML = ""; return; }
     const slots = slotsFor(state.date);
     if (state.time != null && !slots.includes(state.time)) state.time = null;
     const t = totals().minutes;
+    if (t > MAX_JOB) { hint.textContent = S().tooBig(fmtDur(t), fmtDur(MAX_JOB)); box.innerHTML = ""; state.time = null; return; }
     hint.textContent = !state.cart.length ? S().slotNoCart(fmtDate(state.date))
       : t > dayLen ? S().slotLong(fmtDur(t)) : S().slotFit(fmtDate(state.date), fmtDur(t));
     box.innerHTML = slots.length
@@ -358,6 +362,7 @@
   function validate() {
     let msg = "";
     if (!state.cart.length) msg = S().errCart;
+    else if (totals().minutes > MAX_JOB) msg = S().tooBig(fmtDur(totals().minutes), fmtDur(MAX_JOB));
     else if (!state.date) msg = S().errDay;
     else if (state.time == null) msg = S().errTime;
     else {

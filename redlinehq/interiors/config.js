@@ -50,6 +50,7 @@ window.BUSINESS = {
   bufferMinutes: 45,                // travel time between jobs
   bookAheadDays: 45,
   minNoticeHours: 24,
+  maxJobMinutes: 900,       // longest job one booking can be (15 h); bigger jobs are asked to WhatsApp you
   daysOff: ["2026-12-24", "2026-12-25", "2026-12-31", "2027-01-01", "2027-01-06"],
   // Only needed if you are NOT using Google Calendar:
   booked: [],
