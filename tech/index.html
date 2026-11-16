@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="es" data-lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Redline Technologies</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="Consultoría tecnológica, PCs a la medida y desarrollo de páginas web en el Área Metropolitana de Puerto Rico.">
+  <meta property="og:title" content="Redline Technologies">
+  <meta property="og:description" content="Consultoría, PCs a la medida y páginas web. Cotización gratis.">
+  <meta property="og:image" content="../assets/img/og.jpg">
+  <meta name="theme-color" content="#08090b">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <script>try{var l=localStorage.getItem("lang");if(l)document.documentElement.dataset.lang=l}catch(e){}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/redline.css">
+  <style>
+    .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: clamp(24px, 4vw, 56px); align-items: center; padding-block: clamp(40px, 6vw, 84px) clamp(32px, 5vw, 56px); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+
+    /* build sheet: a parts list printed like a spec label */
+    .sheet { padding: 0; overflow: hidden; font-family: var(--mono); }
+    .sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); background: var(--bg-2); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .sheet-head b { color: var(--red-hot); font-weight: 600; }
+    .sheet dl { margin: 0; padding: 8px 18px 4px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 18px; font-size: 14px; }
+    .sheet dt { color: var(--muted); padding: 9px 0; border-bottom: 1px dashed var(--line); }
+    .sheet dd { margin: 0; padding: 9px 0; border-bottom: 1px dashed var(--line); text-align: right; overflow-wrap: anywhere; }
+    .sheet dl > :nth-last-child(-n+2) { border-bottom: 0; }
+    .sheet-foot { padding: 14px 18px 18px; border-top: 1px solid var(--line); display: grid; gap: 10px; }
+    .meter { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 12px; color: var(--muted); }
+    .meter-bar { height: 8px; border-radius: 99px; background: repeating-linear-gradient(90deg, rgba(125,132,139,.5) 0 2px, transparent 2px 10px), var(--bg-2); overflow: hidden; }
+    .meter-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--cyber), var(--red-hot)); border-radius: 99px; }
+    .meter b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+    .svc-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .svc { padding: 26px; display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 90px; }
+    .svc-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .icon { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; background: var(--bg-2); border: 1px solid var(--line-2); color: var(--red-hot); }
+    .icon svg { width: 28px; height: 28px; }
+    .svc h3 { font-size: 24px; font-style: italic; }
+    .svc p { margin: 0; color: #c3c9cf; }
+    .incl { list-style: none; margin: 0; padding: 14px 0 0; border-top: 1px solid var(--line); display: grid; gap: 9px; font-size: 15px; }
+    .incl li { display: flex; gap: 10px; }
+    .incl li::before { content: ""; flex: 0 0 auto; width: 8px; height: 2px; background: var(--red); margin-top: 11px; }
+    .ideal { font: 500 13px/1.5 var(--mono); color: var(--muted); }
+    .ideal b { color: var(--text); font-weight: 600; }
+    .svc .btn { margin-top: auto; }
+
+    .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; counter-reset: s; }
+    .steps li { position: relative; padding: 24px 22px 22px; counter-increment: s; }
+    .steps li::before { content: "0" counter(s); display: block; font: 700 italic 44px/1 var(--display); color: transparent; -webkit-text-stroke: 1.2px var(--cyber); margin-bottom: 14px; }
+    .steps li:last-child::before { -webkit-text-stroke-color: var(--red-hot); }
+    .steps h3 { font-size: 19px; margin-bottom: 6px; }
+    .steps p { margin: 0; color: var(--muted); font-size: 15px; }
+
+    .proof { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; padding: clamp(22px, 3vw, 32px); margin-top: 18px; }
+    .proof p { margin: 6px 0 0; color: var(--muted); }
+
+    .quote { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(20px, 4vw, 48px); align-items: start; scroll-margin-top: 80px; }
+    .quote-form { padding: clamp(20px, 3vw, 30px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .quote-form .full { grid-column: 1 / -1; }
+    .actions { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .error { grid-column: 1 / -1; color: var(--red-hot); font-weight: 600; font-size: 14px; margin: 0; min-height: 1em; }
+    .lines { display: grid; gap: 10px; margin-top: 22px; }
+    .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: var(--r); background: var(--bg-2); border: 1px solid var(--line); min-width: 0; }
+    .line .label { font: 600 11px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px; }
+    .line strong { font-weight: 600; overflow-wrap: anywhere; }
+    .copy { flex: 0 0 auto; font: 600 12px/1 var(--mono); color: var(--text); background: var(--glass); border: 1px solid var(--line-2); border-radius: 8px; padding: 8px 10px; cursor: pointer; }
+
+    @media (max-width: 1000px) { .svc-grid { grid-template-columns: 1fr; } .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 860px) { .hero, .quote { grid-template-columns: 1fr; } .proof { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) { .steps, .quote-form, .actions { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="RedlineHQ"><img src="../assets/img/wordmark.webp" alt="RedlineHQ" width="640" height="211"></a>
+      <span class="crumb">Technologies</span>
+      <nav class="nav-links" aria-label="Secciones">
+        <a href="../interiors/index.html">Interiors</a>
+        <a href="index.html" aria-current="page">Technologies</a>
+        <a href="../portfolio/index.html">Portfolio</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Idioma / Language"><button data-lang="es">ES</button><button data-lang="en">EN</button></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="wrap hero">
+      <div>
+        <p class="kicker">Redline Technologies · <span data-site="area">Área Metropolitana, Puerto Rico</span></p>
+        <h1><span lang="es">Consultoría, PCs a la medida y páginas web.</span><span lang="en">Consulting, custom PCs and websites.</span></h1>
+        <p class="lead">
+          <span lang="es">Te ayudo a escoger, armar y configurar la tecnología de tu casa o negocio. Precio claro antes de empezar y soporte directo por WhatsApp.</span>
+          <span lang="en">I help you choose, build and set up the tech for your home or business. A clear price before any work starts, and direct support on WhatsApp.</span>
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-red" href="#quote"><span lang="es">Pedir cotización gratis</span><span lang="en">Get a free quote</span> <span class="arrow" aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="#services"><span lang="es">Ver servicios</span><span lang="en">See services</span></a>
+        </div>
+      </div>
+
+      <aside class="panel sheet" aria-label="Build sheet">
+        <div class="sheet-head"><span>Build sheet</span><b><span lang="es">Ejemplo</span><span lang="en">Example</span></b></div>
+        <dl>
+          <dt><span lang="es">Uso</span><span lang="en">Use</span></dt><dd><span lang="es">Gaming 1440p + stream</span><span lang="en">1440p gaming + stream</span></dd>
+          <dt>CPU</dt><dd><span lang="es">8 núcleos / 16 hilos</span><span lang="en">8 cores / 16 threads</span></dd>
+          <dt>GPU</dt><dd>12 GB VRAM</dd>
+          <dt>RAM</dt><dd>32 GB DDR5</dd>
+          <dt>SSD</dt><dd>2 TB NVMe</dd>
+          <dt>PSU</dt><dd>750 W 80+ Gold</dd>
+          <dt><span lang="es">Enfriamiento</span><span lang="en">Cooling</span></dt><dd>AIO 240 mm</dd>
+        </dl>
+        <div class="sheet-foot">
+          <div class="meter"><span><span lang="es">Prueba de estrés</span><span lang="en">Stress test</span></span><span class="meter-bar"><i style="width: 100%"></i></span><b>2 h</b></div>
+          <div class="meter"><span>CPU max</span><span class="meter-bar"><i style="width: 74%"></i></span><b>74 °C</b></div>
+        </div>
+      </aside>
+    </section>
+
+    <div class="tach" aria-hidden="true"></div>
+
+    <section id="services" class="wrap section">
+      <div class="section-head">
+        <p class="kicker"><span lang="es">Servicios</span><span lang="en">Services</span></p>
+        <h2><span lang="es">Tres formas de ayudarte.</span><span lang="en">Three ways I can help.</span></h2>
+        <p><span lang="es">Cada trabajo empieza con una cotización gratis: sabes el precio y el tiempo antes de decidir.</span><span lang="en">Every job starts with a free quote, so you know the price and timing before you decide.</span></p>
+      </div>
+
+      <div class="svc-grid">
+        <article class="panel svc" id="consulting">
+          <div class="svc-top">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H9l-4 4V5z"/><path d="M8.5 9.5h7M8.5 12h4"/></svg></span>
+            <span class="chip red"><span lang="es">Cotización gratis</span><span lang="en">Free quote</span></span>
+          </div>
+          <h3><span lang="es">Consultoría tecnológica</span><span lang="en">Tech consulting</span></h3>
+          <p><span lang="es">Te ayudo a decidir qué comprar, a configurarlo bien y a resolver lo que no funciona.</span><span lang="en">I help you decide what to buy, set it up properly and fix what isn't working.</span></p>
+          <ul class="incl">
+            <li><span lang="es">Asesoría de compra: laptops, PCs, monitores y redes</span><span lang="en">Buying advice: laptops, PCs, monitors and networking</span></li>
+            <li><span lang="es">Configuración de equipos, Wi-Fi y cuentas</span><span lang="en">Device, Wi-Fi and account setup</span></li>
+            <li><span lang="es">Dominio y email profesional para tu negocio</span><span lang="en">Domain and business email for your company</span></li>
+            <li><span lang="es">Diagnóstico y solución de problemas</span><span lang="en">Troubleshooting and repairs</span></li>
+          </ul>
+          <p class="ideal"><b><span lang="es">Ideal para:</span><span lang="en">Best for:</span></b> <span lang="es">casas, oficinas pequeñas y emprendedores</span><span lang="en">homes, small offices and entrepreneurs</span></p>
+          <a class="btn btn-ghost block" href="#quote" data-service="consulting"><span lang="es">Cotizar consultoría</span><span lang="en">Quote consulting</span> <span class="arrow" aria-hidden="true">→</span></a>
+        </article>
+
+        <article class="panel svc" id="pc">
+          <div class="svc-top">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2"/><circle cx="12" cy="14" r="3.2"/><path d="M9 6.5h6M9 9h3"/></svg></span>
+            <span class="chip red"><span lang="es">Cotización gratis</span><span lang="en">Free quote</span></span>
+          </div>
+          <h3><span lang="es">PCs a la medida</span><span lang="en">Custom PC builds</span></h3>
+          <p><span lang="es">Una PC armada para lo que haces, dentro de tu presupuesto, probada antes de entregarla.</span><span lang="en">A PC built for what you do, within your budget, tested before it's handed over.</span></p>
+          <ul class="incl">
+            <li><span lang="es">Selección de piezas según tu presupuesto</span><span lang="en">Parts picked to fit your budget</span></li>
+            <li><span lang="es">Ensamblaje y cable management</span><span lang="en">Assembly and cable management</span></li>
+            <li><span lang="es">Windows, drivers y BIOS al día</span><span lang="en">Windows, drivers and BIOS up to date</span></li>
+            <li><span lang="es">Prueba de estrés y temperaturas</span><span lang="en">Stress and temperature testing</span></li>
+            <li><span lang="es">Upgrades, limpieza y pasta térmica a tu PC actual</span><span lang="en">Upgrades, cleaning and fresh thermal paste for your current PC</span></li>
+          </ul>
+          <p class="ideal"><b><span lang="es">Ideal para:</span><span lang="en">Best for:</span></b> <span lang="es">gaming, streaming, edición y trabajo</span><span lang="en">gaming, streaming, editing and work</span></p>
+          <a class="btn btn-ghost block" href="#quote" data-service="pc"><span lang="es">Cotizar una PC</span><span lang="en">Quote a PC</span> <span class="arrow" aria-hidden="true">→</span></a>
+        </article>
+
+        <article class="panel svc" id="web">
+          <div class="svc-top">
+            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M2.5 8.5h19M6 6.3h.01M8.5 6.3h.01"/><path d="m9.5 12.5-2.5 2.5 2.5 2.5M14.5 12.5l2.5 2.5-2.5 2.5"/></svg></span>
+            <span class="chip red"><span lang="es">Cotización gratis</span><span lang="en">Free quote</span></span>
+          </div>
+          <h3><span lang="es">Desarrollo web</span><span lang="en">Web development</span></h3>
+          <p><span lang="es">Páginas rápidas y bilingües que se ven bien en el celular y ayudan a tu negocio a vender.</span><span lang="en">Fast, bilingual websites that look right on a phone and help your business sell.</span></p>
+          <ul class="incl">
+            <li><span lang="es">Páginas para negocios, en español e inglés</span><span lang="en">Business websites in Spanish and English</span></li>
+            <li><span lang="es">Sistemas de citas con calendario y depósitos</span><span lang="en">Booking systems with calendar and deposits</span></li>
+            <li><span lang="es">Dominio, email y hosting configurados</span><span lang="en">Domain, email and hosting set up</span></li>
+            <li><span lang="es">Cambios y mantenimiento</span><span lang="en">Updates and maintenance</span></li>
+          </ul>
+          <p class="ideal"><b><span lang="es">Ideal para:</span><span lang="en">Best for:</span></b> <span lang="es">negocios locales que quieren recibir clientes en línea</span><span lang="en">local businesses that want to get customers online</span></p>
+          <a class="btn btn-ghost block" href="#quote" data-service="web"><span lang="es">Cotizar una página</span><span lang="en">Quote a website</span> <span class="arrow" aria-hidden="true">→</span></a>
+        </article>
+      </div>
+
+      <div class="panel proof">
+        <div>
+          <p class="kicker" style="margin:0"><span lang="es">Hecho por Redline Technologies</span><span lang="en">Built by Redline Technologies</span></p>
+          <h3><span lang="es">Esta página y el sistema de citas de Redline Interiors.</span><span lang="en">This site and the Redline Interiors booking system.</span></h3>
+          <p><span lang="es">Bilingüe, con calendario en vivo, depósitos y dominio con email propio.</span><span lang="en">Bilingual, with a live calendar, deposits, and its own domain and email.</span></p>
+        </div>
+        <a class="btn btn-ghost" href="../portfolio/index.html#web"><span lang="es">Ver en el portafolio</span><span lang="en">See it in the portfolio</span> <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <section class="wrap section" style="padding-top: 0">
+      <div class="section-head">
+        <p class="kicker"><span lang="es">Cómo trabajo</span><span lang="en">How it works</span></p>
+        <h2><span lang="es">De la idea a funcionando.</span><span lang="en">From idea to up and running.</span></h2>
+      </div>
+      <ol class="steps">
+        <li class="panel"><h3><span lang="es">Cuéntame qué necesitas</span><span lang="en">Tell me what you need</span></h3><p><span lang="es">Por el formulario o WhatsApp, con tu presupuesto si lo tienes.</span><span lang="en">Through the form or WhatsApp, with your budget if you have one.</span></p></li>
+        <li class="panel"><h3><span lang="es">Cotización clara</span><span lang="en">Clear quote</span></h3><p><span lang="es">Precio, piezas y tiempo de entrega antes de empezar.</span><span lang="en">Price, parts and timeline before anything starts.</span></p></li>
+        <li class="panel"><h3><span lang="es">Manos a la obra</span><span lang="en">The work</span></h3><p><span lang="es">Te mantengo al tanto con fotos y avances.</span><span lang="en">I keep you posted with photos and progress.</span></p></li>
+        <li class="panel"><h3><span lang="es">Entrega y soporte</span><span lang="en">Handover and support</span></h3><p><span lang="es">Te explico todo y sigo disponible si surge algo.</span><span lang="en">I walk you through it and stay available if anything comes up.</span></p></li>
+      </ol>
+    </section>
+
+    <section id="quote" class="wrap section quote" style="padding-top: 0">
+      <div>
+        <p class="kicker"><span lang="es">Cotización</span><span lang="en">Quote</span></p>
+        <h2><span lang="es">Pide tu cotización gratis.</span><span lang="en">Get your free quote.</span></h2>
+        <p class="lead" style="font-size:17px"><span lang="es">Llena lo básico y se abre WhatsApp o tu email con el mensaje listo para enviar.</span><span lang="en">Fill in the basics and WhatsApp or your email opens with the message ready to send.</span></p>
+        <div class="lines">
+          <div class="line" data-copy-wrap><div><span class="label"><span lang="es">Teléfono / WhatsApp</span><span lang="en">Phone / WhatsApp</span></span><strong data-site="phone">(787) 910-0777</strong></div><button class="copy" data-copy="phone"><span lang="es">Copiar</span><span lang="en">Copy</span></button></div>
+          <div class="line" data-copy-wrap><div><span class="label">Email</span><strong data-site="email">citas@redlinehq.work</strong></div><button class="copy" data-copy="email"><span lang="es">Copiar</span><span lang="en">Copy</span></button></div>
+        </div>
+      </div>
+
+      <form class="panel quote-form" id="quote-form" novalidate>
+        <label class="field" for="q-name"><span><span lang="es">Nombre</span><span lang="en">Name</span></span><input id="q-name" name="name" autocomplete="name" required maxlength="80"></label>
+        <label class="field" for="q-phone"><span><span lang="es">Teléfono</span><span lang="en">Phone</span></span><input id="q-phone" name="phone" type="tel" autocomplete="tel" required maxlength="30"></label>
+        <label class="field" for="q-service"><span><span lang="es">Servicio</span><span lang="en">Service</span></span>
+          <select id="q-service" name="service" required>
+            <option value="consulting">Consultoría / Consulting</option>
+            <option value="pc">PC a la medida / Custom PC</option>
+            <option value="web">Página web / Website</option>
+            <option value="other">Otro / Other</option>
+          </select>
+        </label>
+        <label class="field" for="q-budget"><span><span lang="es">Presupuesto</span><span lang="en">Budget</span></span>
+          <select id="q-budget" name="budget">
+            <option value="unsure">No sé todavía / Not sure yet</option>
+            <option value="<500">Menos de $500 / Under $500</option>
+            <option value="500-1000">$500 – $1,000</option>
+            <option value="1000-2000">$1,000 – $2,000</option>
+            <option value="2000+">$2,000+</option>
+          </select>
+        </label>
+        <label class="field full" for="q-details"><span><span lang="es">¿Qué necesitas?</span><span lang="en">What do you need?</span></span>
+          <textarea id="q-details" name="details" rows="5" maxlength="1200" required data-ph-es="Ej.: PC para jugar a 1440p y hacer stream, o una página para mi barbería con citas." data-ph-en="E.g. a PC for 1440p gaming and streaming, or a site for my barbershop with bookings."></textarea>
+        </label>
+        <p class="error" id="q-error" role="alert"></p>
+        <div class="actions">
+          <a class="btn btn-red" id="q-wa" href="https://wa.me/17879100777" target="_blank" rel="noopener"><span lang="es">Enviar por WhatsApp</span><span lang="en">Send on WhatsApp</span></a>
+          <a class="btn btn-ghost" id="q-mail" href="mailto:citas@redlinehq.work"><span lang="es">Enviar por email</span><span lang="en">Send by email</span></a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="../index.html"><img src="../assets/img/wordmark.webp" alt="RedlineHQ" width="640" height="211"></a>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="../interiors/index.html">Redline Interiors</a>
+        <a href="index.html">Redline Technologies</a>
+        <a href="../portfolio/index.html">Redline Portfolio</a>
+      </nav>
+      <span>© <span data-year>2026</span> RedlineHQ · redlinehq.work</span>
+    </div>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+  <script>
+    (function () {
+      const form = document.getElementById("quote-form");
+      const $ = (id) => document.getElementById(id);
+      const NAMES = {
+        consulting: { es: "Consultoría tecnológica", en: "Tech consulting" },
+        pc: { es: "PC a la medida", en: "Custom PC build" },
+        web: { es: "Página web", en: "Website" },
+        other: { es: "Otro", en: "Other" },
+      };
+      const BUDGET = {
+        unsure: { es: "No sé todavía", en: "Not sure yet" },
+        "<500": { es: "Menos de $500", en: "Under $500" },
+        "500-1000": { es: "$500 – $1,000", en: "$500 – $1,000" },
+        "1000-2000": { es: "$1,000 – $2,000", en: "$1,000 – $2,000" },
+        "2000+": { es: "$2,000 o más", en: "$2,000+" },
+      };
+
+      // service buttons pre-select the form
+      document.querySelectorAll("[data-service]").forEach((a) =>
+        a.addEventListener("click", () => { $("q-service").value = a.dataset.service; setTimeout(() => $("q-name").focus({ preventScroll: true }), 400); }));
+
+      function message() {
+        const l = window.redlineLang(), f = new FormData(form);
+        const v = (k) => (f.get(k) || "").toString().trim();
+        const b = v("budget"), budget = BUDGET[b] ? BUDGET[b][l] : b;
+        return [
+          l === "es" ? "¡Hola! Quiero una cotización de Redline Technologies." : "Hi! I'd like a quote from Redline Technologies.",
+          "",
+          `${l === "es" ? "Servicio" : "Service"}: ${NAMES[v("service")][l]}`,
+          `${l === "es" ? "Presupuesto" : "Budget"}: ${budget}`,
+          "",
+          v("details"),
+          "",
+          `${l === "es" ? "Nombre" : "Name"}: ${v("name")}`,
+          `${l === "es" ? "Teléfono" : "Phone"}: ${v("phone")}`,
+        ].join("\n");
+      }
+      function refresh() {
+        const l = window.redlineLang(), msg = message();
+        $("q-wa").href = window.redlineWa(msg);
+        const subject = (l === "es" ? "Cotización: " : "Quote: ") + NAMES[$("q-service").value][l];
+        $("q-mail").href = `mailto:${window.SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(msg)}`;
+      }
+      function valid() {
+        const bad = [...form.querySelectorAll("[required]")].find((i) => !i.value.trim());
+        $("q-error").textContent = bad ? (window.redlineLang() === "es" ? "Llena tu nombre, teléfono y lo que necesitas." : "Please fill in your name, phone and what you need.") : "";
+        if (bad) bad.focus();
+        return !bad;
+      }
+      form.addEventListener("input", () => { refresh(); if ($("q-error").textContent) $("q-error").textContent = ""; });
+      form.addEventListener("submit", (e) => e.preventDefault());
+      ["q-wa", "q-mail"].forEach((id) => $(id).addEventListener("click", (e) => { refresh(); if (!valid()) e.preventDefault(); }));
+      document.addEventListener("redline:lang", refresh);
+      refresh();
+    })();
+  </script>
+</body>
+</html>

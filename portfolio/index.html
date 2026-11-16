@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es" data-lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Redline Portfolio</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="Trabajo terminado de RedlineHQ: detallado interior, PCs y proyectos web.">
+  <meta property="og:title" content="Redline Portfolio">
+  <meta property="og:description" content="Antes y después, builds y proyectos web de RedlineHQ.">
+  <meta property="og:image" content="../assets/img/og.jpg">
+  <meta name="theme-color" content="#08090b">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
+  <script>try{var l=localStorage.getItem("lang");if(l)document.documentElement.dataset.lang=l}catch(e){}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/redline.css">
+  <style>
+    .hero { padding-block: clamp(40px, 6vw, 80px) clamp(28px, 4vw, 44px); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; }
+    .counts { display: flex; gap: 0; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--bg-2); }
+    .counts div { padding: 14px 18px; border-right: 1px solid var(--line); min-width: 96px; }
+    .counts div:last-child { border-right: 0; }
+    .counts b { display: block; font: 700 italic 32px/1 var(--display); font-variant-numeric: tabular-nums; }
+    .counts span { font: 600 11px/1.3 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 24px; }
+    .filters button {
+      font: 600 14px/1 var(--body); color: var(--muted); background: var(--bg-2);
+      border: 1px solid var(--line-2); border-radius: 999px; padding: 10px 16px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center;
+    }
+    .filters button small { font: 600 12px/1 var(--mono); color: var(--dim); }
+    .filters button[aria-pressed="true"] { color: var(--white); background: var(--red); border-color: var(--red); box-shadow: 0 8px 22px -10px var(--red-glow); }
+    .filters button[aria-pressed="true"] small { color: rgba(255,255,255,.75); }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 18px; }
+    .card { display: flex; flex-direction: column; overflow: hidden; }
+    .media { position: relative; aspect-ratio: 16 / 10; background: var(--bg-2); border-bottom: 1px solid var(--line); overflow: hidden; max-width: 100%; }
+    .media > img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+    .card-body { padding: 20px 22px 22px; display: grid; gap: 10px; flex: 1; align-content: start; }
+    .meta { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .date { font: 600 12px/1 var(--mono); color: var(--muted); letter-spacing: 0.06em; }
+    .card h3 { font-size: 21px; }
+    .card p { margin: 0; color: #c3c9cf; font-size: 15px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .tags span { font: 500 12px/1 var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+    .card .open { margin-top: 6px; font-weight: 700; text-decoration: none; display: inline-flex; gap: 8px; align-items: center; color: var(--red-hot); justify-self: start; }
+
+    /* DNS record card art */
+    .dns { position: absolute; inset: 0; padding: 18px; display: grid; align-content: center; gap: 8px; font: 500 12.5px/1.3 var(--mono); background: radial-gradient(400px 220px at 80% 0%, rgba(227,22,29,.18), transparent 70%), var(--bg-2); }
+    .dns div { display: grid; grid-template-columns: 56px 1fr; gap: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: rgba(0,0,0,.25); min-width: 0; }
+    .dns b { color: var(--red-hot); font-weight: 600; }
+    .dns span { color: #c9cfd4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* before / after slider */
+    .ba { --pos: 50%; }
+    .ba img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .ba .before { clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
+    .ba .handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; background: var(--white); box-shadow: 0 0 14px var(--red-glow); pointer-events: none; }
+    .ba .handle::after { content: "⇆"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 38px; height: 38px; border-radius: 50%; background: var(--red); color: var(--white); display: grid; place-items: center; font-size: 18px; }
+    .ba input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
+    .ba .lbl { position: absolute; top: 10px; font: 600 11px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; background: rgba(0,0,0,.6); padding: 6px 8px; border-radius: 6px; pointer-events: none; }
+    .ba .lbl.l { left: 10px; } .ba .lbl.r { right: 10px; }
+
+    /* coming-soon card */
+    .soon .media { display: grid; place-items: center; background:
+      repeating-linear-gradient(135deg, rgba(160,170,180,.05) 0 12px, transparent 12px 24px), var(--bg-2); }
+    .soon .media .ring { width: 96px; height: 96px; border-radius: 50%; border: 6px solid var(--cyber); box-shadow: inset 0 0 0 6px var(--bg-2), inset 0 0 0 10px var(--red), 0 0 30px var(--red-glow); }
+    .empty { padding: 28px; text-align: center; color: var(--muted); }
+    @media (min-width: 900px) {
+      .soon { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+      .soon .media { aspect-ratio: auto; min-height: 220px; border-bottom: 0; border-right: 1px solid var(--line); }
+      .soon .card-body { align-content: center; padding: 28px 32px; }
+    }
+
+    @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } .counts { width: 100%; } .counts div { flex: 1; min-width: 0; } }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html" aria-label="RedlineHQ"><img src="../assets/img/wordmark.webp" alt="RedlineHQ" width="640" height="211"></a>
+      <span class="crumb">Portfolio</span>
+      <nav class="nav-links" aria-label="Secciones">
+        <a href="../interiors/index.html">Interiors</a>
+        <a href="../tech/index.html">Technologies</a>
+        <a href="index.html" aria-current="page">Portfolio</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Idioma / Language"><button data-lang="es">ES</button><button data-lang="en">EN</button></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <p class="kicker">Redline Portfolio</p>
+        <h1><span lang="es">Trabajo real, sin filtros.</span><span lang="en">Real work, no filters.</span></h1>
+        <p class="lead"><span lang="es">Antes y después de detallado, PCs armadas y proyectos web terminados. Todo lo que ves aquí está hecho.</span><span lang="en">Detailing before and afters, finished PC builds and web projects. Everything here is real, finished work.</span></p>
+      </div>
+      <div class="counts" id="counts"></div>
+    </section>
+
+    <div class="filters" id="filters" role="group" aria-label="Filtrar"></div>
+    <div class="grid" id="grid"></div>
+    <div style="height: clamp(56px, 8vw, 96px)"></div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-inner">
+      <a class="brand" href="../index.html"><img src="../assets/img/wordmark.webp" alt="RedlineHQ" width="640" height="211"></a>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="../interiors/index.html">Redline Interiors</a>
+        <a href="../tech/index.html">Redline Technologies</a>
+        <a href="index.html">Redline Portfolio</a>
+      </nav>
+      <span>© <span data-year>2026</span> RedlineHQ · redlinehq.work</span>
+    </div>
+  </footer>
+
+  <script src="../assets/site.js"></script>
+  <script src="projects.js"></script>
+  <script>
+    (function () {
+      const P = window.PROJECTS || [];
+      const CATS = [
+        { id: "all", es: "Todo", en: "All" },
+        { id: "interiors", es: "Interiores", en: "Interiors" },
+        { id: "tech", es: "Tecnología", en: "Tech" },
+        { id: "web", es: "Web", en: "Web" },
+      ];
+      const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      const L = (v) => (v && typeof v === "object" ? v[window.redlineLang()] ?? v.es : v);
+      const catName = (id) => L(CATS.find((c) => c.id === id));
+      const fmtDate = (ym) => { const [y, m] = ym.split("-").map(Number); const s = new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString(window.redlineLang() === "es" ? "es-PR" : "en-US", { month: "short", year: "numeric", timeZone: "UTC" }); return s.charAt(0).toUpperCase() + s.slice(1); };
+      let filter = CATS.some((c) => c.id === location.hash.slice(1)) ? location.hash.slice(1) : "all";
+
+      function media(p) {
+        if (p.before && p.after) return `<div class="media ba">
+            <img src="${esc(p.after)}" alt="${esc(L(p.title))}, ${window.redlineLang() === "es" ? "después" : "after"}" loading="lazy">
+            <img class="before" src="${esc(p.before)}" alt="${esc(L(p.title))}, ${window.redlineLang() === "es" ? "antes" : "before"}" loading="lazy">
+            <span class="handle"></span><span class="lbl l">${window.redlineLang() === "es" ? "Antes" : "Before"}</span><span class="lbl r">${window.redlineLang() === "es" ? "Después" : "After"}</span>
+            <input type="range" min="0" max="100" value="50" aria-label="${window.redlineLang() === "es" ? "Comparar antes y después" : "Compare before and after"}">
+          </div>`;
+        if (p.visual === "dns") return `<div class="media"><div class="dns" aria-hidden="true">
+            <div><b>MX</b><span>mx01.mail.icloud.com. · 10</span></div>
+            <div><b>MX</b><span>mx02.mail.icloud.com. · 10</span></div>
+            <div><b>TXT</b><span>v=spf1 include:icloud.com ~all</span></div>
+            <div><b>CNAME</b><span>sig1._domainkey → icloudmailadmin.com.</span></div>
+          </div></div>`;
+        if (p.image) return `<div class="media"><img src="${esc(p.image)}" alt="${esc(L(p.title))}" loading="lazy"></div>`;
+        return `<div class="media"></div>`;
+      }
+      function card(p) {
+        return `<article class="panel card">
+          ${media(p)}
+          <div class="card-body">
+            <div class="meta"><span class="chip">${esc(catName(p.category))}</span><span class="date">${esc(fmtDate(p.date))}</span></div>
+            <h3>${esc(L(p.title))}</h3>
+            <p>${esc(L(p.summary))}</p>
+            <div class="tags">${(p.tags || []).map((t) => `<span>${esc(L(t))}</span>`).join("")}</div>
+            ${p.link ? `<a class="open" href="${esc(p.link)}">${esc(L(p.linkLabel) || "Ver")} <span class="arrow" aria-hidden="true">→</span></a>` : ""}
+          </div>
+        </article>`;
+      }
+      function soonCard() {
+        const es = window.redlineLang() === "es";
+        return `<article class="panel card soon">
+          <div class="media"><span class="ring" aria-hidden="true"></span></div>
+          <div class="card-body">
+            <div class="meta"><span class="chip">${esc(catName("interiors"))}</span><span class="date">${es ? "Muy pronto" : "Coming soon"}</span></div>
+            <h3>${es ? "Antes y después de detallado" : "Detailing before and afters"}</h3>
+            <p>${es ? "Las primeras fotos de interiores y muebles van aquí. Reserva tu cita y tu auto puede ser uno de ellos." : "The first interior and furniture photos go here. Book a visit and your car could be one of them."}</p>
+            <a class="open" href="../interiors/index.html#book">${es ? "Reservar cita" : "Book a visit"} <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        </article>`;
+      }
+
+      function render() {
+        const es = window.redlineLang() === "es";
+        const n = (id) => (id === "all" ? P.length : P.filter((p) => p.category === id).length);
+        document.getElementById("counts").innerHTML = CATS.filter((c) => c.id !== "all")
+          .map((c) => `<div><b>${n(c.id)}</b><span>${esc(L(c))}</span></div>`).join("");
+        document.getElementById("filters").innerHTML = CATS
+          .map((c) => `<button data-f="${c.id}" aria-pressed="${c.id === filter}">${esc(L(c))} <small>${n(c.id)}</small></button>`).join("");
+        const list = P.filter((p) => filter === "all" || p.category === filter).sort((a, b) => b.date.localeCompare(a.date));
+        const hasInteriors = P.some((p) => p.category === "interiors");
+        let html = list.map(card).join("");
+        if (!hasInteriors && (filter === "all" || filter === "interiors")) html += soonCard();
+        if (!html) html = `<div class="panel empty">${es ? "Todavía no hay proyectos en esta categoría." : "No projects in this category yet."}</div>`;
+        document.getElementById("grid").innerHTML = html;
+      }
+
+      document.getElementById("filters").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-f]"); if (!b) return;
+        filter = b.dataset.f;
+        history.replaceState(null, "", filter === "all" ? location.href.split("#")[0] : "#" + filter);
+        render();
+      });
+      window.addEventListener("hashchange", () => { const h = location.hash.slice(1); if (CATS.some((c) => c.id === h)) { filter = h; render(); } });
+      document.getElementById("grid").addEventListener("input", (e) => {
+        if (e.target.matches(".ba input")) e.target.closest(".ba").style.setProperty("--pos", e.target.value + "%");
+      });
+      document.addEventListener("redline:lang", render);
+      render();
+    })();
+  </script>
+</body>
+</html>
