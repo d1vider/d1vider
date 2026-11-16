@@ -18,7 +18,7 @@ The RedlineHQ website: a hub page with three sections, all bilingual (Spanish by
 | Portfolio projects and photos | `portfolio/projects.js` (+ photos in `portfolio/img/`) |
 | Colours, fonts, buttons (whole site) | `assets/redline.css` |
 | Technologies services text | `tech/index.html` |
-| Logo files | `assets/img/` (`emblem.webp` = circle logo, `wordmark.webp` = text logo) |
+| Logo files | `assets/img/`: `lockup.webp` = full logo (RPM meter + name), `badge.webp` = meter only, `wordmark.webp` = R3DL1NE name, `ring.webp` = empty ring the live meter is drawn on (`assets/gauge.js`) |
 
 ### Adding a detailing before/after to the portfolio
 1. Put two photos in `portfolio/img/`, e.g. `civic-before.jpg` and `civic-after.jpg` (same size, landscape works best).
