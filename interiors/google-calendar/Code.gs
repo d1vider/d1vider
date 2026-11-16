@@ -15,7 +15,7 @@
 const SETTINGS = {
   MODE: 'apple',                       // 'apple' or 'google'
   ICLOUD_CALENDAR_URL: '',             // apple mode: paste the webcal://... link from iCloud here
-  GOOGLE_CALENDAR_ID: 'primary',       // google mode: 'primary' = your main Google Calendar
+  GOOGLE_CALENDAR_NAME: 'Redline',     // google mode: bookings go in this Google calendar (created if missing)
   NOTIFY_EMAIL: 'citas@redlinehq.work', // where bookings are emailed (empty = this Google account's Gmail)
   BUSINESS_NAME: 'Redline Interiors',
   TIMEZONE: 'America/Puerto_Rico',
@@ -35,8 +35,10 @@ const webAppUrl_ = () => ScriptApp.getService().getUrl();
 const escHtml_ = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 function googleCal_() {
-  return SETTINGS.GOOGLE_CALENDAR_ID === 'primary'
-    ? CalendarApp.getDefaultCalendar() : CalendarApp.getCalendarById(SETTINGS.GOOGLE_CALENDAR_ID);
+  const found = CalendarApp.getCalendarsByName(SETTINGS.GOOGLE_CALENDAR_NAME);
+  if (found.length) return found[0];
+  const cal = CalendarApp.createCalendar(SETTINGS.GOOGLE_CALENDAR_NAME, { color: CalendarApp.Color.RED, timeZone: SETTINGS.TIMEZONE });
+  return cal;
 }
 
 /** Split [start, end) into per-day {date, from, to} blocks in Puerto Rico time. */
@@ -193,6 +195,9 @@ function doPost(e) {
       const ev = googleCal_().createEvent('⏳ PENDIENTE · ' + name + ' · ' + (town || 'PR'), start, end,
         { description: description + '\n\nAl recibir el depósito: cambia el título a ✅ y el color a rojo.', location: bk.location });
       ev.setColor(CalendarApp.EventColor.YELLOW);
+      ev.removeAllReminders();
+      ev.addPopupReminder(24 * 60);
+      ev.addPopupReminder(60);
     } else {
       const holds = holds_();
       holds.push({ id: id, start: bk.start, end: bk.end, until: Date.now() + SETTINGS.HOLD_HOURS * 36e5 });
@@ -204,19 +209,19 @@ function doPost(e) {
       '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px">' +
       '<h2 style="margin:0 0 4px">Nueva solicitud de cita</h2>' +
       '<p style="margin:0 0 16px;color:#555">' + escHtml_(whenText) + '</p>' +
-      '<p><a href="' + addUrl + '" style="background:#d71920;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700;display:inline-block">📅 Añadir al Calendario</a>' +
+      '<p>' + (SETTINGS.MODE === 'google' ? '' : '<a href="' + addUrl + '" style="background:#d71920;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700;display:inline-block">📅 Añadir al Calendario</a>') +
       '&nbsp; <a href="' + wa + '" style="color:#d71920;font-weight:700">Escribir por WhatsApp</a></p>' +
       '<pre style="white-space:pre-wrap;font:14px/1.5 inherit;background:#f3f4f5;padding:14px;border-radius:8px">' + escHtml_(description) + '</pre>' +
       '<p style="color:#777;font-size:13px">' + (SETTINGS.MODE === 'google'
-        ? 'Ya está en tu Google Calendar como ⏳ PENDIENTE.'
+        ? 'Ya está en tu calendario Redline como ⏳ PENDIENTE, con recordatorios 1 día y 1 hora antes. Cuando recibas el depósito, cambia el título a ✅. Si no llega, borra el evento y la hora queda libre en la página.'
         : 'Esta hora queda bloqueada en la página por ' + SETTINGS.HOLD_HOURS + ' horas. Cuando recibas el depósito, toca "Añadir al Calendario" (o abre el archivo .ics adjunto) y guárdala en tu calendario Redline para que siga bloqueada. Si no llega el depósito, no hagas nada y la hora se libera sola.') +
       '</p></div>';
     MailApp.sendEmail({
       to: notifyTo_(),
-      subject: '📅 Nueva cita: ' + name + ' · ' + fmt_(start, 'EEE d MMM, h:mm a'),
+      subject: (SETTINGS.MODE === 'google' ? '✅ Cita añadida a tu calendario: ' : '📅 Nueva cita: ') + name + ' · ' + fmt_(start, 'EEE d MMM, h:mm a'),
       htmlBody: html,
       body: whenText + '\n\n' + description + '\n\nAñadir al calendario: ' + addUrl,
-      attachments: [Utilities.newBlob(buildIcs_(bk), 'text/calendar', 'cita-redline.ics')],
+      attachments: SETTINGS.MODE === 'google' ? [] : [Utilities.newBlob(buildIcs_(bk), 'text/calendar', 'cita-redline.ics')],
     });
     return json_({ ok: true });
   } catch (err) {
