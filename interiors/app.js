@@ -31,6 +31,8 @@
       errCart: "Añade al menos un servicio.", errDay: "Escoge un día.", errTime: "Escoge una hora.",
       tooBig: (dur, max) => `Este trabajo toma ${dur}, más del máximo de ${max} por cita. Quita algunos servicios o escríbeme por WhatsApp y lo dividimos en dos visitas.`,
       errFields: "Llena tu nombre, teléfono, dirección y pueblo.", errTaken: "Alguien acaba de separar esa hora. Escoge otra, por favor.",
+      privacy: "Solo uso tus datos para coordinar tu cita. No los comparto con nadie.",
+      errHuman: "Confirma que no eres un robot (la casilla de arriba) y vuelve a intentar.",
       errNet: "No se pudo enviar la solicitud. Envíamela por WhatsApp:",
       doneTitleApi: "¡Solicitud recibida!", doneTitleWa: "¡Casi listo!",
       doneBody: (when, dep, hrs) => `Tu hora del <strong>${when}</strong> está separada. Envía el depósito de <strong>${dep}</strong> en las próximas ${hrs} horas para confirmarla:`,
@@ -70,6 +72,8 @@
       errCart: "Add at least one service.", errDay: "Pick a day.", errTime: "Pick a start time.",
       tooBig: (dur, max) => `This job takes ${dur}, over the ${max} limit per booking. Remove a few services, or send me a WhatsApp and we'll split it into two visits.`,
       errFields: "Please fill in your name, phone, address and town.", errTaken: "Someone just booked that time. Please pick another.",
+      privacy: "I only use your details to schedule your visit. I never share them.",
+      errHuman: "Please confirm you're not a robot (the box above) and try again.",
       errNet: "Couldn't send the request. Please send it on WhatsApp instead:",
       doneTitleApi: "Request received!", doneTitleWa: "Almost done!",
       doneBody: (when, dep, hrs) => `Your time on <strong>${when}</strong> is on hold. Send the <strong>${dep}</strong> deposit within ${hrs} hours to confirm it:`,
@@ -333,6 +337,21 @@
     update();
   }
 
+  // ---------- anti-spam: Cloudflare Turnstile (only when a site key is set) ----------
+  let humanWidget = null;
+  function startHuman() {
+    if (!B.turnstileSiteKey || !B.calendarApiUrl) return;
+    const box = $("#human"); box.hidden = false;
+    window.onRedlineHuman = () => {
+      humanWidget = window.turnstile.render("#human", { sitekey: B.turnstileSiteKey, theme: "dark", language: lang, appearance: "interaction-only" });
+    };
+    const s = document.createElement("script");
+    s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onRedlineHuman";
+    s.async = true; s.defer = true; document.head.appendChild(s);
+  }
+  const humanToken = () => { try { return humanWidget !== null ? window.turnstile.getResponse(humanWidget) || "" : ""; } catch (e) { return ""; } };
+  const resetHuman = () => { try { if (humanWidget !== null) window.turnstile.reset(humanWidget); } catch (e) {} };
+
   // ---------- send ----------
   const form = $("#details");
   const field = (n) => (new FormData(form).get(n) || "").toString().trim();
@@ -417,12 +436,14 @@
       name: field("name"), phone: field("phone"), address: field("address"),
       town: field("town") === "other" ? "Otro" : field("town"), notes: field("notes"),
       services: serviceLines(), total: t.price, deposit: t.deposit, lang, website: field("website"),
+      turnstile: humanToken(),
     };
     try {
       const r = await fetch(B.calendarApiUrl, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
       const j = await r.json();
-      if (j.ok) { showDone(true); loadBusy(); }
-      else if (j.error === "taken") { state.time = null; await loadBusy(); $("#form-error").textContent = S().errTaken; }
+      if (j.ok) { showDone(true); loadBusy(); resetHuman(); }
+      else if (j.error === "taken") { state.time = null; await loadBusy(); $("#form-error").textContent = S().errTaken; resetHuman(); }
+      else if (j.error === "captcha") { $("#form-error").textContent = S().errHuman; resetHuman(); }
       else throw new Error(j.error);
     } catch (e) {
       const code = e && e.message ? e.message : "network";
@@ -477,5 +498,5 @@
     renderServices(); renderAddOns(); renderCart(); renderCalendar(); renderSlots(); renderNext();
     if (state.cart.length || state.date) { const e = $("#form-error"); if (!e.querySelector("a")) e.textContent = ""; }
   }
-  renderStatic(); update(); loadBusy();
+  renderStatic(); update(); loadBusy(); startHuman();
 })();
