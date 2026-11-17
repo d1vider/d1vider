@@ -24,6 +24,13 @@ Built with **Tailwind CSS 4 + daisyUI 5** (Redline light/dark themes). The hub i
 | Technologies services text | `tech/index.html` |
 | Logo files | `assets/img/`: `lockup.webp` = full logo (RPM meter joined to the name), `badge.webp` = meter only, `wordmark.webp` / `wordmark-lg.webp` = R3DL1NE name, `ring.webp` = empty ring the live meter is drawn on (`assets/gauge.js`) |
 
+### Opening or closing Redline Interiors
+In `interiors/config.js`, set `open: false` or `open: true`. No rebuild needed.
+
+- **`open: false`** (now): `/interiors/` shows a "Muy pronto" (coming soon) page with a WhatsApp "Avísame cuando abra" button. The hub, navbar and portfolio point people to Technologies and Portfolio instead of booking.
+- **Testing while closed:** the full booking page still works for you at **redlinehq.work/interiors/?preview** (with a "private preview" banner). It's real: a booking sent from there goes to your calendar.
+- **`open: true`:** everything switches back to online booking.
+
 ### Rebuilding after a design change
 From the `hub-src` folder:
 - `npm run build`: rebuilds the hub (`index.html` + `app/`)
