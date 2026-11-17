@@ -19,10 +19,10 @@ window.PROJECTS = [
     date: "2026-11",
     title: { es: "RedlineHQ", en: "RedlineHQ" },
     summary: {
-      es: "Sitio central de la marca con tres secciones, bilingüe, diseño oscuro con el logo adaptado y un tacómetro animado.",
-      en: "The brand's home site: three sections, bilingual, a dark design built around the adapted logo and an animated tachometer.",
+      es: "Sitio central de la marca con tres secciones, bilingüe, modo claro y oscuro, el logo adaptado y un tacómetro animado.",
+      en: "The brand's home site: three sections, bilingual, light and dark mode, the adapted logo and an animated tachometer.",
     },
-    tags: ["HTML / CSS / JS", { es: "Bilingüe", en: "Bilingual" }, "GitHub Pages"],
+    tags: ["React", "Tailwind", "daisyUI", { es: "Bilingüe", en: "Bilingual" }],
     image: "img/redlinehq.webp",
     link: "../",
     linkLabel: { es: "Ver sitio", en: "View site" },

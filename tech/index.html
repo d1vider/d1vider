@@ -4,269 +4,225 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Redline Technologies</title>
-  <meta name="claude:viewport-fit-sides" content="cover">
   <meta name="description" content="Consultoría tecnológica, PCs a la medida y desarrollo de páginas web en el Área Metropolitana de Puerto Rico.">
   <meta property="og:title" content="Redline Technologies">
   <meta property="og:description" content="Consultoría, PCs a la medida y páginas web. Cotización gratis.">
-  <meta property="og:image" content="../assets/img/og.jpg">
-  <meta name="theme-color" content="#08090b">
-  <link rel="icon" href="../assets/img/favicon.png">
-  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <script>try{var l=localStorage.getItem("lang");if(l)document.documentElement.dataset.lang=l}catch(e){}</script>
+  <meta property="og:image" content="https://redlinehq.work/assets/img/og.jpg">
+  <meta property="og:url" content="https://redlinehq.work/tech/">
+  <meta name="theme-color" content="#e3161d">
+  <link rel="icon" href="/assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <script>try{var d=document.documentElement,l=localStorage.getItem("lang"),t=localStorage.getItem("theme");if(l)d.dataset.lang=l;d.dataset.theme=t||(matchMedia("(prefers-color-scheme: dark)").matches?"redline-dark":"redline-light")}catch(e){}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/redline.css">
-  <style>
-    .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: clamp(24px, 4vw, 56px); align-items: center; padding-block: clamp(40px, 6vw, 84px) clamp(32px, 5vw, 56px); }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-
-    /* build sheet: a parts list printed like a spec label */
-    .sheet { padding: 0; overflow: hidden; font-family: var(--mono); }
-    .sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); background: var(--bg-2); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-    .sheet-head b { color: var(--red-hot); font-weight: 600; }
-    .sheet dl { margin: 0; padding: 8px 18px 4px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 18px; font-size: 14px; }
-    .sheet dt { color: var(--muted); padding: 9px 0; border-bottom: 1px dashed var(--line); }
-    .sheet dd { margin: 0; padding: 9px 0; border-bottom: 1px dashed var(--line); text-align: right; overflow-wrap: anywhere; }
-    .sheet dl > :nth-last-child(-n+2) { border-bottom: 0; }
-    .sheet-foot { padding: 14px 18px 18px; border-top: 1px solid var(--line); display: grid; gap: 10px; }
-    .meter { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 12px; color: var(--muted); }
-    .meter-bar { height: 8px; border-radius: 99px; background: repeating-linear-gradient(90deg, rgba(125,132,139,.5) 0 2px, transparent 2px 10px), var(--bg-2); overflow: hidden; }
-    .meter-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--cyber), var(--red-hot)); border-radius: 99px; }
-    .meter b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
-
-    .svc-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-    .svc { padding: 26px; display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 90px; }
-    .svc-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .icon { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; background: var(--bg-2); border: 1px solid var(--line-2); color: var(--red-hot); }
-    .icon svg { width: 28px; height: 28px; }
-    .svc h3 { font-size: 24px; font-style: italic; }
-    .svc p { margin: 0; color: #c3c9cf; }
-    .incl { list-style: none; margin: 0; padding: 14px 0 0; border-top: 1px solid var(--line); display: grid; gap: 9px; font-size: 15px; }
-    .incl li { display: flex; gap: 10px; }
-    .incl li::before { content: ""; flex: 0 0 auto; width: 8px; height: 2px; background: var(--red); margin-top: 11px; }
-    .ideal { font: 500 13px/1.5 var(--mono); color: var(--muted); }
-    .ideal b { color: var(--text); font-weight: 600; }
-    .svc .btn { margin-top: auto; }
-
-    .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; counter-reset: s; }
-    .steps li { position: relative; padding: 24px 22px 22px; counter-increment: s; }
-    .steps li::before { content: "0" counter(s); display: block; font: 700 italic 44px/1 var(--display); color: transparent; -webkit-text-stroke: 1.2px var(--cyber); margin-bottom: 14px; }
-    .steps li:last-child::before { -webkit-text-stroke-color: var(--red-hot); }
-    .steps h3 { font-size: 19px; margin-bottom: 6px; }
-    .steps p { margin: 0; color: var(--muted); font-size: 15px; }
-
-    .proof { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: center; padding: clamp(22px, 3vw, 32px); margin-top: 18px; }
-    .proof p { margin: 6px 0 0; color: var(--muted); }
-
-    .quote { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: clamp(20px, 4vw, 48px); align-items: start; scroll-margin-top: 80px; }
-    .quote-form { padding: clamp(20px, 3vw, 30px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .quote-form .full { grid-column: 1 / -1; }
-    .actions { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .privacy { grid-column: 1 / -1; display: flex; gap: 8px; align-items: flex-start; margin: 0; font-size: 13px; color: var(--muted); }
-    .privacy svg { flex: 0 0 auto; width: 15px; height: 15px; margin-top: 2px; fill: none; stroke: var(--ok); stroke-width: 2; stroke-linecap: round; }
-    .error { grid-column: 1 / -1; color: var(--red-hot); font-weight: 600; font-size: 14px; margin: 0; min-height: 1em; }
-    .lines { display: grid; gap: 10px; margin-top: 22px; }
-    .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: var(--r); background: var(--bg-2); border: 1px solid var(--line); min-width: 0; }
-    .line .label { font: 600 11px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 6px; }
-    .line strong { font-weight: 600; overflow-wrap: anywhere; }
-    .copy { flex: 0 0 auto; font: 600 12px/1 var(--mono); color: var(--text); background: var(--glass); border: 1px solid var(--line-2); border-radius: 8px; padding: 8px 10px; cursor: pointer; }
-
-    @media (max-width: 1000px) { .svc-grid { grid-template-columns: 1fr; } .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    @media (max-width: 860px) { .hero, .quote { grid-template-columns: 1fr; } .proof { grid-template-columns: 1fr; } }
-    @media (max-width: 560px) { .steps, .quote-form, .actions { grid-template-columns: 1fr; } }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/redline-ui.css">
 </head>
 <body>
-  <header class="nav">
-    <div class="wrap nav-inner">
-      <a class="brand" href="../" aria-label="RedlineHQ"><img class="lockup" src="../assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150"></a>
-      <span class="crumb">Technologies</span>
-      <nav class="nav-links" aria-label="Secciones">
-        <a href="../interiors/">Interiors</a>
-        <a href="./" aria-current="page">Technologies</a>
-        <a href="../portfolio/">Portfolio</a>
-      </nav>
-      <div class="lang" role="group" aria-label="Idioma / Language"><button data-lang="es">ES</button><button data-lang="en">EN</button></div>
-    </div>
+  <header class="sticky top-0 z-40 border-b border-base-content/10 bg-base-100/70 backdrop-blur-xl">
+    <nav class="navbar mx-auto max-w-6xl gap-2 px-4" aria-label="RedlineHQ">
+      <div class="flex-1">
+        <a href="/" aria-label="RedlineHQ" class="inline-flex rounded-xl bg-[#0b0c0f] px-2.5 py-1 ring-1 ring-white/10"><img src="/assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150" class="h-9 w-auto"></a>
+      </div>
+      <ul class="menu menu-horizontal hidden gap-1 px-1 text-sm font-medium md:flex"><li><a href="/interiors/">Interiors</a></li><li><a href="/tech/" class="menu-active" aria-current="page">Technologies</a></li><li><a href="/portfolio/">Portfolio</a></li></ul>
+      <div class="lang join" role="group" aria-label="Idioma / Language">
+        <button class="btn join-item btn-sm btn-ghost" data-lang="es">ES</button><button class="btn join-item btn-sm btn-ghost" data-lang="en">EN</button>
+      </div>
+      <label class="btn btn-ghost btn-sm btn-circle swap swap-rotate" aria-label="Tema claro u oscuro / Light or dark theme">
+        <input type="checkbox" class="theme-toggle"><svg class="swap-off size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="swap-on size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      </label>
+      <a href="/interiors/#book" class="btn btn-primary btn-sm hidden sm:inline-flex"><span lang="es">Reservar</span><span lang="en">Book</span></a>
+    </nav>
+    <ul class="menu menu-horizontal w-full justify-center gap-1 border-t border-base-content/5 py-1 text-sm md:hidden"><li><a href="/interiors/">Interiors</a></li><li><a href="/tech/" class="menu-active" aria-current="page">Technologies</a></li><li><a href="/portfolio/">Portfolio</a></li></ul>
   </header>
 
   <main>
-    <section class="wrap hero">
-      <div>
-        <p class="kicker">Redline Technologies · <span data-site="area">Área Metropolitana, Puerto Rico</span></p>
-        <h1><span lang="es">Consultoría, PCs a la medida y páginas web.</span><span lang="en">Consulting, custom PCs and websites.</span></h1>
-        <p class="lead">
-          <span lang="es">Te ayudo a escoger, armar y configurar la tecnología de tu casa o negocio. Precio claro antes de empezar y soporte directo por WhatsApp.</span>
-          <span lang="en">I help you choose, build and set up the tech for your home or business. A clear price before any work starts, and direct support on WhatsApp.</span>
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-red" href="#quote"><span lang="es">Pedir cotización gratis</span><span lang="en">Get a free quote</span> <span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" href="#services"><span lang="es">Ver servicios</span><span lang="en">See services</span></a>
-        </div>
-      </div>
-
-      <aside class="panel sheet" aria-label="Build sheet">
-        <div class="sheet-head"><span>Build sheet</span><b><span lang="es">Ejemplo</span><span lang="en">Example</span></b></div>
-        <dl>
-          <dt><span lang="es">Uso</span><span lang="en">Use</span></dt><dd><span lang="es">Gaming 1440p + stream</span><span lang="en">1440p gaming + stream</span></dd>
-          <dt>CPU</dt><dd><span lang="es">8 núcleos / 16 hilos</span><span lang="en">8 cores / 16 threads</span></dd>
-          <dt>GPU</dt><dd>12 GB VRAM</dd>
-          <dt>RAM</dt><dd>32 GB DDR5</dd>
-          <dt>SSD</dt><dd>2 TB NVMe</dd>
-          <dt>PSU</dt><dd>750 W 80+ Gold</dd>
-          <dt><span lang="es">Enfriamiento</span><span lang="en">Cooling</span></dt><dd>AIO 240 mm</dd>
-        </dl>
-        <div class="sheet-foot">
-          <div class="meter"><span><span lang="es">Prueba de estrés</span><span lang="en">Stress test</span></span><span class="meter-bar"><i style="width: 100%"></i></span><b>2 h</b></div>
-          <div class="meter"><span>CPU max</span><span class="meter-bar"><i style="width: 74%"></i></span><b>74 °C</b></div>
-        </div>
-      </aside>
-    </section>
-
-    <div class="tach" aria-hidden="true"></div>
-
-    <section id="services" class="wrap section">
-      <div class="section-head">
-        <p class="kicker"><span lang="es">Servicios</span><span lang="en">Services</span></p>
-        <h2><span lang="es">Tres formas de ayudarte.</span><span lang="en">Three ways I can help.</span></h2>
-        <p><span lang="es">Cada trabajo empieza con una cotización gratis: sabes el precio y el tiempo antes de decidir.</span><span lang="en">Every job starts with a free quote, so you know the price and timing before you decide.</span></p>
-      </div>
-
-      <div class="svc-grid">
-        <article class="panel svc" id="consulting">
-          <div class="svc-top">
-            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H9l-4 4V5z"/><path d="M8.5 9.5h7M8.5 12h4"/></svg></span>
-            <span class="chip red"><span lang="es">Cotización gratis</span><span lang="en">Free quote</span></span>
-          </div>
-          <h3><span lang="es">Consultoría tecnológica</span><span lang="en">Tech consulting</span></h3>
-          <p><span lang="es">Te ayudo a decidir qué comprar, a configurarlo bien y a resolver lo que no funciona.</span><span lang="en">I help you decide what to buy, set it up properly and fix what isn't working.</span></p>
-          <ul class="incl">
-            <li><span lang="es">Asesoría de compra: laptops, PCs, monitores y redes</span><span lang="en">Buying advice: laptops, PCs, monitors and networking</span></li>
-            <li><span lang="es">Configuración de equipos, Wi-Fi y cuentas</span><span lang="en">Device, Wi-Fi and account setup</span></li>
-            <li><span lang="es">Dominio y email profesional para tu negocio</span><span lang="en">Domain and business email for your company</span></li>
-            <li><span lang="es">Diagnóstico y solución de problemas</span><span lang="en">Troubleshooting and repairs</span></li>
-          </ul>
-          <p class="ideal"><b><span lang="es">Ideal para:</span><span lang="en">Best for:</span></b> <span lang="es">casas, oficinas pequeñas y emprendedores</span><span lang="en">homes, small offices and entrepreneurs</span></p>
-          <a class="btn btn-ghost block" href="#quote" data-service="consulting"><span lang="es">Cotizar consultoría</span><span lang="en">Quote consulting</span> <span class="arrow" aria-hidden="true">→</span></a>
-        </article>
-
-        <article class="panel svc" id="pc">
-          <div class="svc-top">
-            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2"/><circle cx="12" cy="14" r="3.2"/><path d="M9 6.5h6M9 9h3"/></svg></span>
-            <span class="chip red"><span lang="es">Cotización gratis</span><span lang="en">Free quote</span></span>
-          </div>
-          <h3><span lang="es">PCs a la medida</span><span lang="en">Custom PC builds</span></h3>
-          <p><span lang="es">Una PC armada para lo que haces, dentro de tu presupuesto, probada antes de entregarla.</span><span lang="en">A PC built for what you do, within your budget, tested before it's handed over.</span></p>
-          <ul class="incl">
-            <li><span lang="es">Selección de piezas según tu presupuesto</span><span lang="en">Parts picked to fit your budget</span></li>
-            <li><span lang="es">Ensamblaje y cable management</span><span lang="en">Assembly and cable management</span></li>
-            <li><span lang="es">Windows, drivers y BIOS al día</span><span lang="en">Windows, drivers and BIOS up to date</span></li>
-            <li><span lang="es">Prueba de estrés y temperaturas</span><span lang="en">Stress and temperature testing</span></li>
-            <li><span lang="es">Upgrades, limpieza y pasta térmica a tu PC actual</span><span lang="en">Upgrades, cleaning and fresh thermal paste for your current PC</span></li>
-          </ul>
-          <p class="ideal"><b><span lang="es">Ideal para:</span><span lang="en">Best for:</span></b> <span lang="es">gaming, streaming, edición y trabajo</span><span lang="en">gaming, streaming, editing and work</span></p>
-          <a class="btn btn-ghost block" href="#quote" data-service="pc"><span lang="es">Cotizar una PC</span><span lang="en">Quote a PC</span> <span class="arrow" aria-hidden="true">→</span></a>
-        </article>
-
-        <article class="panel svc" id="web">
-          <div class="svc-top">
-            <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M2.5 8.5h19M6 6.3h.01M8.5 6.3h.01"/><path d="m9.5 12.5-2.5 2.5 2.5 2.5M14.5 12.5l2.5 2.5-2.5 2.5"/></svg></span>
-            <span class="chip red"><span lang="es">Cotización gratis</span><span lang="en">Free quote</span></span>
-          </div>
-          <h3><span lang="es">Desarrollo web</span><span lang="en">Web development</span></h3>
-          <p><span lang="es">Páginas rápidas y bilingües que se ven bien en el celular y ayudan a tu negocio a vender.</span><span lang="en">Fast, bilingual websites that look right on a phone and help your business sell.</span></p>
-          <ul class="incl">
-            <li><span lang="es">Páginas para negocios, en español e inglés</span><span lang="en">Business websites in Spanish and English</span></li>
-            <li><span lang="es">Sistemas de citas con calendario y depósitos</span><span lang="en">Booking systems with calendar and deposits</span></li>
-            <li><span lang="es">Dominio, email y hosting configurados</span><span lang="en">Domain, email and hosting set up</span></li>
-            <li><span lang="es">Cambios y mantenimiento</span><span lang="en">Updates and maintenance</span></li>
-          </ul>
-          <p class="ideal"><b><span lang="es">Ideal para:</span><span lang="en">Best for:</span></b> <span lang="es">negocios locales que quieren recibir clientes en línea</span><span lang="en">local businesses that want to get customers online</span></p>
-          <a class="btn btn-ghost block" href="#quote" data-service="web"><span lang="es">Cotizar una página</span><span lang="en">Quote a website</span> <span class="arrow" aria-hidden="true">→</span></a>
-        </article>
-      </div>
-
-      <div class="panel proof">
+    <section class="relative isolate">
+      <div class="dot-grid pointer-events-none absolute inset-0 -z-10"></div>
+      <div class="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[30rem] w-[56rem] -translate-x-1/2 rounded-full bg-gradient-to-tr from-primary/25 via-accent/15 to-transparent blur-3xl"></div>
+      <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-12 pb-14 lg:grid-cols-[1.15fr_0.85fr] lg:pt-16">
         <div>
-          <p class="kicker" style="margin:0"><span lang="es">Hecho por Redline Technologies</span><span lang="en">Built by Redline Technologies</span></p>
-          <h3><span lang="es">Esta página y el sistema de citas de Redline Interiors.</span><span lang="en">This site and the Redline Interiors booking system.</span></h3>
-          <p><span lang="es">Bilingüe, con calendario en vivo, depósitos y dominio con email propio.</span><span lang="en">Bilingual, with a live calendar, deposits, and its own domain and email.</span></p>
+          <a href="#quote" class="inline-flex items-center gap-2 rounded-full border border-base-content/10 bg-base-100/70 py-1 pr-3 pl-1 text-sm shadow-sm backdrop-blur">
+            <span class="badge badge-primary badge-sm rounded-full">Redline Technologies</span><span class="text-base-content/75" data-site="area">Área Metropolitana, Puerto Rico</span>
+          </a>
+          <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-balance sm:text-5xl lg:text-[56px] lg:leading-[1.05]"><span lang="es">Consultoría, PCs a la medida y <span class="text-gradient">páginas web.</span></span><span lang="en">Consulting, custom PCs and <span class="text-gradient">websites.</span></span></h1>
+          <p class="mt-4 max-w-xl text-lg text-base-content/70"><span lang="es">Te ayudo a escoger, armar y configurar la tecnología de tu casa o negocio. Precio claro antes de empezar y soporte directo por WhatsApp.</span><span lang="en">I help you choose, build and set up the tech for your home or business. A clear price before any work starts, and direct support on WhatsApp.</span></p>
+          <div class="mt-7 flex flex-wrap gap-3">
+            <a class="btn btn-primary btn-lg rounded-xl shadow-lg shadow-primary/25" href="#quote"><span lang="es">Pedir cotización gratis</span><span lang="en">Get a free quote</span><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+            <a class="btn btn-outline btn-lg rounded-xl" href="#services"><span lang="es">Ver servicios</span><span lang="en">See services</span></a>
+          </div>
         </div>
-        <a class="btn btn-ghost" href="../portfolio/#web"><span lang="es">Ver en el portafolio</span><span lang="en">See it in the portfolio</span> <span class="arrow" aria-hidden="true">→</span></a>
+
+        <aside class="card border border-base-content/10 bg-base-100 shadow-2xl shadow-primary/10" aria-label="Build sheet">
+          <div class="card-body gap-0 p-0">
+            <div class="flex items-center justify-between border-b border-base-content/10 px-6 py-4 text-xs font-semibold tracking-wider uppercase">
+              <span class="text-base-content/60">Build sheet</span><span class="badge badge-ghost badge-sm"><span lang="es">Ejemplo</span><span lang="en">Example</span></span>
+            </div>
+            <dl class="px-6 py-3 text-sm tabular-nums"><div class="flex justify-between gap-4 border-b border-dashed border-base-content/10 py-2 last:border-0"><dt class="text-base-content/55"><span lang="es">Uso</span><span lang="en">Use</span></dt><dd class="text-right font-medium"><span lang="es">Gaming 1440p + stream</span><span lang="en">1440p gaming + stream</span></dd></div><div class="flex justify-between gap-4 border-b border-dashed border-base-content/10 py-2 last:border-0"><dt class="text-base-content/55"><span lang="es">CPU</span><span lang="en">CPU</span></dt><dd class="text-right font-medium"><span lang="es">8 núcleos / 16 hilos</span><span lang="en">8 cores / 16 threads</span></dd></div><div class="flex justify-between gap-4 border-b border-dashed border-base-content/10 py-2 last:border-0"><dt class="text-base-content/55"><span lang="es">GPU</span><span lang="en">GPU</span></dt><dd class="text-right font-medium"><span lang="es">12 GB VRAM</span><span lang="en">12 GB VRAM</span></dd></div><div class="flex justify-between gap-4 border-b border-dashed border-base-content/10 py-2 last:border-0"><dt class="text-base-content/55"><span lang="es">RAM</span><span lang="en">RAM</span></dt><dd class="text-right font-medium"><span lang="es">32 GB DDR5</span><span lang="en">32 GB DDR5</span></dd></div><div class="flex justify-between gap-4 border-b border-dashed border-base-content/10 py-2 last:border-0"><dt class="text-base-content/55"><span lang="es">SSD</span><span lang="en">SSD</span></dt><dd class="text-right font-medium"><span lang="es">2 TB NVMe</span><span lang="en">2 TB NVMe</span></dd></div><div class="flex justify-between gap-4 border-b border-dashed border-base-content/10 py-2 last:border-0"><dt class="text-base-content/55"><span lang="es">PSU</span><span lang="en">PSU</span></dt><dd class="text-right font-medium"><span lang="es">750 W 80+ Gold</span><span lang="en">750 W 80+ Gold</span></dd></div><div class="flex justify-between gap-4 border-b border-dashed border-base-content/10 py-2 last:border-0"><dt class="text-base-content/55"><span lang="es">Enfriamiento</span><span lang="en">Cooling</span></dt><dd class="text-right font-medium"><span lang="es">AIO 240 mm</span><span lang="en">AIO 240 mm</span></dd></div></dl>
+            <div class="grid gap-3 border-t border-base-content/10 px-6 py-5 text-xs">
+              <div class="grid grid-cols-[auto_1fr_auto] items-center gap-3"><span class="text-base-content/60"><span lang="es">Prueba de estrés</span><span lang="en">Stress test</span></span><progress class="progress progress-success w-full" value="100" max="100"></progress><b>2 h</b></div>
+              <div class="grid grid-cols-[auto_1fr_auto] items-center gap-3"><span class="text-base-content/60">CPU max</span><progress class="progress progress-primary w-full" value="74" max="100"></progress><b>74 °C</b></div>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
 
-    <section class="wrap section" style="padding-top: 0">
-      <div class="section-head">
-        <p class="kicker"><span lang="es">Cómo trabajo</span><span lang="en">How it works</span></p>
-        <h2><span lang="es">De la idea a funcionando.</span><span lang="en">From idea to up and running.</span></h2>
+    <section id="services" class="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 sm:py-20">
+      <div class="mb-8 max-w-2xl">
+        <p class="kicker"><span lang="es">Servicios</span><span lang="en">Services</span></p>
+        <h2 class="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl"><span lang="es">Tres formas de ayudarte.</span><span lang="en">Three ways I can help.</span></h2>
+        <p class="mt-3 text-base-content/70"><span lang="es">Cada trabajo empieza con una cotización gratis: sabes el precio y el tiempo antes de decidir.</span><span lang="en">Every job starts with a free quote, so you know the price and timing before you decide.</span></p>
       </div>
-      <ol class="steps">
-        <li class="panel"><h3><span lang="es">Cuéntame qué necesitas</span><span lang="en">Tell me what you need</span></h3><p><span lang="es">Por el formulario o WhatsApp, con tu presupuesto si lo tienes.</span><span lang="en">Through the form or WhatsApp, with your budget if you have one.</span></p></li>
-        <li class="panel"><h3><span lang="es">Cotización clara</span><span lang="en">Clear quote</span></h3><p><span lang="es">Precio, piezas y tiempo de entrega antes de empezar.</span><span lang="en">Price, parts and timeline before anything starts.</span></p></li>
-        <li class="panel"><h3><span lang="es">Manos a la obra</span><span lang="en">The work</span></h3><p><span lang="es">Te mantengo al tanto con fotos y avances.</span><span lang="en">I keep you posted with photos and progress.</span></p></li>
-        <li class="panel"><h3><span lang="es">Entrega y soporte</span><span lang="en">Handover and support</span></h3><p><span lang="es">Te explico todo y sigo disponible si surge algo.</span><span lang="en">I walk you through it and stay available if anything comes up.</span></p></li>
-      </ol>
+      <div class="grid gap-5 lg:grid-cols-3">
+        <article class="card border border-base-content/10 bg-base-100 scroll-mt-24 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl" id="consulting">
+          <div class="card-body gap-4 p-7">
+            <div class="flex items-center justify-between">
+              <span class="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary"><svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v10H9l-4 4V5z"/><path d="M8.5 9.5h7M8.5 12h4"/></svg></span>
+              <span class="badge badge-primary badge-soft"><span lang="es">Cotización gratis</span><span lang="en">Free quote</span></span>
+            </div>
+            <h3 class="text-xl font-bold"><span lang="es">Consultoría tecnológica</span><span lang="en">Tech consulting</span></h3>
+            <p class="text-sm text-base-content/70"><span lang="es">Te ayudo a decidir qué comprar, a configurarlo bien y a resolver lo que no funciona.</span><span lang="en">I help you decide what to buy, set it up properly and fix what isn't working.</span></p>
+            <ul class="grid gap-2.5 border-t border-base-content/10 pt-4 text-sm"><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Asesoría de compra: laptops, PCs, monitores y redes</span><span lang="en">Buying advice: laptops, PCs, monitors and networking</span></span></li><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Configuración de equipos, Wi-Fi y cuentas</span><span lang="en">Device, Wi-Fi and account setup</span></span></li><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Dominio y email profesional para tu negocio</span><span lang="en">Domain and business email for your company</span></span></li><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Diagnóstico y solución de problemas</span><span lang="en">Troubleshooting and repairs</span></span></li></ul>
+            <p class="text-xs text-base-content/60"><b class="font-semibold text-base-content"><span lang="es">Ideal para:</span><span lang="en">Best for:</span></b> <span lang="es">casas, oficinas pequeñas y emprendedores</span><span lang="en">homes, small offices and entrepreneurs</span></p>
+            <a class="btn btn-outline mt-auto w-full rounded-xl" href="#quote" data-service="consulting"><span lang="es">Cotizar consultoría</span><span lang="en">Quote consulting</span><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+          </div>
+        </article><article class="card border border-base-content/10 bg-base-100 scroll-mt-24 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl" id="pc">
+          <div class="card-body gap-4 p-7">
+            <div class="flex items-center justify-between">
+              <span class="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary"><svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2"/><circle cx="12" cy="14" r="3.2"/><path d="M9 6.5h6M9 9h3"/></svg></span>
+              <span class="badge badge-primary badge-soft"><span lang="es">Cotización gratis</span><span lang="en">Free quote</span></span>
+            </div>
+            <h3 class="text-xl font-bold"><span lang="es">PCs a la medida</span><span lang="en">Custom PC builds</span></h3>
+            <p class="text-sm text-base-content/70"><span lang="es">Una PC armada para lo que haces, dentro de tu presupuesto, probada antes de entregarla.</span><span lang="en">A PC built for what you do, within your budget, tested before it's handed over.</span></p>
+            <ul class="grid gap-2.5 border-t border-base-content/10 pt-4 text-sm"><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Selección de piezas según tu presupuesto</span><span lang="en">Parts picked to fit your budget</span></span></li><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Ensamblaje y cable management</span><span lang="en">Assembly and cable management</span></span></li><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Windows, drivers y BIOS al día</span><span lang="en">Windows, drivers and BIOS up to date</span></span></li><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Prueba de estrés y temperaturas</span><span lang="en">Stress and temperature testing</span></span></li><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Upgrades, limpieza y pasta térmica a tu PC actual</span><span lang="en">Upgrades, cleaning and fresh thermal paste for your current PC</span></span></li></ul>
+            <p class="text-xs text-base-content/60"><b class="font-semibold text-base-content"><span lang="es">Ideal para:</span><span lang="en">Best for:</span></b> <span lang="es">gaming, streaming, edición y trabajo</span><span lang="en">gaming, streaming, editing and work</span></p>
+            <a class="btn btn-outline mt-auto w-full rounded-xl" href="#quote" data-service="pc"><span lang="es">Cotizar una PC</span><span lang="en">Quote a PC</span><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+          </div>
+        </article><article class="card border border-base-content/10 bg-base-100 scroll-mt-24 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl" id="web">
+          <div class="card-body gap-4 p-7">
+            <div class="flex items-center justify-between">
+              <span class="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary"><svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M2.5 8.5h19M6 6.3h.01M8.5 6.3h.01"/><path d="m9.5 12.5-2.5 2.5 2.5 2.5M14.5 12.5l2.5 2.5-2.5 2.5"/></svg></span>
+              <span class="badge badge-primary badge-soft"><span lang="es">Cotización gratis</span><span lang="en">Free quote</span></span>
+            </div>
+            <h3 class="text-xl font-bold"><span lang="es">Desarrollo web</span><span lang="en">Web development</span></h3>
+            <p class="text-sm text-base-content/70"><span lang="es">Páginas rápidas y bilingües que se ven bien en el celular y ayudan a tu negocio a vender.</span><span lang="en">Fast, bilingual websites that look right on a phone and help your business sell.</span></p>
+            <ul class="grid gap-2.5 border-t border-base-content/10 pt-4 text-sm"><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Páginas para negocios, en español e inglés</span><span lang="en">Business websites in Spanish and English</span></span></li><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Sistemas de citas con calendario y depósitos</span><span lang="en">Booking systems with calendar and deposits</span></span></li><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Dominio, email y hosting configurados</span><span lang="en">Domain, email and hosting set up</span></span></li><li class="flex gap-2.5"><svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span><span lang="es">Cambios y mantenimiento</span><span lang="en">Updates and maintenance</span></span></li></ul>
+            <p class="text-xs text-base-content/60"><b class="font-semibold text-base-content"><span lang="es">Ideal para:</span><span lang="en">Best for:</span></b> <span lang="es">negocios locales que quieren recibir clientes en línea</span><span lang="en">local businesses that want to get customers online</span></p>
+            <a class="btn btn-outline mt-auto w-full rounded-xl" href="#quote" data-service="web"><span lang="es">Cotizar una página</span><span lang="en">Quote a website</span><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+          </div>
+        </article>
+      </div>
+
+      <div class="card mt-6 overflow-hidden border border-base-content/10 bg-gradient-to-br from-primary/10 via-base-100 to-base-100">
+        <div class="card-body flex-col gap-5 p-7 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="kicker"><span lang="es">Hecho por Redline Technologies</span><span lang="en">Built by Redline Technologies</span></p>
+            <h3 class="text-xl font-bold"><span lang="es">Esta página y el sistema de citas de Redline Interiors.</span><span lang="en">This site and the Redline Interiors booking system.</span></h3>
+            <p class="mt-1 text-sm text-base-content/70"><span lang="es">Bilingüe, con calendario en vivo, depósitos y dominio con email propio.</span><span lang="en">Bilingual, with a live calendar, deposits, and its own domain and email.</span></p>
+          </div>
+          <a class="btn btn-outline shrink-0 rounded-xl" href="/portfolio/#web"><span lang="es">Ver en el portafolio</span><span lang="en">See it in the portfolio</span><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+        </div>
+      </div>
     </section>
 
-    <section id="quote" class="wrap section quote" style="padding-top: 0">
+    <section class="border-y border-base-content/10 bg-base-200/60">
+      <div class="mx-auto max-w-6xl px-4 py-16 sm:py-20">
+        <div class="mx-auto mb-10 max-w-2xl text-center">
+          <p class="kicker"><span lang="es">Cómo trabajo</span><span lang="en">How it works</span></p>
+          <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl"><span lang="es">De la idea a funcionando.</span><span lang="en">From idea to up and running.</span></h2>
+        </div>
+        <ol class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4"><li class="card border border-base-content/10 bg-base-100"><div class="card-body gap-2 p-6">
+            <span class="grid size-9 place-items-center rounded-full bg-base-200 text-base-content text-sm font-bold">1</span>
+            <h3 class="mt-2 font-bold"><span lang="es">Cuéntame qué necesitas</span><span lang="en">Tell me what you need</span></h3><p class="text-sm text-base-content/65"><span lang="es">Por el formulario o WhatsApp, con tu presupuesto si lo tienes.</span><span lang="en">Through the form or WhatsApp, with your budget if you have one.</span></p></div></li><li class="card border border-base-content/10 bg-base-100"><div class="card-body gap-2 p-6">
+            <span class="grid size-9 place-items-center rounded-full bg-base-200 text-base-content text-sm font-bold">2</span>
+            <h3 class="mt-2 font-bold"><span lang="es">Cotización clara</span><span lang="en">Clear quote</span></h3><p class="text-sm text-base-content/65"><span lang="es">Precio, piezas y tiempo de entrega antes de empezar.</span><span lang="en">Price, parts and timeline before anything starts.</span></p></div></li><li class="card border border-base-content/10 bg-base-100"><div class="card-body gap-2 p-6">
+            <span class="grid size-9 place-items-center rounded-full bg-base-200 text-base-content text-sm font-bold">3</span>
+            <h3 class="mt-2 font-bold"><span lang="es">Manos a la obra</span><span lang="en">The work</span></h3><p class="text-sm text-base-content/65"><span lang="es">Te mantengo al tanto con fotos y avances.</span><span lang="en">I keep you posted with photos and progress.</span></p></div></li><li class="card border border-base-content/10 bg-base-100"><div class="card-body gap-2 p-6">
+            <span class="grid size-9 place-items-center rounded-full bg-primary text-primary-content text-sm font-bold">4</span>
+            <h3 class="mt-2 font-bold"><span lang="es">Entrega y soporte</span><span lang="en">Handover and support</span></h3><p class="text-sm text-base-content/65"><span lang="es">Te explico todo y sigo disponible si surge algo.</span><span lang="en">I walk you through it and stay available if anything comes up.</span></p></div></li></ol>
+      </div>
+    </section>
+
+    <section id="quote" class="mx-auto grid max-w-6xl scroll-mt-24 items-start gap-10 px-4 py-16 sm:py-20 lg:grid-cols-[0.85fr_1.15fr]">
       <div>
         <p class="kicker"><span lang="es">Cotización</span><span lang="en">Quote</span></p>
-        <h2><span lang="es">Pide tu cotización gratis.</span><span lang="en">Get your free quote.</span></h2>
-        <p class="lead" style="font-size:17px"><span lang="es">Llena lo básico y se abre WhatsApp o tu email con el mensaje listo para enviar.</span><span lang="en">Fill in the basics and WhatsApp or your email opens with the message ready to send.</span></p>
-        <div class="lines">
-          <div class="line" data-copy-wrap><div><span class="label"><span lang="es">Teléfono / WhatsApp</span><span lang="en">Phone / WhatsApp</span></span><strong data-site="phone">(787) 910-0777</strong></div><button class="copy" data-copy="phone"><span lang="es">Copiar</span><span lang="en">Copy</span></button></div>
-          <div class="line" data-copy-wrap><div><span class="label">Email</span><strong data-site="email">citas@redlinehq.work</strong></div><button class="copy" data-copy="email"><span lang="es">Copiar</span><span lang="en">Copy</span></button></div>
+        <h2 class="text-3xl font-extrabold tracking-tight sm:text-4xl"><span lang="es">Pide tu cotización gratis.</span><span lang="en">Get your free quote.</span></h2>
+        <p class="mt-3 text-base-content/70"><span lang="es">Llena lo básico y se abre WhatsApp o tu email con el mensaje listo para enviar.</span><span lang="en">Fill in the basics and WhatsApp or your email opens with the message ready to send.</span></p>
+        <div class="mt-6 grid gap-3">
+          <div class="flex items-center justify-between gap-3 rounded-2xl border border-base-content/10 bg-base-100 px-4 py-3.5" data-copy-wrap>
+            <div class="min-w-0"><div class="text-[11px] font-semibold tracking-wider text-base-content/55 uppercase"><span lang="es">Teléfono / WhatsApp</span><span lang="en">Phone / WhatsApp</span></div><strong class="mt-0.5 block truncate" data-site="phone">(787) 910-0777</strong></div>
+            <button class="btn btn-sm btn-ghost border border-base-content/15" data-copy="phone"><span lang="es">Copiar</span><span lang="en">Copy</span></button>
+          </div>
+          <div class="flex items-center justify-between gap-3 rounded-2xl border border-base-content/10 bg-base-100 px-4 py-3.5" data-copy-wrap>
+            <div class="min-w-0"><div class="text-[11px] font-semibold tracking-wider text-base-content/55 uppercase">Email</div><strong class="mt-0.5 block truncate" data-site="email">citas@redlinehq.work</strong></div>
+            <button class="btn btn-sm btn-ghost border border-base-content/15" data-copy="email"><span lang="es">Copiar</span><span lang="en">Copy</span></button>
+          </div>
         </div>
       </div>
 
-      <form class="panel quote-form" id="quote-form" novalidate>
-        <label class="field" for="q-name"><span><span lang="es">Nombre</span><span lang="en">Name</span></span><input id="q-name" name="name" autocomplete="name" required maxlength="80"></label>
-        <label class="field" for="q-phone"><span><span lang="es">Teléfono</span><span lang="en">Phone</span></span><input id="q-phone" name="phone" type="tel" autocomplete="tel" required maxlength="30"></label>
-        <label class="field" for="q-service"><span><span lang="es">Servicio</span><span lang="en">Service</span></span>
-          <select id="q-service" name="service" required>
-            <option value="consulting">Consultoría / Consulting</option>
-            <option value="pc">PC a la medida / Custom PC</option>
-            <option value="web">Página web / Website</option>
-            <option value="other">Otro / Other</option>
-          </select>
-        </label>
-        <label class="field" for="q-budget"><span><span lang="es">Presupuesto</span><span lang="en">Budget</span></span>
-          <select id="q-budget" name="budget">
-            <option value="unsure">No sé todavía / Not sure yet</option>
-            <option value="<500">Menos de $500 / Under $500</option>
-            <option value="500-1000">$500 – $1,000</option>
-            <option value="1000-2000">$1,000 – $2,000</option>
-            <option value="2000+">$2,000+</option>
-          </select>
-        </label>
-        <label class="field full" for="q-details"><span><span lang="es">¿Qué necesitas?</span><span lang="en">What do you need?</span></span>
-          <textarea id="q-details" name="details" rows="5" maxlength="1200" required data-ph-es="Ej.: PC para jugar a 1440p y hacer stream, o una página para mi barbería con citas." data-ph-en="E.g. a PC for 1440p gaming and streaming, or a site for my barbershop with bookings."></textarea>
-        </label>
-        <p class="privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span><span lang="es">Tu mensaje va directo a mi WhatsApp o email. Esta página no guarda tus datos.</span><span lang="en">Your message goes straight to my WhatsApp or email. This page doesn't store your details.</span></span></p>
-        <p class="error" id="q-error" role="alert"></p>
-        <div class="actions">
-          <a class="btn btn-red" id="q-wa" href="https://wa.me/17879100777" target="_blank" rel="noopener"><span lang="es">Enviar por WhatsApp</span><span lang="en">Send on WhatsApp</span></a>
-          <a class="btn btn-ghost" id="q-mail" href="mailto:citas@redlinehq.work"><span lang="es">Enviar por email</span><span lang="en">Send by email</span></a>
+      <form class="card border border-base-content/10 bg-base-100 shadow-xl" id="quote-form" novalidate>
+        <div class="card-body grid gap-4 p-6 sm:grid-cols-2 sm:p-7">
+          <label class="flex flex-col gap-1.5 text-sm font-medium" for="q-name"><span lang="es">Nombre</span><span lang="en">Name</span><input id="q-name" name="name" class="input w-full" autocomplete="name" required maxlength="80"></label>
+          <label class="flex flex-col gap-1.5 text-sm font-medium" for="q-phone"><span lang="es">Teléfono</span><span lang="en">Phone</span><input id="q-phone" name="phone" type="tel" class="input w-full" autocomplete="tel" required maxlength="30"></label>
+          <label class="flex flex-col gap-1.5 text-sm font-medium" for="q-service"><span lang="es">Servicio</span><span lang="en">Service</span>
+            <select id="q-service" name="service" class="select w-full" required>
+              <option value="consulting">Consultoría / Consulting</option>
+              <option value="pc">PC a la medida / Custom PC</option>
+              <option value="web">Página web / Website</option>
+              <option value="other">Otro / Other</option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-1.5 text-sm font-medium" for="q-budget"><span lang="es">Presupuesto</span><span lang="en">Budget</span>
+            <select id="q-budget" name="budget" class="select w-full">
+              <option value="unsure">No sé todavía / Not sure yet</option>
+              <option value="&lt;500">Menos de $500 / Under $500</option>
+              <option value="500-1000">$500 – $1,000</option>
+              <option value="1000-2000">$1,000 – $2,000</option>
+              <option value="2000+">$2,000+</option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-1.5 text-sm font-medium sm:col-span-2" for="q-details"><span lang="es">¿Qué necesitas?</span><span lang="en">What do you need?</span>
+            <textarea id="q-details" name="details" rows="5" class="textarea w-full" maxlength="1200" required data-ph-es="Ej.: PC para jugar a 1440p y hacer stream, o una página para mi barbería con citas." data-ph-en="E.g. a PC for 1440p gaming and streaming, or a site for my barbershop with bookings."></textarea>
+          </label>
+          <p class="privacy sm:col-span-2"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span><span lang="es">Tu mensaje va directo a mi WhatsApp o email. Esta página no guarda tus datos.</span><span lang="en">Your message goes straight to my WhatsApp or email. This page doesn't store your details.</span></span></p>
+          <p class="error sm:col-span-2" id="q-error" role="alert"></p>
+          <div class="grid gap-3 sm:col-span-2 sm:grid-cols-2">
+            <a class="btn btn-primary rounded-xl shadow-lg shadow-primary/20" id="q-wa" href="https://wa.me/17879100777" target="_blank" rel="noopener"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg><span lang="es">Enviar por WhatsApp</span><span lang="en">Send on WhatsApp</span></a>
+            <a class="btn btn-outline rounded-xl" id="q-mail" href="mailto:citas@redlinehq.work"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span lang="es">Enviar por email</span><span lang="en">Send by email</span></a>
+          </div>
         </div>
       </form>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="wrap footer-inner">
-      <a class="brand" href="../"><img class="lockup" src="../assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150"></a>
-      <nav class="footer-links" aria-label="Footer">
-        <a href="../interiors/">Redline Interiors</a>
-        <a href="./">Redline Technologies</a>
-        <a href="../portfolio/">Redline Portfolio</a>
-      </nav>
-      <span>© <span data-year>2026</span> RedlineHQ · redlinehq.work</span>
+  <footer class="border-t border-base-content/10 bg-base-200/50">
+    <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+      <div>
+        <span class="inline-flex rounded-xl bg-[#0b0c0f] px-3 py-1.5 ring-1 ring-white/10"><img src="/assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150" class="h-10 w-auto"></span>
+        <p class="mt-4 max-w-xs text-sm text-base-content/60"><span lang="es">Detallado, tecnología y web en el Área Metropolitana de Puerto Rico.</span><span lang="en">Detailing, tech and web in the San Juan metro area, Puerto Rico.</span></p>
+      </div>
+      <div>
+        <h4 class="mb-3 text-sm font-semibold"><span lang="es">Servicios</span><span lang="en">Services</span></h4>
+        <ul class="grid gap-2 text-sm text-base-content/70">
+          <li><a class="link link-hover" href="/interiors/">Redline Interiors</a></li>
+          <li><a class="link link-hover" href="/tech/">Redline Technologies</a></li>
+          <li><a class="link link-hover" href="/portfolio/">Redline Portfolio</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="mb-3 text-sm font-semibold"><span lang="es">Contacto</span><span lang="en">Contact</span></h4>
+        <ul class="grid gap-2 text-sm text-base-content/70">
+              <li class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-site="phone">(787) 910-0777</span></li>
+              <li class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-site="email">citas@redlinehq.work</span></li>
+              <li><a class="link link-hover flex items-center gap-2" data-wa href="https://wa.me/17879100777"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>WhatsApp</a></li>
+        </ul>
+      </div>
     </div>
+    <div class="border-t border-base-content/10 py-5 text-center text-xs text-base-content/50">© <span data-year>2026</span> RedlineHQ · redlinehq.work</div>
   </footer>
 
-  <script src="../assets/site.js"></script>
+  <script src="/assets/site.js"></script>
   <script>
     (function () {
       const form = document.getElementById("quote-form");

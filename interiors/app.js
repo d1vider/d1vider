@@ -175,7 +175,7 @@
     const cat = B.categories.find((c) => c.id === state.tab);
     $("#service-list").innerHTML = cat.services.map((s) => `
       <article class="card service">
-        <div class="service-head"><h3>${esc(L(s.name))}</h3>${s.popular ? `<span class="badge">${S().popular}</span>` : ""}</div>
+        <div class="service-head"><h3>${esc(L(s.name))}</h3>${s.popular ? `<span class="badge badge-primary badge-sm shrink-0">${S().popular}</span>` : ""}</div>
         <p class="muted">${esc(L(s.desc))}</p>
         <ul class="opts">
           ${s.options.map((o, i) => {
@@ -409,8 +409,8 @@
           : `<div class="pay-opt"><span class="pay-name">PayPal</span><span>${S().payPaypalAsk}</span></div>`}
       </div>
       ${t.balance > 0 ? `<p>${S().payBalance(money(t.balance))}</p>` : ""}
-      <a class="btn btn-primary block" href="${state.sent.wa}" target="_blank" rel="noopener">${viaApi ? S().doneWaBtn : S().doneWaAgain}</a>
-      <button class="btn btn-ghost block" id="again">${S().doneAgain}</button>`;
+      <a class="btn btn-primary w-full" href="${state.sent.wa}" target="_blank" rel="noopener">${viaApi ? S().doneWaBtn : S().doneWaAgain}</a>
+      <button class="btn btn-ghost w-full mt-2" id="again">${S().doneAgain}</button>`;
     $("#sticky-bar").classList.remove("show");
     d.scrollIntoView({ behavior: "smooth", block: "center" });
   }
