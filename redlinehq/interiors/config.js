@@ -7,6 +7,13 @@
  * ============================================================
  */
 window.BUSINESS = {
+  // ---------- OPEN / COMING SOON ----------
+  // false = the Interiors page shows "Muy pronto" (coming soon) and the rest of the site
+  //         points people to Technologies and Portfolio instead of booking.
+  //         The booking page still works for you at redlinehq.work/interiors/?preview
+  // true  = booking is open to everyone.
+  open: false,
+
   name: "Redline Interiors",
   logo: "",                         // e.g. "images/logo.png", which replaces the text logo in the header
   tagline: {

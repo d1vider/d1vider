@@ -40,6 +40,7 @@ window.PROJECTS = [
     image: "img/interiors.webp",
     link: "../interiors/",
     linkLabel: { es: "Probar el sistema", en: "Try it" },
+    requiresInteriors: true,   // link hidden while Interiors is closed (open: false)
   },
   {
     id: "domain-email",

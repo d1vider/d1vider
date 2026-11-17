@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
-import { ArrowRight, Armchair, Cpu, Images, Sun, Moon, MapPin, CalendarCheck, MessageCircle, ShieldCheck, Sparkles, Phone, Mail, ChevronRight } from "lucide-react";
+import { ArrowRight, Armchair, Cpu, Images, Sun, Moon, MapPin, CalendarCheck, MessageCircle, ShieldCheck, Sparkles, Phone, Mail, ChevronRight, Wrench, Monitor, Code, BadgeCheck } from "lucide-react";
 
 const SITE = { whatsapp: "17879100777", phone: "(787) 910-0777", email: "citas@redlinehq.work" };
 const B = window.BUSINESS || { categories: [], municipalities: [], notes: { es: [], en: [] }, currency: "$", deposit: 100, minNoticeHours: 24 };
@@ -29,6 +29,22 @@ const T = {
     other: "Otro pueblo: escríbeme y lo coordinamos.",
     bandH: "¿Listo para que tu interior quede como nuevo?", bandP: "Mira los precios y escoge tu hora en menos de un minuto.",
     foot: { services: "Servicios", contact: "Contacto", about: "Detallado, tecnología y web en el Área Metropolitana de Puerto Rico." },
+    closed: {
+      nav: "Cotizar",
+      pill: ["Muy pronto", "Redline Interiors: detallado a domicilio"],
+      lead: "Consultoría, PCs a la medida y páginas web, con detallado interior a domicilio muy pronto. Todo bajo una misma marca, en el Área Metropolitana de Puerto Rico.",
+      ctaA: "Pedir cotización", ctaB: "Ver proyectos",
+      trust: ["Área Metropolitana", "Español e inglés", "Cotización gratis"],
+      soon: "Muy pronto", soonShort: "Detallado interior a domicilio para autos y muebles. Estoy afinando los últimos detalles.", soonCta: "Ver más",
+      example: "Ejemplo", quotePc: "Cotizar una PC", stress: "Prueba de estrés",
+      sheet: [["Uso", "Gaming 1440p + stream"], ["CPU", "8 núcleos / 16 hilos"], ["GPU", "12 GB VRAM"], ["RAM", "32 GB DDR5"], ["SSD", "2 TB NVMe"]],
+      freeK: "Cotización", freeH: "Gratis", freeP: "Precio claro antes de empezar",
+      techDesc: "Consultoría, PCs a la medida y desarrollo de páginas web para casa y negocio. Cada trabajo empieza con una cotización gratis.",
+      techList: [["Consultoría tecnológica", "Compras, configuración y soporte"], ["PCs a la medida", "Armadas, probadas y listas"], ["Desarrollo web", "Bilingües, con dominio y email"]],
+      stepsK: "Cómo trabajo", stepsH: "De la idea a funcionando.",
+      steps: ["Cuéntame qué necesitas", "Cotización clara", "Manos a la obra", "Entrega y soporte"],
+      bandH: "¿Tienes un proyecto en mente?", bandP: "Cuéntame qué necesitas y te envío una cotización gratis.",
+    },
   },
   en: {
     nav: { book: "Book" },
@@ -53,6 +69,22 @@ const T = {
     other: "Another town: message me and we'll work it out.",
     bandH: "Ready for an interior that looks new again?", bandP: "See the prices and pick your time in under a minute.",
     foot: { services: "Services", contact: "Contact", about: "Detailing, tech and web in the San Juan metro area, Puerto Rico." },
+    closed: {
+      nav: "Get a quote",
+      pill: ["Coming soon", "Redline Interiors: mobile detailing"],
+      lead: "Consulting, custom PCs and websites, with mobile interior detailing coming soon. All under one brand, in the San Juan metro area, Puerto Rico.",
+      ctaA: "Get a quote", ctaB: "See projects",
+      trust: ["San Juan metro area", "Spanish and English", "Free quote"],
+      soon: "Coming soon", soonShort: "Mobile interior detailing for cars and furniture. I'm fine-tuning the last details.", soonCta: "Learn more",
+      example: "Example", quotePc: "Quote a PC", stress: "Stress test",
+      sheet: [["Use", "1440p gaming + stream"], ["CPU", "8 cores / 16 threads"], ["GPU", "12 GB VRAM"], ["RAM", "32 GB DDR5"], ["SSD", "2 TB NVMe"]],
+      freeK: "Quote", freeH: "Free", freeP: "A clear price before work starts",
+      techDesc: "Consulting, custom PC builds and website development for home and business. Every job starts with a free quote.",
+      techList: [["Tech consulting", "Buying, setup and support"], ["Custom PC builds", "Built, tested and ready"], ["Web development", "Bilingual, with domain and email"]],
+      stepsK: "How it works", stepsH: "From idea to up and running.",
+      steps: ["Tell me what you need", "Clear quote", "The work", "Handover and support"],
+      bandH: "Got a project in mind?", bandP: "Tell me what you need and I'll send you a free quote.",
+    },
   },
 };
 
@@ -93,6 +125,8 @@ export default function App() {
   useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   const t = T[lang];
+  const open = B.open !== false;   // interiors/config.js "open": false = Interiors shows "coming soon"
+  const c = t.closed;
 
   const data = useMemo(() => {
     const cat = (id) => B.categories.find((c) => c.id === id);
@@ -148,7 +182,9 @@ export default function App() {
             <Sun className="swap-off size-5" />
             <Moon className="swap-on size-5" />
           </label>
-          <a href="/interiors/#book" className="btn btn-primary btn-sm hidden sm:inline-flex">{t.nav.book}</a>
+          {open
+            ? <a href="/interiors/#book" className="btn btn-primary btn-sm hidden sm:inline-flex">{t.nav.book}</a>
+            : <a href="/tech/#quote" className="btn btn-primary btn-sm hidden sm:inline-flex">{c.nav}</a>}
         </nav>
         <ul className="menu menu-horizontal w-full justify-center gap-1 border-t border-base-content/5 py-1 text-sm md:hidden">
           <li><a href="/interiors/">Interiors</a></li>
@@ -164,25 +200,30 @@ export default function App() {
           <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[34rem] w-[58rem] -translate-x-1/2 rounded-full bg-gradient-to-tr from-primary/30 via-accent/20 to-transparent blur-3xl" />
           <div className="mx-auto max-w-6xl px-4 pt-14 pb-8 text-center sm:pt-20">
             <motion.a {...fade(0)} href="/interiors/" className="mx-auto inline-flex items-center gap-2 rounded-full border border-base-content/10 bg-base-100/70 py-1 pr-3 pl-1 text-sm shadow-sm backdrop-blur">
-              <span className="badge badge-primary badge-sm rounded-full">{t.pill[0]}</span>
-              <span className="text-base-content/80">{t.pill[1]}</span>
+              <span className="badge badge-primary badge-sm rounded-full">{(open ? t.pill : c.pill)[0]}</span>
+              <span className="text-base-content/80">{(open ? t.pill : c.pill)[1]}</span>
               <ChevronRight className="size-4 text-base-content/50" />
             </motion.a>
             <motion.h1 {...fade(1)} className="mx-auto mt-6 max-w-3xl text-4xl font-extrabold tracking-tight text-balance sm:text-6xl">
               {t.h1a} <span className="text-gradient">{t.h1b}</span>
             </motion.h1>
-            <motion.p {...fade(2)} className="mx-auto mt-5 max-w-2xl text-lg text-base-content/70">{t.lead}</motion.p>
+            <motion.p {...fade(2)} className="mx-auto mt-5 max-w-2xl text-lg text-base-content/70">{open ? t.lead : c.lead}</motion.p>
             <motion.div {...fade(3)} className="mt-8 flex flex-wrap justify-center gap-3">
-              <a href="/interiors/#book" className="btn btn-primary btn-lg rounded-xl shadow-lg shadow-primary/25">{t.ctaBook}<ArrowRight className="size-5" /></a>
-              <a href="/tech/#quote" className="btn btn-outline btn-lg rounded-xl">{t.ctaQuote}</a>
+              {open ? (<>
+                <a href="/interiors/#book" className="btn btn-primary btn-lg rounded-xl shadow-lg shadow-primary/25">{t.ctaBook}<ArrowRight className="size-5" /></a>
+                <a href="/tech/#quote" className="btn btn-outline btn-lg rounded-xl">{t.ctaQuote}</a>
+              </>) : (<>
+                <a href="/tech/#quote" className="btn btn-primary btn-lg rounded-xl shadow-lg shadow-primary/25">{c.ctaA}<ArrowRight className="size-5" /></a>
+                <a href="/portfolio/" className="btn btn-outline btn-lg rounded-xl">{c.ctaB}</a>
+              </>)}
             </motion.div>
             <motion.ul {...fade(4)} className="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-base-content/60">
-              {t.trust.map((x, i) => <li key={x} className="flex items-center gap-1.5">{[<MapPin key="a" className="size-4" />, <MessageCircle key="b" className="size-4" />, <ShieldCheck key="c" className="size-4" />][i]}{x}</li>)}
+              {(open ? t.trust : c.trust).map((x, i) => <li key={x} className="flex items-center gap-1.5">{[<MapPin key="a" className="size-4" />, <MessageCircle key="b" className="size-4" />, <ShieldCheck key="c" className="size-4" />][i]}{x}</li>)}
             </motion.ul>
           </div>
 
           {/* product showcase: real prices from the booking system (HeroUI-style floating cards) */}
-          <div className="mx-auto max-w-5xl px-4 pb-16">
+          {open && <div className="mx-auto max-w-5xl px-4 pb-16">
             <motion.div {...fade(2)} className="relative grid items-center gap-5 md:grid-cols-[1fr_1.15fr_1fr]">
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                 className="card order-2 border border-base-content/10 bg-base-100 shadow-xl md:order-1 md:-rotate-2">
@@ -228,13 +269,61 @@ export default function App() {
                 </div>
               </motion.div>
             </motion.div>
-          </div>
+          </div>}
+
+          {/* showcase while Interiors is closed: the tech side */}
+          {!open && <div className="mx-auto max-w-5xl px-4 pb-16">
+            <motion.div {...fade(2)} className="relative grid items-center gap-5 md:grid-cols-[1fr_1.15fr_1fr]">
+              <motion.a href="/interiors/" animate={{ y: [0, -8, 0] }} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                className="card order-2 border border-base-content/10 bg-base-100 shadow-xl md:order-1 md:-rotate-2">
+                <div className="card-body gap-3 p-5 text-left">
+                  <div className="flex items-center justify-between">
+                    <span className="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><Armchair className="size-5" /></span>
+                    <span className="badge badge-warning badge-soft badge-sm">{c.soon}</span>
+                  </div>
+                  <div className="font-bold">Redline Interiors</div>
+                  <p className="text-sm text-base-content/70">{c.soonShort}</p>
+                </div>
+              </motion.a>
+
+              <div className="card order-1 border border-base-content/10 bg-base-100 shadow-2xl shadow-primary/10 md:order-2">
+                <div className="card-body gap-0 p-0 text-left">
+                  <div className="flex items-center justify-between border-b border-base-content/10 px-6 py-4 text-xs font-semibold tracking-wider uppercase">
+                    <span className="text-base-content/60">Build sheet</span><span className="badge badge-ghost badge-sm">{c.example}</span>
+                  </div>
+                  <dl className="px-6 py-2 text-sm tabular-nums">
+                    {c.sheet.map(([k, v]) => (
+                      <div key={k} className="flex justify-between gap-4 border-b border-dashed border-base-content/10 py-2 last:border-0"><dt className="text-base-content/55">{k}</dt><dd className="text-right font-medium">{v}</dd></div>
+                    ))}
+                  </dl>
+                  <div className="grid grid-cols-[auto_1fr_auto] items-center gap-3 border-t border-base-content/10 px-6 py-4 text-xs">
+                    <span className="text-base-content/60">{c.stress}</span><progress className="progress progress-success w-full" value="100" max="100" /><b>2 h</b>
+                  </div>
+                  <div className="px-6 pb-6"><a href="/tech/#quote" className="btn btn-primary w-full rounded-xl">{c.quotePc}<ArrowRight className="size-4" /></a></div>
+                </div>
+              </div>
+
+              <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                className="order-3 grid gap-4 md:rotate-2">
+                <div className="card border border-base-content/10 bg-neutral text-neutral-content shadow-xl">
+                  <div className="card-body items-center p-5"><Meter className="w-40" /></div>
+                </div>
+                <div className="card border border-base-content/10 bg-base-100 shadow-xl">
+                  <div className="card-body p-5 text-left">
+                    <div className="text-xs font-semibold text-base-content/60 uppercase">{c.freeK}</div>
+                    <div className="flex items-center gap-2 text-3xl font-extrabold"><BadgeCheck className="size-7 text-success" />{c.freeH}</div>
+                    <div className="text-sm text-base-content/60">{c.freeP}</div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>}
         </section>
 
         {/* services bento (Preline) */}
         <section id="services" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 sm:py-24">
           <SectionHead k={t.servicesK} h={t.servicesH} p={t.servicesP} />
-          <div className="grid gap-5 lg:grid-cols-3 lg:grid-rows-2">
+          {open && <div className="grid gap-5 lg:grid-cols-3 lg:grid-rows-2">
             <motion.a {...fade(0)} href="/interiors/" className="group card relative overflow-hidden border border-base-content/10 bg-gradient-to-br from-primary/10 via-base-100 to-base-100 transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/15 lg:col-span-2 lg:row-span-2">
               <div className="pointer-events-none absolute -right-24 -bottom-24 size-80 rounded-full bg-primary/20 blur-3xl" />
               <div className="card-body gap-5 p-7 sm:p-9">
@@ -280,11 +369,61 @@ export default function App() {
                 </div>
               </motion.a>
             ))}
-          </div>
+          </div>}
+
+          {!open && <div className="grid gap-5 lg:grid-cols-3 lg:grid-rows-2">
+            <motion.a {...fade(0)} href="/tech/" className="group card relative overflow-hidden border border-base-content/10 bg-gradient-to-br from-primary/10 via-base-100 to-base-100 transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/15 lg:col-span-2 lg:row-span-2">
+              <div className="pointer-events-none absolute -right-24 -bottom-24 size-80 rounded-full bg-primary/20 blur-3xl" />
+              <div className="card-body gap-5 p-7 sm:p-9">
+                <div className="flex items-center justify-between">
+                  <span className="grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary"><Cpu className="size-6" /></span>
+                  <span className="badge badge-primary badge-soft">{t.tiles.tech.badge}</span>
+                </div>
+                <h3 className="text-3xl font-extrabold tracking-tight">{t.tiles.tech.title}</h3>
+                <p className="max-w-lg text-base-content/70">{c.techDesc}</p>
+                <ul className="max-w-lg divide-y divide-base-content/10 rounded-2xl border border-base-content/10 bg-base-100/80 backdrop-blur">
+                  {c.techList.map(([name, sub], i) => {
+                    const Icon = [Wrench, Monitor, Code][i];
+                    return (
+                      <li key={name} className="flex items-center gap-3 px-4 py-3">
+                        <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-base-200 text-primary"><Icon className="size-4" /></span>
+                        <span><span className="block font-medium">{name}</span><span className="block text-sm text-base-content/60">{sub}</span></span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <span className="mt-auto inline-flex items-center gap-2 font-semibold text-primary">{t.tiles.tech.cta}<ArrowRight className="size-4 transition group-hover:translate-x-1" /></span>
+              </div>
+            </motion.a>
+
+            <motion.a {...fade(1)} href="/portfolio/" className="group card border border-base-content/10 bg-base-100 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl">
+              <div className="card-body gap-3 p-7">
+                <div className="flex items-center justify-between">
+                  <span className="grid size-11 place-items-center rounded-2xl bg-base-200 text-primary"><Images className="size-5" /></span>
+                  <span className="badge badge-ghost badge-soft">{t.tiles.portfolio.badge.replace("{n}", data.projects)}</span>
+                </div>
+                <h3 className="text-xl font-bold">{t.tiles.portfolio.title}</h3>
+                <p className="text-sm text-base-content/70">{t.tiles.portfolio.desc}</p>
+                <span className="mt-auto inline-flex items-center gap-2 pt-2 text-sm font-semibold text-primary">{t.tiles.portfolio.cta}<ArrowRight className="size-4 transition group-hover:translate-x-1" /></span>
+              </div>
+            </motion.a>
+
+            <motion.a {...fade(2)} href="/interiors/" className="group card border border-dashed border-base-content/20 bg-base-100 transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl">
+              <div className="card-body gap-3 p-7">
+                <div className="flex items-center justify-between">
+                  <span className="grid size-11 place-items-center rounded-2xl bg-base-200 text-primary"><Armchair className="size-5" /></span>
+                  <span className="badge badge-warning badge-soft">{c.soon}</span>
+                </div>
+                <h3 className="text-xl font-bold">{t.tiles.interiors.title}</h3>
+                <p className="text-sm text-base-content/70">{c.soonShort}</p>
+                <span className="mt-auto inline-flex items-center gap-2 pt-2 text-sm font-semibold text-primary">{c.soonCta}<ArrowRight className="size-4 transition group-hover:translate-x-1" /></span>
+              </div>
+            </motion.a>
+          </div>}
         </section>
 
         {/* stats (daisyUI) */}
-        <section className="border-y border-base-content/10 bg-base-200/60">
+        {open && <section className="border-y border-base-content/10 bg-base-200/60">
           <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 py-10 md:grid-cols-4">
             {[[money(data.carFrom), 0], [data.towns.length, 1], [money(data.deposit), 2], [data.notice, 3]].map(([v, i]) => (
               <motion.div key={i} {...fade(i)} className="px-4 py-3 text-center">
@@ -293,18 +432,18 @@ export default function App() {
               </motion.div>
             ))}
           </div>
-        </section>
+        </section>}
 
         {/* steps (daisyUI) */}
         <section className="mx-auto max-w-6xl px-4 py-16 sm:py-24">
-          <SectionHead k={t.stepsK} h={t.stepsH} center />
+          <SectionHead k={open ? t.stepsK : c.stepsK} h={open ? t.stepsH : c.stepsH} center />
           <motion.ul {...fade(1)} className="steps steps-vertical w-full sm:steps-horizontal">
-            {t.steps.map((s, i) => <li key={s} className={`step ${i < 3 ? "step-primary" : "step-primary"} text-sm font-medium`}>{s}</li>)}
+            {(open ? t.steps : c.steps).map((s, i) => <li key={s} className={`step ${i < 3 ? "step-primary" : "step-primary"} text-sm font-medium`}>{s}</li>)}
           </motion.ul>
         </section>
 
         {/* FAQ (Preline layout, daisyUI collapse) */}
-        <section className="mx-auto grid max-w-6xl gap-10 px-4 pb-16 sm:pb-24 lg:grid-cols-[0.8fr_1.2fr]">
+        {open && <section className="mx-auto grid max-w-6xl gap-10 px-4 pb-16 sm:pb-24 lg:grid-cols-[0.8fr_1.2fr]">
           <SectionHead k={t.faqK} h={t.faqH} />
           <motion.div {...fade(1)} className="join join-vertical w-full">
             {t.faq.map((q, i) => (
@@ -315,17 +454,17 @@ export default function App() {
               </div>
             ))}
           </motion.div>
-        </section>
+        </section>}
 
         {/* CTA band */}
         <section className="mx-auto max-w-6xl px-4 pb-20">
           <motion.div {...fade()} className="relative isolate overflow-hidden rounded-[2rem] bg-gradient-to-br from-primary to-accent px-6 py-14 text-center text-primary-content shadow-2xl shadow-primary/25 sm:px-12">
             <div className="pointer-events-none absolute -top-24 -left-24 -z-10 size-72 rounded-full bg-white/20 blur-3xl" />
             <Sparkles className="mx-auto mb-4 size-8 opacity-90" />
-            <h2 className="mx-auto max-w-2xl text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">{t.bandH}</h2>
-            <p className="mx-auto mt-3 max-w-xl opacity-90">{t.bandP}</p>
+            <h2 className="mx-auto max-w-2xl text-3xl font-extrabold tracking-tight text-balance sm:text-4xl">{open ? t.bandH : c.bandH}</h2>
+            <p className="mx-auto mt-3 max-w-xl opacity-90">{open ? t.bandP : c.bandP}</p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <a href="/interiors/#book" className="btn btn-lg rounded-xl border-0 bg-white text-primary hover:bg-white/90">{t.ctaBook}<ArrowRight className="size-5" /></a>
+              <a href={open ? "/interiors/#book" : "/tech/#quote"} className="btn btn-lg rounded-xl border-0 bg-white text-primary hover:bg-white/90">{open ? t.ctaBook : c.ctaA}<ArrowRight className="size-5" /></a>
               <a href={`https://wa.me/${SITE.whatsapp}`} target="_blank" rel="noopener" className="btn btn-lg btn-outline rounded-xl border-white/70 text-white hover:bg-white/10"><MessageCircle className="size-5" />WhatsApp</a>
             </div>
           </motion.div>

@@ -13,6 +13,8 @@
   <link rel="icon" href="/assets/img/favicon.png">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <script>try{var d=document.documentElement,l=localStorage.getItem("lang"),t=localStorage.getItem("theme");if(l)d.dataset.lang=l;d.dataset.theme=t||(matchMedia("(prefers-color-scheme: dark)").matches?"redline-dark":"redline-light")}catch(e){}</script>
+  <script src="/interiors/config.js"></script>
+  <script>try{var o=window.BUSINESS&&BUSINESS.open===false,pv=/[?&]preview(=|&|$)/.test(location.search),c=document.documentElement.classList;if(o&&!pv)c.add("rl-closed");if(o&&pv)c.add("rl-preview")}catch(e){}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
@@ -31,7 +33,8 @@
       <label class="btn btn-ghost btn-sm btn-circle swap swap-rotate" aria-label="Tema claro u oscuro / Light or dark theme">
         <input type="checkbox" class="theme-toggle"><svg class="swap-off size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="swap-on size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
       </label>
-      <a href="/interiors/#book" class="btn btn-primary btn-sm hidden sm:inline-flex"><span lang="es">Reservar</span><span lang="en">Book</span></a>
+      <a href="/interiors/#book" class="rl-open-only btn btn-primary btn-sm hidden sm:inline-flex"><span lang="es">Reservar</span><span lang="en">Book</span></a>
+      <a href="/tech/#quote" class="rl-closed-only btn btn-primary btn-sm hidden sm:inline-flex"><span lang="es">Cotizar</span><span lang="en">Get a quote</span></a>
     </nav>
     <ul class="menu menu-horizontal w-full justify-center gap-1 border-t border-base-content/5 py-1 text-sm md:hidden"><li><a href="/interiors/">Interiors</a></li><li><a href="/tech/" class="menu-active" aria-current="page">Technologies</a></li><li><a href="/portfolio/">Portfolio</a></li></ul>
   </header>

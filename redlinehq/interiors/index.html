@@ -13,6 +13,8 @@
   <link rel="icon" href="/assets/img/favicon.png">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <script>try{var d=document.documentElement,l=localStorage.getItem("lang"),t=localStorage.getItem("theme");if(l)d.dataset.lang=l;d.dataset.theme=t||(matchMedia("(prefers-color-scheme: dark)").matches?"redline-dark":"redline-light")}catch(e){}</script>
+  <script src="/interiors/config.js"></script>
+  <script>try{var o=window.BUSINESS&&BUSINESS.open===false,pv=/[?&]preview(=|&|$)/.test(location.search),c=document.documentElement.classList;if(o&&!pv)c.add("rl-closed");if(o&&pv)c.add("rl-preview")}catch(e){}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
@@ -31,12 +33,50 @@
       <label class="btn btn-ghost btn-sm btn-circle swap swap-rotate" aria-label="Tema claro u oscuro / Light or dark theme">
         <input type="checkbox" class="theme-toggle"><svg class="swap-off size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="swap-on size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
       </label>
-      <a href="/interiors/#book" class="btn btn-primary btn-sm hidden sm:inline-flex"><span lang="es">Reservar</span><span lang="en">Book</span></a>
+      <a href="/interiors/#book" class="rl-open-only btn btn-primary btn-sm hidden sm:inline-flex"><span lang="es">Reservar</span><span lang="en">Book</span></a>
+      <a href="/tech/#quote" class="rl-closed-only btn btn-primary btn-sm hidden sm:inline-flex"><span lang="es">Cotizar</span><span lang="en">Get a quote</span></a>
     </nav>
     <ul class="menu menu-horizontal w-full justify-center gap-1 border-t border-base-content/5 py-1 text-sm md:hidden"><li><a href="/interiors/" class="menu-active" aria-current="page">Interiors</a></li><li><a href="/tech/">Technologies</a></li><li><a href="/portfolio/">Portfolio</a></li></ul>
   </header>
 
-  <main>
+  <!-- shown only at /interiors/?preview while the page is closed -->
+  <div class="rl-preview-only border-b border-warning/30 bg-warning/15 px-4 py-2 text-center text-sm font-medium">
+    <span lang="es">Vista previa privada: Redline Interiors está cerrado al público (open: false en config.js).</span><span lang="en">Private preview: Redline Interiors is closed to the public (open: false in config.js).</span>
+  </div>
+
+  <!-- coming soon (open: false) -->
+  <main class="rl-closed-only">
+    <section class="relative isolate">
+      <div class="dot-grid pointer-events-none absolute inset-0 -z-10"></div>
+      <div class="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[30rem] w-[56rem] -translate-x-1/2 rounded-full bg-gradient-to-tr from-primary/25 via-accent/15 to-transparent blur-3xl"></div>
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:py-24 lg:grid-cols-[1.1fr_0.9fr]">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-base-content/10 bg-base-100/70 py-1 pr-3 pl-1 text-sm shadow-sm backdrop-blur">
+            <span class="badge badge-primary badge-sm rounded-full"><span lang="es">Muy pronto</span><span lang="en">Coming soon</span></span><span class="text-base-content/75">Redline Interiors</span>
+          </span>
+          <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-balance sm:text-5xl lg:text-[56px] lg:leading-[1.05]"><span lang="es">Detallado interior a domicilio, <span class="text-gradient">muy pronto.</span></span><span lang="en">Mobile interior detailing, <span class="text-gradient">coming soon.</span></span></h1>
+          <p class="mt-4 max-w-xl text-lg text-base-content/70"><span lang="es">Estoy afinando los últimos detalles del servicio de detallado para autos y muebles del hogar en el Área Metropolitana. Escríbeme y te aviso en cuanto abra.</span><span lang="en">I'm fine-tuning the last details of the detailing service for cars and home furniture in the San Juan metro area. Message me and I'll let you know as soon as it opens.</span></p>
+          <ul class="mt-6 flex flex-wrap gap-2">
+            <li class="chip"><span lang="es">Autos y muebles</span><span lang="en">Cars and furniture</span></li>
+            <li class="chip"><span lang="es">A domicilio</span><span lang="en">I come to you</span></li>
+            <li class="chip" data-site="area">Área Metropolitana, Puerto Rico</li>
+          </ul>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a class="btn btn-primary btn-lg rounded-xl shadow-lg shadow-primary/25" data-wa data-wa-es="¡Hola! Avísame cuando abra Redline Interiors." data-wa-en="Hi! Let me know when Redline Interiors opens." href="https://wa.me/17879100777"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg><span lang="es">Avísame cuando abra</span><span lang="en">Let me know when it opens</span></a>
+            <a class="btn btn-outline btn-lg rounded-xl" href="/tech/"><span lang="es">Mientras tanto: Technologies</span><span lang="en">Meanwhile: Technologies</span><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+          </div>
+        </div>
+        <div class="mx-auto w-full max-w-sm">
+          <div class="rounded-[2rem] bg-[#0b0c0f] p-7 shadow-2xl shadow-primary/20 ring-1 ring-white/10">
+            <div class="relative aspect-square"><img src="/assets/img/ring.webp" alt="" class="absolute inset-0 size-full"><svg id="soon-meter" viewBox="0 0 1120 1120" aria-hidden="true" class="absolute inset-0 size-full"></svg></div>
+            <p class="mt-4 text-center text-xs font-semibold tracking-[0.2em] text-white/60 uppercase"><span lang="es">Calentando motores</span><span lang="en">Warming up the engine</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <main class="rl-open-only">
     <!-- hero -->
     <section class="relative isolate" id="top">
       <div class="dot-grid pointer-events-none absolute inset-0 -z-10"></div>
@@ -201,8 +241,8 @@
       <div>
         <h4 class="mb-3 text-sm font-semibold"><span lang="es">Contacto</span><span lang="en">Contact</span></h4>
         <ul class="grid gap-2 text-sm text-base-content/70">
-              <li class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a id="foot-phone" class="link link-hover"></a></li>
-              <li id="foot-email-wrap" class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><a id="foot-email" class="link link-hover"></a></li>
+              <li class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a id="foot-phone" class="link link-hover" href="tel:+17879100777" data-site="phone">(787) 910-0777</a></li>
+              <li id="foot-email-wrap" class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><a id="foot-email" class="link link-hover" href="mailto:citas@redlinehq.work" data-site="email">citas@redlinehq.work</a></li>
               <li><a class="link link-hover flex items-center gap-2" data-wa href="https://wa.me/17879100777"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>WhatsApp</a></li>
         </ul>
       </div>
@@ -210,14 +250,15 @@
     <div class="border-t border-base-content/10 py-5 text-center text-xs text-base-content/50">© <span data-year>2026</span> RedlineHQ · redlinehq.work</div>
   </footer>
 
-  <div class="sticky-bar" id="sticky-bar">
+  <div class="sticky-bar rl-open-only" id="sticky-bar">
     <span id="sticky-text"></span>
     <a class="btn btn-primary btn-sm rounded-xl" href="#book" data-t="continue"></a>
   </div>
   <div class="rl-toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="/assets/site.js"></script>
-  <script src="/interiors/config.js"></script>
+  <script src="/assets/gauge.js"></script>
+  <script>if (document.documentElement.classList.contains("rl-closed")) redlineGauge(document.getElementById("soon-meter"), { value: 0.7, animate: true });</script>
   <script src="/interiors/app.js"></script>
 </body>
 </html>

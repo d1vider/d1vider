@@ -1,5 +1,8 @@
 (function () {
   "use strict";
+  // Closed ("open: false" in config.js): the page shows "coming soon" instead, so skip the booking app.
+  // At /interiors/?preview it runs as normal so you can test changes.
+  if (document.documentElement.classList.contains("rl-closed")) return;
   const B = window.BUSINESS;
   const $ = (s) => document.querySelector(s);
 

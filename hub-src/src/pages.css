@@ -16,6 +16,9 @@
   html[data-lang="es"] body [lang="en"], html[data-lang="en"] body [lang="es"] { display: none !important; }
 }
 
+/* ---------- Interiors open / coming soon (set by interiors/config.js "open") ---------- */
+html:not(.rl-closed) .rl-closed-only, html.rl-closed .rl-open-only, html:not(.rl-preview) .rl-preview-only { display: none !important; }
+
 /* ---------- shared bits ---------- */
 .dot-grid {
   background-image: radial-gradient(color-mix(in oklab, var(--color-base-content) 14%, transparent) 1px, transparent 1px);
