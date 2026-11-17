@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/* RedlineHQ tokens for Tailwind: black chassis, cyber grey, redline red */
+@theme {
+  --color-bg: #08090b;
+  --color-bg-2: #0d0f12;
+  --color-panel: #121418;
+  --color-line: rgb(160 170 180 / 0.14);
+  --color-line-2: rgb(160 170 180 / 0.26);
+  --color-ink: #eef1f4;
+  --color-muted: #9aa2ab;
+  --color-cyber: #7d848b;
+  --color-red: #e3161d;
+  --color-red-hot: #ff3c42;
+  --color-ok: #35d07f;
+  --font-display: "Chakra Petch", "Arial Narrow", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+
+html { background: var(--color-bg); color-scheme: dark; }
+body {
+  margin: 0; color: var(--color-ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(1100px 620px at 85% -12%, rgb(227 22 29 / 0.18), transparent 62%),
+    radial-gradient(900px 560px at -15% 18%, rgb(125 132 139 / 0.12), transparent 60%),
+    var(--color-bg);
+}
+.grid-bg {
+  background-image: linear-gradient(rgb(160 170 180 / 0.06) 1px, transparent 1px), linear-gradient(90deg, rgb(160 170 180 / 0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 60% 0%, #000 20%, transparent 75%);
+}
+.tach { background: repeating-linear-gradient(90deg, rgb(125 132 139 / 0.75) 0 2px, transparent 2px 18px), #15181c; }
+.tach-hot { background: repeating-linear-gradient(90deg, #ff6a6f 0 2px, transparent 2px 18px), var(--color-red); box-shadow: 0 0 22px rgb(255 40 48 / 0.45); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
