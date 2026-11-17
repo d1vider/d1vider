@@ -165,6 +165,7 @@ function doPost(e) {
     cache.put('reqs', String(count + 1), 3600);
 
     const str = (v, max) => String(v || '').trim().slice(0, max);
+    if (b.type === 'quote') return quote_(b, str);   // Redline Technologies quote form
     if (!/^\d{4}-\d{2}-\d{2}$/.test(b.date) || !/^\d{2}:\d{2}$/.test(b.start)) return json_({ ok: false, error: 'invalid' });
     const minutes = Number(b.minutes);
     if (!(minutes >= 10 && minutes <= 900)) return json_({ ok: false, error: 'toolong' });   // max 15 h per booking
@@ -242,6 +243,33 @@ function doPost(e) {
   } finally {
     lock.releaseLock();
   }
+}
+
+/** Quote request from redlinehq.work/tech: email it to you; "Reply" goes to the client if they left an email. */
+function quote_(b, str) {
+  const name = str(b.name, 80), phone = str(b.phone, 30), email = str(b.email, 120), details = str(b.details, 1200);
+  if (!name || !phone || !details) return json_({ ok: false, error: 'invalid' });
+  const service = str(b.service, 60) || 'Otro', budget = str(b.budget, 40) || 'No sé todavía';
+  const okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const digits = phone.replace(/\D/g, '');
+  const wa = 'https://wa.me/' + (digits.length === 10 ? '1' + digits : digits);
+  const text = [
+    'Servicio: ' + service, 'Presupuesto: ' + budget, '', details, '',
+    'Nombre: ' + name, 'Teléfono: ' + phone, 'WhatsApp: ' + wa,
+    okEmail ? 'Email: ' + email : 'Email: (no lo dejó)',
+    'Idioma: ' + (b.lang === 'en' ? 'English' : 'Español'),
+  ].join('\n');
+  const html =
+    '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px">' +
+    '<h2 style="margin:0 0 4px">Nueva solicitud de cotización</h2>' +
+    '<p style="margin:0 0 16px;color:#555">' + escHtml_(service) + ' · ' + escHtml_(budget) + '</p>' +
+    '<p><a href="' + wa + '" style="background:#d71920;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700;display:inline-block">Contestar por WhatsApp</a>' +
+    (okEmail ? '&nbsp; <span style="color:#555">o toca Responder para contestar por email</span>' : '') + '</p>' +
+    '<pre style="white-space:pre-wrap;font:14px/1.5 inherit;background:#f3f4f5;padding:14px;border-radius:8px">' + escHtml_(text) + '</pre></div>';
+  const msg = { to: notifyTo_(), subject: '💬 Cotización: ' + service + ' · ' + name, htmlBody: html, body: text };
+  if (okEmail) msg.replyTo = email;
+  MailApp.sendEmail(msg);
+  return json_({ ok: true });
 }
 
 /** Forget booking details older than 60 days. */
