@@ -89,7 +89,7 @@ function SectionHead({ k, h, p, center }) {
 export default function App() {
   const [lang, setLang] = usePersisted("lang", "es");
   const prefersDark = typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches;
-  const [theme, setTheme] = usePersisted("theme-v3", prefersDark ? "redline-dark" : "redline-light");
+  const [theme, setTheme] = usePersisted("theme", prefersDark ? "redline-dark" : "redline-light");
   useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   const t = T[lang];
