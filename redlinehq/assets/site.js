@@ -64,11 +64,26 @@
   let timer;
   function toast(text) {
     let el = document.getElementById("toast");
-    if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+    if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "rl-toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
     el.textContent = text; el.classList.add("show");
     clearTimeout(timer); timer = setTimeout(() => el.classList.remove("show"), 1800);
   }
   window.redlineToast = toast;
+
+  // light / dark theme (same setting as the hub)
+  const darkQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  const storedTheme = () => { try { return localStorage.getItem("theme"); } catch (e) { return null; } };
+  function applyTheme(th) {
+    root.dataset.theme = th;
+    document.querySelectorAll(".theme-toggle").forEach((c) => { c.checked = th === "redline-dark"; });
+  }
+  document.addEventListener("change", (e) => {
+    if (!e.target.matches(".theme-toggle")) return;
+    const th = e.target.checked ? "redline-dark" : "redline-light";
+    try { localStorage.setItem("theme", th); } catch (err) {}
+    applyTheme(th);
+  });
+  applyTheme(storedTheme() || (darkQuery && darkQuery.matches ? "redline-dark" : "redline-light"));
 
   applyLang(read() || root.dataset.lang || "es");
 })();

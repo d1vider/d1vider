@@ -4,122 +4,86 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Redline Portfolio</title>
-  <meta name="claude:viewport-fit-sides" content="cover">
   <meta name="description" content="Trabajo terminado de RedlineHQ: detallado interior, PCs y proyectos web.">
   <meta property="og:title" content="Redline Portfolio">
   <meta property="og:description" content="Antes y después, builds y proyectos web de RedlineHQ.">
-  <meta property="og:image" content="../assets/img/og.jpg">
-  <meta name="theme-color" content="#08090b">
-  <link rel="icon" href="../assets/img/favicon.png">
-  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <script>try{var l=localStorage.getItem("lang");if(l)document.documentElement.dataset.lang=l}catch(e){}</script>
+  <meta property="og:image" content="https://redlinehq.work/assets/img/og.jpg">
+  <meta property="og:url" content="https://redlinehq.work/portfolio/">
+  <meta name="theme-color" content="#e3161d">
+  <link rel="icon" href="/assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <script>try{var d=document.documentElement,l=localStorage.getItem("lang"),t=localStorage.getItem("theme");if(l)d.dataset.lang=l;d.dataset.theme=t||(matchMedia("(prefers-color-scheme: dark)").matches?"redline-dark":"redline-light")}catch(e){}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/redline.css">
-  <style>
-    .hero { padding-block: clamp(40px, 6vw, 80px) clamp(28px, 4vw, 44px); display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; }
-    .counts { display: flex; gap: 0; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--bg-2); }
-    .counts div { padding: 14px 18px; border-right: 1px solid var(--line); min-width: 96px; }
-    .counts div:last-child { border-right: 0; }
-    .counts b { display: block; font: 700 italic 32px/1 var(--display); font-variant-numeric: tabular-nums; }
-    .counts span { font: 600 11px/1.3 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-
-    .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 24px; }
-    .filters button {
-      font: 600 14px/1 var(--body); color: var(--muted); background: var(--bg-2);
-      border: 1px solid var(--line-2); border-radius: 999px; padding: 10px 16px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center;
-    }
-    .filters button small { font: 600 12px/1 var(--mono); color: var(--dim); }
-    .filters button[aria-pressed="true"] { color: var(--white); background: var(--red); border-color: var(--red); box-shadow: 0 8px 22px -10px var(--red-glow); }
-    .filters button[aria-pressed="true"] small { color: rgba(255,255,255,.75); }
-
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 18px; }
-    .card { display: flex; flex-direction: column; overflow: hidden; }
-    .media { position: relative; aspect-ratio: 16 / 10; background: var(--bg-2); border-bottom: 1px solid var(--line); overflow: hidden; max-width: 100%; }
-    .media > img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
-    .card-body { padding: 20px 22px 22px; display: grid; gap: 10px; flex: 1; align-content: start; }
-    .meta { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-    .date { font: 600 12px/1 var(--mono); color: var(--muted); letter-spacing: 0.06em; }
-    .card h3 { font-size: 21px; }
-    .card p { margin: 0; color: #c3c9cf; font-size: 15px; }
-    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-    .tags span { font: 500 12px/1 var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
-    .card .open { margin-top: 6px; font-weight: 700; text-decoration: none; display: inline-flex; gap: 8px; align-items: center; color: var(--red-hot); justify-self: start; }
-
-    /* DNS record card art */
-    .dns { position: absolute; inset: 0; padding: 18px; display: grid; align-content: center; gap: 8px; font: 500 12.5px/1.3 var(--mono); background: radial-gradient(400px 220px at 80% 0%, rgba(227,22,29,.18), transparent 70%), var(--bg-2); }
-    .dns div { display: grid; grid-template-columns: 56px 1fr; gap: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: rgba(0,0,0,.25); min-width: 0; }
-    .dns b { color: var(--red-hot); font-weight: 600; }
-    .dns span { color: #c9cfd4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    /* before / after slider */
-    .ba { --pos: 50%; }
-    .ba img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-    .ba .before { clip-path: inset(0 calc(100% - var(--pos)) 0 0); }
-    .ba .handle { position: absolute; top: 0; bottom: 0; left: var(--pos); width: 2px; background: var(--white); box-shadow: 0 0 14px var(--red-glow); pointer-events: none; }
-    .ba .handle::after { content: "⇆"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 38px; height: 38px; border-radius: 50%; background: var(--red); color: var(--white); display: grid; place-items: center; font-size: 18px; }
-    .ba input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
-    .ba .lbl { position: absolute; top: 10px; font: 600 11px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase; background: rgba(0,0,0,.6); padding: 6px 8px; border-radius: 6px; pointer-events: none; }
-    .ba .lbl.l { left: 10px; } .ba .lbl.r { right: 10px; }
-
-    /* coming-soon card */
-    .soon .media { display: grid; place-items: center; background:
-      repeating-linear-gradient(135deg, rgba(160,170,180,.05) 0 12px, transparent 12px 24px), var(--bg-2); }
-    .soon .media .ring { width: 96px; height: 96px; border-radius: 50%; border: 6px solid var(--cyber); box-shadow: inset 0 0 0 6px var(--bg-2), inset 0 0 0 10px var(--red), 0 0 30px var(--red-glow); }
-    .empty { padding: 28px; text-align: center; color: var(--muted); }
-    @media (min-width: 900px) {
-      .soon { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
-      .soon .media { aspect-ratio: auto; min-height: 220px; border-bottom: 0; border-right: 1px solid var(--line); }
-      .soon .card-body { align-content: center; padding: 28px 32px; }
-    }
-
-    @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } .counts { width: 100%; } .counts div { flex: 1; min-width: 0; } }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/redline-ui.css">
 </head>
 <body>
-  <header class="nav">
-    <div class="wrap nav-inner">
-      <a class="brand" href="../" aria-label="RedlineHQ"><img class="lockup" src="../assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150"></a>
-      <span class="crumb">Portfolio</span>
-      <nav class="nav-links" aria-label="Secciones">
-        <a href="../interiors/">Interiors</a>
-        <a href="../tech/">Technologies</a>
-        <a href="./" aria-current="page">Portfolio</a>
-      </nav>
-      <div class="lang" role="group" aria-label="Idioma / Language"><button data-lang="es">ES</button><button data-lang="en">EN</button></div>
-    </div>
+  <header class="sticky top-0 z-40 border-b border-base-content/10 bg-base-100/70 backdrop-blur-xl">
+    <nav class="navbar mx-auto max-w-6xl gap-2 px-4" aria-label="RedlineHQ">
+      <div class="flex-1">
+        <a href="/" aria-label="RedlineHQ" class="inline-flex rounded-xl bg-[#0b0c0f] px-2.5 py-1 ring-1 ring-white/10"><img src="/assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150" class="h-9 w-auto"></a>
+      </div>
+      <ul class="menu menu-horizontal hidden gap-1 px-1 text-sm font-medium md:flex"><li><a href="/interiors/">Interiors</a></li><li><a href="/tech/">Technologies</a></li><li><a href="/portfolio/" class="menu-active" aria-current="page">Portfolio</a></li></ul>
+      <div class="lang join" role="group" aria-label="Idioma / Language">
+        <button class="btn join-item btn-sm btn-ghost" data-lang="es">ES</button><button class="btn join-item btn-sm btn-ghost" data-lang="en">EN</button>
+      </div>
+      <label class="btn btn-ghost btn-sm btn-circle swap swap-rotate" aria-label="Tema claro u oscuro / Light or dark theme">
+        <input type="checkbox" class="theme-toggle"><svg class="swap-off size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="swap-on size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      </label>
+      <a href="/interiors/#book" class="btn btn-primary btn-sm hidden sm:inline-flex"><span lang="es">Reservar</span><span lang="en">Book</span></a>
+    </nav>
+    <ul class="menu menu-horizontal w-full justify-center gap-1 border-t border-base-content/5 py-1 text-sm md:hidden"><li><a href="/interiors/">Interiors</a></li><li><a href="/tech/">Technologies</a></li><li><a href="/portfolio/" class="menu-active" aria-current="page">Portfolio</a></li></ul>
   </header>
 
-  <main class="wrap">
-    <section class="hero">
-      <div>
-        <p class="kicker">Redline Portfolio</p>
-        <h1><span lang="es">Trabajo real, sin filtros.</span><span lang="en">Real work, no filters.</span></h1>
-        <p class="lead"><span lang="es">Antes y después de detallado, PCs armadas y proyectos web terminados. Todo lo que ves aquí está hecho.</span><span lang="en">Detailing before and afters, finished PC builds and web projects. Everything here is real, finished work.</span></p>
+  <main>
+    <section class="relative isolate">
+      <div class="dot-grid pointer-events-none absolute inset-0 -z-10"></div>
+      <div class="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[30rem] w-[56rem] -translate-x-1/2 rounded-full bg-gradient-to-tr from-primary/25 via-accent/15 to-transparent blur-3xl"></div>
+      <div class="mx-auto flex max-w-6xl flex-col gap-8 px-4 pt-12 pb-10 lg:flex-row lg:items-end lg:justify-between lg:pt-16">
+        <div class="max-w-2xl">
+          <span class="inline-flex items-center gap-2 rounded-full border border-base-content/10 bg-base-100/70 py-1 pr-3 pl-1 text-sm shadow-sm backdrop-blur"><span class="badge badge-primary badge-sm rounded-full">Redline Portfolio</span><span class="text-base-content/75"><span lang="es">Trabajo terminado</span><span lang="en">Finished work</span></span></span>
+          <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-balance sm:text-5xl lg:text-[56px] lg:leading-[1.05]"><span lang="es">Trabajo real, <span class="text-gradient">sin filtros.</span></span><span lang="en">Real work, <span class="text-gradient">no filters.</span></span></h1>
+          <p class="mt-4 text-lg text-base-content/70"><span lang="es">Antes y después de detallado, PCs armadas y proyectos web terminados. Todo lo que ves aquí está hecho.</span><span lang="en">Detailing before and afters, finished PC builds and web projects. Everything here is real, finished work.</span></p>
+        </div>
+        <div class="grid grid-cols-3 divide-x divide-base-content/10 rounded-2xl border border-base-content/10 bg-base-100/80 backdrop-blur" id="counts"></div>
       </div>
-      <div class="counts" id="counts"></div>
     </section>
 
-    <div class="filters" id="filters" role="group" aria-label="Filtrar"></div>
-    <div class="grid" id="grid"></div>
-    <div style="height: clamp(56px, 8vw, 96px)"></div>
+    <section class="mx-auto max-w-6xl px-4 pb-20">
+      <div class="mb-6 flex flex-wrap gap-2" id="filters" role="group" aria-label="Filtrar / Filter"></div>
+      <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3" id="grid"></div>
+    </section>
   </main>
 
-  <footer class="footer">
-    <div class="wrap footer-inner">
-      <a class="brand" href="../"><img class="lockup" src="../assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150"></a>
-      <nav class="footer-links" aria-label="Footer">
-        <a href="../interiors/">Redline Interiors</a>
-        <a href="../tech/">Redline Technologies</a>
-        <a href="./">Redline Portfolio</a>
-      </nav>
-      <span>© <span data-year>2026</span> RedlineHQ · redlinehq.work</span>
+  <footer class="border-t border-base-content/10 bg-base-200/50">
+    <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+      <div>
+        <span class="inline-flex rounded-xl bg-[#0b0c0f] px-3 py-1.5 ring-1 ring-white/10"><img src="/assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150" class="h-10 w-auto"></span>
+        <p class="mt-4 max-w-xs text-sm text-base-content/60"><span lang="es">Detallado, tecnología y web en el Área Metropolitana de Puerto Rico.</span><span lang="en">Detailing, tech and web in the San Juan metro area, Puerto Rico.</span></p>
+      </div>
+      <div>
+        <h4 class="mb-3 text-sm font-semibold"><span lang="es">Servicios</span><span lang="en">Services</span></h4>
+        <ul class="grid gap-2 text-sm text-base-content/70">
+          <li><a class="link link-hover" href="/interiors/">Redline Interiors</a></li>
+          <li><a class="link link-hover" href="/tech/">Redline Technologies</a></li>
+          <li><a class="link link-hover" href="/portfolio/">Redline Portfolio</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="mb-3 text-sm font-semibold"><span lang="es">Contacto</span><span lang="en">Contact</span></h4>
+        <ul class="grid gap-2 text-sm text-base-content/70">
+              <li class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-site="phone">(787) 910-0777</span></li>
+              <li class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-site="email">citas@redlinehq.work</span></li>
+              <li><a class="link link-hover flex items-center gap-2" data-wa href="https://wa.me/17879100777"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>WhatsApp</a></li>
+        </ul>
+      </div>
     </div>
+    <div class="border-t border-base-content/10 py-5 text-center text-xs text-base-content/50">© <span data-year>2026</span> RedlineHQ · redlinehq.work</div>
   </footer>
 
-  <script src="../assets/site.js"></script>
-  <script src="projects.js"></script>
+  <script src="/assets/site.js"></script>
+  <script src="/portfolio/projects.js"></script>
   <script>
     (function () {
       const P = window.PROJECTS || [];
@@ -130,64 +94,67 @@
         { id: "web", es: "Web", en: "Web" },
       ];
       const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+      const es = () => window.redlineLang() === "es";
       const L = (v) => (v && typeof v === "object" ? v[window.redlineLang()] ?? v.es : v);
       const catName = (id) => L(CATS.find((c) => c.id === id));
-      const fmtDate = (ym) => { const [y, m] = ym.split("-").map(Number); const s = new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString(window.redlineLang() === "es" ? "es-PR" : "en-US", { month: "short", year: "numeric", timeZone: "UTC" }); return s.charAt(0).toUpperCase() + s.slice(1); };
+      const fmtDate = (ym) => { const [y, m] = ym.split("-").map(Number); const s = new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString(es() ? "es-PR" : "en-US", { month: "short", year: "numeric", timeZone: "UTC" }); return s.charAt(0).toUpperCase() + s.slice(1); };
+      const ARROW = '<svg class="size-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+      const MEDIA = "media relative aspect-[16/10] overflow-hidden border-b border-base-content/10 bg-base-200";
       let filter = CATS.some((c) => c.id === location.hash.slice(1)) ? location.hash.slice(1) : "all";
 
       function media(p) {
-        if (p.before && p.after) return `<div class="media ba">
-            <img src="${esc(p.after)}" alt="${esc(L(p.title))}, ${window.redlineLang() === "es" ? "después" : "after"}" loading="lazy">
-            <img class="before" src="${esc(p.before)}" alt="${esc(L(p.title))}, ${window.redlineLang() === "es" ? "antes" : "before"}" loading="lazy">
-            <span class="handle"></span><span class="lbl l">${window.redlineLang() === "es" ? "Antes" : "Before"}</span><span class="lbl r">${window.redlineLang() === "es" ? "Después" : "After"}</span>
-            <input type="range" min="0" max="100" value="50" aria-label="${window.redlineLang() === "es" ? "Comparar antes y después" : "Compare before and after"}">
+        if (p.before && p.after) return `<div class="${MEDIA} ba">
+            <img src="${esc(p.after)}" alt="${esc(L(p.title))}, ${es() ? "después" : "after"}" loading="lazy">
+            <img class="before" src="${esc(p.before)}" alt="${esc(L(p.title))}, ${es() ? "antes" : "before"}" loading="lazy">
+            <span class="handle"></span>
+            <span class="badge badge-neutral badge-sm absolute top-3 left-3">${es() ? "Antes" : "Before"}</span>
+            <span class="badge badge-neutral badge-sm absolute top-3 right-3">${es() ? "Después" : "After"}</span>
+            <input type="range" min="0" max="100" value="50" aria-label="${es() ? "Comparar antes y después" : "Compare before and after"}">
           </div>`;
-        if (p.visual === "dns") return `<div class="media"><div class="dns" aria-hidden="true">
-            <div><b>MX</b><span>mx01.mail.icloud.com. · 10</span></div>
-            <div><b>MX</b><span>mx02.mail.icloud.com. · 10</span></div>
-            <div><b>TXT</b><span>v=spf1 include:icloud.com ~all</span></div>
-            <div><b>CNAME</b><span>sig1._domainkey → icloudmailadmin.com.</span></div>
+        if (p.visual === "dns") {
+          const rec = [["MX", "mx01.mail.icloud.com. · 10"], ["MX", "mx02.mail.icloud.com. · 10"], ["TXT", "v=spf1 include:icloud.com ~all"], ["CNAME", "sig1._domainkey → icloudmailadmin.com."]];
+          return `<div class="${MEDIA}"><div class="absolute inset-0 grid content-center gap-2 bg-gradient-to-br from-primary/10 to-transparent p-5 font-mono text-xs" aria-hidden="true">
+            ${rec.map(([t, v]) => `<div class="grid min-w-0 grid-cols-[56px_1fr] gap-2 rounded-lg border border-base-content/10 bg-base-100/80 px-3 py-2"><b class="text-primary">${t}</b><span class="truncate">${v}</span></div>`).join("")}
           </div></div>`;
-        if (p.image) return `<div class="media"><img src="${esc(p.image)}" alt="${esc(L(p.title))}" loading="lazy"></div>`;
-        return `<div class="media"></div>`;
+        }
+        if (p.image) return `<div class="${MEDIA}"><img src="${esc(p.image)}" alt="${esc(L(p.title))}" loading="lazy" class="size-full object-cover object-top"></div>`;
+        return `<div class="${MEDIA}"></div>`;
       }
       function card(p) {
-        return `<article class="panel card">
+        return `<article class="card group overflow-hidden border border-base-content/10 bg-base-100 transition hover:-translate-y-1 hover:shadow-xl">
           ${media(p)}
-          <div class="card-body">
-            <div class="meta"><span class="chip">${esc(catName(p.category))}</span><span class="date">${esc(fmtDate(p.date))}</span></div>
-            <h3>${esc(L(p.title))}</h3>
-            <p>${esc(L(p.summary))}</p>
-            <div class="tags">${(p.tags || []).map((t) => `<span>${esc(L(t))}</span>`).join("")}</div>
-            ${p.link ? `<a class="open" href="${esc(p.link)}">${esc(L(p.linkLabel) || "Ver")} <span class="arrow" aria-hidden="true">→</span></a>` : ""}
+          <div class="card-body gap-3 p-6">
+            <div class="flex items-center justify-between gap-2"><span class="badge badge-primary badge-soft">${esc(catName(p.category))}</span><span class="text-xs text-base-content/55">${esc(fmtDate(p.date))}</span></div>
+            <h3 class="text-lg font-bold">${esc(L(p.title))}</h3>
+            <p class="text-sm text-base-content/70">${esc(L(p.summary))}</p>
+            <div class="flex flex-wrap gap-1.5">${(p.tags || []).map((t) => `<span class="badge badge-ghost badge-sm">${esc(L(t))}</span>`).join("")}</div>
+            ${p.link ? `<a class="open mt-1 inline-flex items-center gap-2 self-start text-sm font-semibold text-primary" href="${esc(p.link)}">${esc(L(p.linkLabel) || "Ver")} ${ARROW}</a>` : ""}
           </div>
         </article>`;
       }
       function soonCard() {
-        const es = window.redlineLang() === "es";
-        return `<article class="panel card soon">
-          <div class="media"><span class="ring" aria-hidden="true"></span></div>
-          <div class="card-body">
-            <div class="meta"><span class="chip">${esc(catName("interiors"))}</span><span class="date">${es ? "Muy pronto" : "Coming soon"}</span></div>
-            <h3>${es ? "Antes y después de detallado" : "Detailing before and afters"}</h3>
-            <p>${es ? "Las primeras fotos de interiores y muebles van aquí. Reserva tu cita y tu auto puede ser uno de ellos." : "The first interior and furniture photos go here. Book a visit and your car could be one of them."}</p>
-            <a class="open" href="../interiors/#book">${es ? "Reservar cita" : "Book a visit"} <span class="arrow" aria-hidden="true">→</span></a>
+        return `<article class="card soon group overflow-hidden border border-dashed border-base-content/20 bg-base-100 md:col-span-2 lg:col-span-3 md:grid md:grid-cols-[1fr_2fr]">
+          <div class="${MEDIA} grid place-items-center md:aspect-auto md:min-h-48 md:border-r md:border-b-0"><div class="w-28 rounded-[1.5rem] bg-[#0b0c0f] p-3 shadow-lg"><img src="/assets/img/badge.webp" alt="" class="w-full"></div></div>
+          <div class="card-body justify-center gap-3 p-7">
+            <div class="flex items-center justify-between gap-2"><span class="badge badge-primary badge-soft">${esc(catName("interiors"))}</span><span class="text-xs text-base-content/55">${es() ? "Muy pronto" : "Coming soon"}</span></div>
+            <h3 class="text-xl font-bold">${es() ? "Antes y después de detallado" : "Detailing before and afters"}</h3>
+            <p class="text-sm text-base-content/70">${es() ? "Las primeras fotos de interiores y muebles van aquí. Reserva tu cita y tu auto puede ser uno de ellos." : "The first interior and furniture photos go here. Book a visit and your car could be one of them."}</p>
+            <a class="open inline-flex items-center gap-2 self-start text-sm font-semibold text-primary" href="/interiors/#book">${es() ? "Reservar cita" : "Book a visit"} ${ARROW}</a>
           </div>
         </article>`;
       }
 
       function render() {
-        const es = window.redlineLang() === "es";
         const n = (id) => (id === "all" ? P.length : P.filter((p) => p.category === id).length);
         document.getElementById("counts").innerHTML = CATS.filter((c) => c.id !== "all")
-          .map((c) => `<div><b>${n(c.id)}</b><span>${esc(L(c))}</span></div>`).join("");
+          .map((c) => `<div class="px-5 py-3 text-center"><div class="text-3xl font-extrabold tabular-nums">${n(c.id)}</div><div class="text-xs text-base-content/60">${esc(L(c))}</div></div>`).join("");
         document.getElementById("filters").innerHTML = CATS
-          .map((c) => `<button data-f="${c.id}" aria-pressed="${c.id === filter}">${esc(L(c))} <small>${n(c.id)}</small></button>`).join("");
+          .map((c) => `<button class="btn btn-sm rounded-full ${c.id === filter ? "btn-primary" : "btn-ghost border border-base-content/15"}" data-f="${c.id}" aria-pressed="${c.id === filter}">${esc(L(c))} <span class="opacity-60">${n(c.id)}</span></button>`).join("");
         const list = P.filter((p) => filter === "all" || p.category === filter).sort((a, b) => b.date.localeCompare(a.date));
         const hasInteriors = P.some((p) => p.category === "interiors");
         let html = list.map(card).join("");
         if (!hasInteriors && (filter === "all" || filter === "interiors")) html += soonCard();
-        if (!html) html = `<div class="panel empty">${es ? "Todavía no hay proyectos en esta categoría." : "No projects in this category yet."}</div>`;
+        if (!html) html = `<div class="card border border-base-content/10 p-8 text-center text-base-content/60 md:col-span-2 lg:col-span-3">${es() ? "Todavía no hay proyectos en esta categoría." : "No projects in this category yet."}</div>`;
         document.getElementById("grid").innerHTML = html;
       }
 

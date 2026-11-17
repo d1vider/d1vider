@@ -4,143 +4,157 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Redline Interiors</title>
-  <meta name="claude:viewport-fit-sides" content="cover">
   <meta name="description" content="Detallado interior a domicilio para autos y muebles en el Área Metropolitana de Puerto Rico. Precios y citas en línea.">
   <meta property="og:title" content="Redline Interiors">
   <meta property="og:description" content="Detallado interior a domicilio · Área Metropolitana, PR. Mira precios y separa tu cita.">
-  <meta property="og:image" content="../assets/img/og.jpg">
-  <meta name="theme-color" content="#08090b">
-  <link rel="icon" href="../assets/img/favicon.png">
-  <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
-  <script>try{var l=localStorage.getItem("lang");if(l)document.documentElement.dataset.lang=l}catch(e){}</script>
+  <meta property="og:image" content="https://redlinehq.work/assets/img/og.jpg">
+  <meta property="og:url" content="https://redlinehq.work/interiors/">
+  <meta name="theme-color" content="#e3161d">
+  <link rel="icon" href="/assets/img/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <script>try{var d=document.documentElement,l=localStorage.getItem("lang"),t=localStorage.getItem("theme");if(l)d.dataset.lang=l;d.dataset.theme=t||(matchMedia("(prefers-color-scheme: dark)").matches?"redline-dark":"redline-light")}catch(e){}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/redline.css">
-  <link rel="stylesheet" href="interiors.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/redline-ui.css">
 </head>
 <body>
-  <header class="nav">
-    <div class="wrap nav-inner">
-      <a class="brand" href="../" aria-label="RedlineHQ"><img class="lockup" src="../assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150"></a>
-      <span class="crumb">Interiors</span>
-      <nav class="nav-links" aria-label="Secciones">
-        <a href="./" aria-current="page">Interiors</a>
-        <a href="../tech/">Technologies</a>
-        <a href="../portfolio/">Portfolio</a>
-      </nav>
-      <div class="lang" role="group" aria-label="Idioma / Language"><button data-lang="es">ES</button><button data-lang="en">EN</button></div>
-    </div>
+  <header class="sticky top-0 z-40 border-b border-base-content/10 bg-base-100/70 backdrop-blur-xl">
+    <nav class="navbar mx-auto max-w-6xl gap-2 px-4" aria-label="RedlineHQ">
+      <div class="flex-1">
+        <a href="/" aria-label="RedlineHQ" class="inline-flex rounded-xl bg-[#0b0c0f] px-2.5 py-1 ring-1 ring-white/10"><img src="/assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150" class="h-9 w-auto"></a>
+      </div>
+      <ul class="menu menu-horizontal hidden gap-1 px-1 text-sm font-medium md:flex"><li><a href="/interiors/" class="menu-active" aria-current="page">Interiors</a></li><li><a href="/tech/">Technologies</a></li><li><a href="/portfolio/">Portfolio</a></li></ul>
+      <div class="lang join" role="group" aria-label="Idioma / Language">
+        <button class="btn join-item btn-sm btn-ghost" data-lang="es">ES</button><button class="btn join-item btn-sm btn-ghost" data-lang="en">EN</button>
+      </div>
+      <label class="btn btn-ghost btn-sm btn-circle swap swap-rotate" aria-label="Tema claro u oscuro / Light or dark theme">
+        <input type="checkbox" class="theme-toggle"><svg class="swap-off size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="swap-on size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+      </label>
+      <a href="/interiors/#book" class="btn btn-primary btn-sm hidden sm:inline-flex"><span lang="es">Reservar</span><span lang="en">Book</span></a>
+    </nav>
+    <ul class="menu menu-horizontal w-full justify-center gap-1 border-t border-base-content/5 py-1 text-sm md:hidden"><li><a href="/interiors/" class="menu-active" aria-current="page">Interiors</a></li><li><a href="/tech/">Technologies</a></li><li><a href="/portfolio/">Portfolio</a></li></ul>
   </header>
 
   <main>
-    <section class="wrap hero" id="top">
-      <div class="hero-copy">
-        <p class="kicker">Redline Interiors · <span data-c="area"></span></p>
-        <h1 data-c="tagline"></h1>
-        <p class="lead" data-t="lead"></p>
-        <div class="hero-actions">
-          <a class="btn btn-red" href="#book"><span data-t="pickTime"></span> <span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn btn-ghost" href="#prices" data-t="seePrices"></a>
+    <!-- hero -->
+    <section class="relative isolate" id="top">
+      <div class="dot-grid pointer-events-none absolute inset-0 -z-10"></div>
+      <div class="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[30rem] w-[56rem] -translate-x-1/2 rounded-full bg-gradient-to-tr from-primary/25 via-accent/15 to-transparent blur-3xl"></div>
+      <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-12 pb-14 lg:grid-cols-[1.2fr_0.8fr] lg:pt-16">
+        <div>
+          <a href="#book" class="inline-flex items-center gap-2 rounded-full border border-base-content/10 bg-base-100/70 py-1 pr-3 pl-1 text-sm shadow-sm backdrop-blur">
+            <span class="badge badge-primary badge-sm rounded-full">Redline Interiors</span><span class="text-base-content/75" data-c="area"></span>
+          </a>
+          <h1 class="mt-5 text-4xl font-extrabold tracking-tight text-balance sm:text-5xl lg:text-[56px] lg:leading-[1.05]" data-c="tagline"></h1>
+          <p class="mt-4 max-w-xl text-lg text-base-content/70" data-t="lead"></p>
+          <div class="mt-7 flex flex-wrap gap-3">
+            <a class="btn btn-primary btn-lg rounded-xl shadow-lg shadow-primary/25" href="#book"><span data-t="pickTime"></span><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+            <a class="btn btn-outline btn-lg rounded-xl" href="#prices" data-t="seePrices"></a>
+          </div>
+          <ul class="hero-facts mt-6" id="hero-facts"></ul>
         </div>
-        <ul class="hero-facts" id="hero-facts"></ul>
-      </div>
 
-      <aside class="panel next" aria-live="polite">
-        <div class="next-head">
-          <span class="kicker" data-t="nextTitle"></span>
-          <span class="live" id="cal-status"></span>
-        </div>
-        <div id="next-slot" class="next-slot"></div>
-        <dl class="next-grid">
-          <div><dt data-t="fromLabel"></dt><dd id="from-price">—</dd></div>
-          <div><dt data-t="depositNow"></dt><dd id="hero-deposit">—</dd></div>
-          <div><dt data-t="hoursLabel"></dt><dd id="hero-hours">—</dd></div>
-        </dl>
-        <button class="btn btn-red block" id="next-pick"><span data-t="nextPick"></span> <span class="arrow" aria-hidden="true">→</span></button>
-      </aside>
+        <aside class="card border border-base-content/10 bg-base-100 shadow-2xl shadow-primary/10" aria-live="polite">
+          <div class="card-body gap-4 p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="kicker !mb-0" data-t="nextTitle"></span>
+              <span class="live" id="cal-status"></span>
+            </div>
+            <div id="next-slot" class="next-slot"></div>
+            <dl class="next-grid">
+              <div><dt data-t="fromLabel"></dt><dd id="from-price">—</dd></div>
+              <div><dt data-t="depositNow"></dt><dd id="hero-deposit">—</dd></div>
+              <div><dt data-t="hoursLabel"></dt><dd id="hero-hours">—</dd></div>
+            </dl>
+            <button class="btn btn-primary rounded-xl" id="next-pick"><span data-t="nextPick"></span><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+          </div>
+        </aside>
+      </div>
     </section>
 
-    <div class="tach" aria-hidden="true"></div>
-
-    <section id="prices" class="wrap section">
-      <div class="section-head">
+    <!-- prices -->
+    <section id="prices" class="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 sm:py-20">
+      <div class="mb-8 max-w-2xl">
         <p class="kicker" data-t="kPrices"></p>
-        <h2 data-t="pricesTitle"></h2>
-        <p data-t="pricesSub"></p>
+        <h2 class="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl" data-t="pricesTitle"></h2>
+        <p class="mt-3 text-base-content/70" data-t="pricesSub"></p>
       </div>
-      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="mb-6"><div id="tabs" role="tablist"></div></div>
       <div id="service-list" class="service-grid"></div>
-      <div class="addons-block">
-        <h3 data-t="addOns"></h3>
+      <div class="mt-10">
+        <h3 class="mb-3 text-lg font-bold" data-t="addOns"></h3>
         <div id="addon-list" class="addon-grid"></div>
       </div>
     </section>
 
-    <section id="about" class="wrap">
-      <div class="panel about">
-        <div class="about-emblem"><img src="../assets/img/badge.webp" alt="" width="900" height="900" loading="lazy"></div>
-        <div class="about-copy">
+    <!-- about -->
+    <section id="about" class="border-y border-base-content/10 bg-base-200/60">
+      <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-[0.7fr_1.3fr]">
+        <div class="mx-auto w-full max-w-[280px]">
+          <div class="rounded-[2rem] bg-[#0b0c0f] p-6 shadow-xl ring-1 ring-white/10"><img src="/assets/img/badge.webp" alt="" width="900" height="900" loading="lazy" class="w-full"></div>
+        </div>
+        <div>
           <p class="kicker" data-t="kAbout"></p>
-          <h2 data-t="aboutTitle"></h2>
+          <h2 class="mb-4 text-3xl font-extrabold tracking-tight text-balance sm:text-4xl" data-t="aboutTitle"></h2>
           <div id="about-text" class="about-text"></div>
-          <ul class="about-points" id="about-points"></ul>
+          <ul id="about-points" class="about-points"></ul>
         </div>
       </div>
-      <div id="gallery" class="gallery"></div>
+      <div class="mx-auto max-w-6xl px-4"><div id="gallery" class="gallery pb-10"></div></div>
     </section>
 
-    <section id="book" class="wrap section">
-      <div class="section-head">
+    <!-- booking -->
+    <section id="book" class="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 sm:py-20">
+      <div class="mb-8 max-w-2xl">
         <p class="kicker" data-t="kBook"></p>
-        <h2 data-t="bookTitle"></h2>
-        <p data-t="bookSub"></p>
+        <h2 class="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl" data-t="bookTitle"></h2>
+        <p class="mt-3 text-base-content/70" data-t="bookSub"></p>
       </div>
-
-      <div class="book-layout">
-        <div class="book-main">
-          <div class="panel step">
-            <div class="step-title"><span class="step-num">1</span> <span data-t="step1"></span></div>
-            <div class="cal-head">
-              <button class="icon-btn" id="cal-prev" aria-label="‹">‹</button>
-              <strong id="cal-label"></strong>
-              <button class="icon-btn" id="cal-next" aria-label="›">›</button>
+      <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_370px]">
+        <div class="grid min-w-0 gap-5">
+          <div class="card border border-base-content/10 bg-base-100"><div class="card-body p-5 sm:p-6">
+            <h3 class="mb-4 flex items-center gap-3 text-lg font-bold"><span class="grid size-8 place-items-center rounded-full bg-primary text-sm text-primary-content">1</span><span data-t="step1"></span></h3>
+            <div class="mb-3 flex items-center justify-between">
+              <button class="btn btn-circle btn-sm btn-ghost border border-base-content/15" id="cal-prev" aria-label="‹">‹</button>
+              <strong id="cal-label" class="text-base font-bold"></strong>
+              <button class="btn btn-circle btn-sm btn-ghost border border-base-content/15" id="cal-next" aria-label="›">›</button>
             </div>
             <div class="cal-grid cal-dow" id="cal-dow" aria-hidden="true"></div>
             <div class="cal-grid" id="cal-days"></div>
-            <div class="cal-legend">
+            <div class="cal-legend mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-base-content/60">
               <span><i class="dot dot-open"></i><span data-t="legendOpen"></span></span>
               <span><i class="dot dot-full"></i><span data-t="legendFull"></span></span>
             </div>
-          </div>
+          </div></div>
 
-          <div class="panel step">
-            <div class="step-title"><span class="step-num">2</span> <span data-t="step2"></span></div>
-            <p class="muted" id="slot-hint"></p>
+          <div class="card border border-base-content/10 bg-base-100"><div class="card-body p-5 sm:p-6">
+            <h3 class="mb-4 flex items-center gap-3 text-lg font-bold"><span class="grid size-8 place-items-center rounded-full bg-primary text-sm text-primary-content">2</span><span data-t="step2"></span></h3>
+            <p class="mb-3 text-sm text-base-content/65" id="slot-hint"></p>
             <div class="slots" id="slots"></div>
-          </div>
+          </div></div>
 
-          <div class="panel step">
-            <div class="step-title"><span class="step-num">3</span> <span data-t="step3"></span></div>
-            <form id="details" class="form" novalidate>
-              <label class="field" for="f-name"><span data-t="fName"></span><input id="f-name" name="name" autocomplete="name" required maxlength="80"></label>
-              <label class="field" for="f-phone"><span data-t="fPhone"></span><input id="f-phone" name="phone" type="tel" autocomplete="tel" required maxlength="30"></label>
-              <label class="field full" for="f-address"><span data-t="fAddress"></span><input id="f-address" name="address" autocomplete="street-address" required maxlength="160"></label>
-              <label class="field" for="town"><span data-t="fTown"></span><select name="town" id="town" required></select></label>
-              <label class="field full" for="f-notes"><span data-t="fNotes"></span><textarea id="f-notes" name="notes" rows="3" maxlength="600"></textarea></label>
-              <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
-              <div class="full human" id="human" hidden></div>
-              <p class="full privacy"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span data-t="privacy"></span></p>
+          <div class="card border border-base-content/10 bg-base-100"><div class="card-body p-5 sm:p-6">
+            <h3 class="mb-4 flex items-center gap-3 text-lg font-bold"><span class="grid size-8 place-items-center rounded-full bg-primary text-sm text-primary-content">3</span><span data-t="step3"></span></h3>
+            <form id="details" class="grid gap-4 sm:grid-cols-2" novalidate>
+              <label class="flex flex-col gap-1.5 text-sm font-medium" for="f-name"><span data-t="fName"></span><input id="f-name" name="name" class="input w-full" autocomplete="name" required maxlength="80"></label>
+              <label class="flex flex-col gap-1.5 text-sm font-medium" for="f-phone"><span data-t="fPhone"></span><input id="f-phone" name="phone" type="tel" class="input w-full" autocomplete="tel" required maxlength="30"></label>
+              <label class="flex flex-col gap-1.5 text-sm font-medium sm:col-span-2" for="f-address"><span data-t="fAddress"></span><input id="f-address" name="address" class="input w-full" autocomplete="street-address" required maxlength="160"></label>
+              <label class="flex flex-col gap-1.5 text-sm font-medium" for="town"><span data-t="fTown"></span><select name="town" id="town" class="select w-full" required></select></label>
+              <label class="flex flex-col gap-1.5 text-sm font-medium sm:col-span-2" for="f-notes"><span data-t="fNotes"></span><textarea id="f-notes" name="notes" rows="3" class="textarea w-full" maxlength="600"></textarea></label>
+              <input class="absolute -left-[9999px] size-px opacity-0" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+              <div class="human sm:col-span-2" id="human" hidden></div>
+              <p class="privacy sm:col-span-2"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg><span data-t="privacy"></span></p>
             </form>
-          </div>
+          </div></div>
         </div>
 
-        <aside class="book-side">
-          <div class="panel summary" id="summary">
-            <h3 data-t="yourBooking"></h3>
+        <aside class="lg:sticky lg:top-24">
+          <div class="card border border-base-content/10 bg-base-100 shadow-xl" id="summary"><div class="card-body p-6">
+            <h3 class="mb-1 text-lg font-bold" data-t="yourBooking"></h3>
             <ul class="cart" id="cart"></ul>
-            <div id="cart-empty" class="muted"><span data-t="cartEmpty"></span> <a href="#prices" data-t="browse"></a></div>
-            <dl class="totals">
+            <div id="cart-empty" class="text-sm text-base-content/60"><span data-t="cartEmpty"></span> <a href="#prices" class="link link-primary" data-t="browse"></a></div>
+            <dl class="totals mt-3">
               <div><dt data-t="estTime"></dt><dd id="sum-time">—</dd></div>
               <div><dt data-t="when"></dt><dd id="sum-when">—</dd></div>
               <div class="grand"><dt data-t="estTotal"></dt><dd id="sum-total">—</dd></div>
@@ -148,40 +162,62 @@
               <div><dt data-t="balance"></dt><dd id="sum-balance">—</dd></div>
             </dl>
             <p class="error" id="form-error" role="alert"></p>
-            <div id="send-actions">
-              <button class="btn btn-red block" id="send" data-t="send"></button>
-              <button class="btn btn-ghost block" id="send-email" data-t="sendEmail"></button>
+            <div id="send-actions" class="mt-2 grid gap-2">
+              <button class="btn btn-primary w-full rounded-xl shadow-lg shadow-primary/20" id="send" data-t="send"></button>
+              <button class="btn btn-ghost w-full rounded-xl border border-base-content/15" id="send-email" data-t="sendEmail"></button>
               <p class="fine"></p>
               <div class="paychips" id="paychips"></div>
             </div>
             <div id="done" class="done" hidden></div>
-          </div>
+          </div></div>
         </aside>
       </div>
     </section>
 
-    <section class="wrap section notes-section">
-      <div class="section-head"><p class="kicker" data-t="kInfo"></p><h2 data-t="goodToKnow"></h2></div>
+    <!-- notes -->
+    <section class="mx-auto max-w-6xl px-4 pb-16 sm:pb-20">
+      <div class="mb-8 max-w-2xl">
+        <p class="kicker" data-t="kInfo"></p>
+        <h2 class="text-3xl font-extrabold tracking-tight text-balance sm:text-4xl" data-t="goodToKnow"></h2>
+      </div>
       <ul class="notes" id="notes"></ul>
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="wrap footer-inner">
-      <a class="brand" href="../"><img class="lockup" src="../assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150"></a>
-      <span><span data-c="area"></span> · <a id="foot-phone"></a><span id="foot-email-wrap"> · <a id="foot-email"></a></span></span>
-      <span>© <span data-year>2026</span> RedlineHQ · redlinehq.work</span>
+  <footer class="border-t border-base-content/10 bg-base-200/50">
+    <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+      <div>
+        <span class="inline-flex rounded-xl bg-[#0b0c0f] px-3 py-1.5 ring-1 ring-white/10"><img src="/assets/img/lockup-sm.webp" alt="RedlineHQ" width="440" height="150" class="h-10 w-auto"></span>
+        <p class="mt-4 max-w-xs text-sm text-base-content/60"><span lang="es">Detallado, tecnología y web en el Área Metropolitana de Puerto Rico.</span><span lang="en">Detailing, tech and web in the San Juan metro area, Puerto Rico.</span></p>
+      </div>
+      <div>
+        <h4 class="mb-3 text-sm font-semibold"><span lang="es">Servicios</span><span lang="en">Services</span></h4>
+        <ul class="grid gap-2 text-sm text-base-content/70">
+          <li><a class="link link-hover" href="/interiors/">Redline Interiors</a></li>
+          <li><a class="link link-hover" href="/tech/">Redline Technologies</a></li>
+          <li><a class="link link-hover" href="/portfolio/">Redline Portfolio</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="mb-3 text-sm font-semibold"><span lang="es">Contacto</span><span lang="en">Contact</span></h4>
+        <ul class="grid gap-2 text-sm text-base-content/70">
+              <li class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><a id="foot-phone" class="link link-hover"></a></li>
+              <li id="foot-email-wrap" class="flex items-center gap-2"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><a id="foot-email" class="link link-hover"></a></li>
+              <li><a class="link link-hover flex items-center gap-2" data-wa href="https://wa.me/17879100777"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>WhatsApp</a></li>
+        </ul>
+      </div>
     </div>
+    <div class="border-t border-base-content/10 py-5 text-center text-xs text-base-content/50">© <span data-year>2026</span> RedlineHQ · redlinehq.work</div>
   </footer>
 
   <div class="sticky-bar" id="sticky-bar">
     <span id="sticky-text"></span>
-    <a class="btn btn-red" href="#book" data-t="continue"></a>
+    <a class="btn btn-primary btn-sm rounded-xl" href="#book" data-t="continue"></a>
   </div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="rl-toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="../assets/site.js"></script>
-  <script src="config.js"></script>
-  <script src="app.js"></script>
+  <script src="/assets/site.js"></script>
+  <script src="/interiors/config.js"></script>
+  <script src="/interiors/app.js"></script>
 </body>
 </html>

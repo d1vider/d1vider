@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "node -e \"require('fs').rmSync('../redlinehq/app',{recursive:true,force:true})\" && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:pages": "tailwindcss -i src/pages.css -o ../redlinehq/assets/redline-ui.css --minify",
+    "build:all": "npm run build && npm run build:pages"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -19,6 +21,7 @@
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.1.11",
     "@tailwindcss/vite": "4.1.11",
     "@vitejs/plugin-react": "^4.3.4",
     "tailwindcss": "4.1.11",

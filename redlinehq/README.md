@@ -1,10 +1,12 @@
 # RedlineHQ — redlinehq.work
 
-The RedlineHQ website: a hub page with three sections, all bilingual (Spanish by default, English toggle) and sharing one dark black / Cyber Grey / red design.
+The RedlineHQ website: a hub page with three sections, all bilingual (Spanish by default, English toggle), in one Redline design with light and dark mode (follows the visitor's device, with a ☀️/🌙 switch).
+
+Built with **Tailwind CSS 4 + daisyUI 5** (Redline light/dark themes). The hub is a small React app; the other pages are plain HTML + JavaScript. Source for the hub and the shared stylesheet lives in `../hub-src/`.
 
 | Page | Folder | What it is |
 |---|---|---|
-| **Hub** | `index.html` | Logo with animated tachometer, three service buttons, contact |
+| **Hub** | `index.html` + `app/` | Built from `../hub-src/` (don't edit these two by hand) |
 | **Redline Interiors** | `interiors/` | Prices and online booking with calendar, deposit, WhatsApp/email requests |
 | **Redline Technologies** | `tech/` | Consulting, custom PC builds, web development, free-quote form |
 | **Redline Portfolio** | `portfolio/` | Finished work with filters and before/after photo sliders |
@@ -16,9 +18,19 @@ The RedlineHQ website: a hub page with three sections, all bilingual (Spanish by
 | Phone, WhatsApp, email used across the site | `assets/site.js` (top of the file) |
 | Detailing prices, hours, days off, deposit, About text | `interiors/config.js` |
 | Portfolio projects and photos | `portfolio/projects.js` (+ photos in `portfolio/img/`) |
-| Colours, fonts, buttons (whole site) | `assets/redline.css` |
+| Colours (light + dark themes) | `../hub-src/src/theme.css`, then rebuild (below) |
+| Hub text and layout | `../hub-src/src/App.jsx`, then rebuild |
+| Interiors / Technologies / Portfolio layout | their `index.html` (Tailwind + daisyUI classes), then rebuild the stylesheet |
 | Technologies services text | `tech/index.html` |
 | Logo files | `assets/img/`: `lockup.webp` = full logo (RPM meter joined to the name), `badge.webp` = meter only, `wordmark.webp` / `wordmark-lg.webp` = R3DL1NE name, `ring.webp` = empty ring the live meter is drawn on (`assets/gauge.js`) |
+
+### Rebuilding after a design change
+From the `hub-src` folder:
+- `npm run build`: rebuilds the hub (`index.html` + `app/`)
+- `npm run build:pages`: rebuilds `assets/redline-ui.css` for the other pages (run it after adding new Tailwind classes to their HTML)
+- `npm run build:all`: both
+
+Price, text, project and contact changes in `config.js`, `projects.js` and `site.js` need **no** rebuild.
 
 ### Adding a detailing before/after to the portfolio
 1. Put two photos in `portfolio/img/`, e.g. `civic-before.jpg` and `civic-after.jpg` (same size, landscape works best).
