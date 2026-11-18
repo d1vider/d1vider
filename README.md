@@ -31,6 +31,15 @@ In `interiors/config.js`, set `open: false` or `open: true`. No rebuild needed.
 - **Testing while closed:** the full booking page still works for you at **redlinehq.work/interiors/?preview** (with a "private preview" banner). It's real: a booking sent from there goes to your calendar.
 - **`open: true`:** everything switches back to online booking.
 
+### Admin page (only you)
+The booking script also serves a private admin page: upcoming bookings (mark the deposit received, cancel, WhatsApp the client), quote requests with a status (Nuevo / Contestado / Cerrado), and days off. Every quote and booking is also saved to a Google Sheet, "Redline – Solicitudes", in your Google Drive.
+
+One-time setup in script.google.com → Redline booking:
+1. **Deploy → New deployment →** gear → **Web app**. **Execute as: Me**, **Who has access: Only myself** → **Deploy**.
+2. Copy that web app URL, add `?action=admin` to the end, and bookmark it (Safari on iPhone: Share → Add to Home Screen).
+
+Google asks you to sign in with your account, and anyone else gets "No autorizado". The public deployment the website uses stays as it is.
+
 ### Rebuilding after a design change
 From the `hub-src` folder:
 - `npm run build`: rebuilds the hub (`index.html` + `app/`)
