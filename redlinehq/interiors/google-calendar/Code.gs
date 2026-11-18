@@ -123,6 +123,7 @@ function buildIcs_(bk) {
 // ---------------------------------------------------------------- web app
 function doGet(e) {
   const p = (e && e.parameter) || {};
+  if (p.action === 'admin') return adminPage_();
   try {
     if (p.action === 'ics') {                                          // "Add to Calendar" link from the email
       const raw = props_().getProperty('bk_' + String(p.id || '').replace(/\W/g, ''));
@@ -212,6 +213,7 @@ function doPost(e) {
       ev.removeAllReminders();
       ev.addPopupReminder(24 * 60);
       ev.addPopupReminder(60);
+      logBooking_({ when: start, name: name, phone: phone, address: address + (town ? ', ' + town : ''), services: services.join('\n'), total: total, deposit: deposit, eventId: ev.getId() });
     } else {
       const holds = holds_();
       holds.push({ id: id, start: bk.start, end: bk.end, until: Date.now() + SETTINGS.HOLD_HOURS * 36e5 });
@@ -269,6 +271,7 @@ function quote_(b, str) {
   const msg = { to: notifyTo_(), subject: '💬 Cotización: ' + service + ' · ' + name, htmlBody: html, body: text };
   if (okEmail) msg.replyTo = email;
   MailApp.sendEmail(msg);
+  logQuote_({ name: name, phone: phone, email: okEmail ? email : '', service: service, budget: budget, details: details });
   return json_({ ok: true });
 }
 
@@ -285,6 +288,300 @@ function cleanup_() {
 function authorize() {
   if (SETTINGS.MODE === 'google') Logger.log('Google Calendar: ' + googleCal_().getName());
   else Logger.log('iCloud busy times found: ' + icloudBusy_(new Date(), new Date(Date.now() + 30 * 864e5)).length);
+  Logger.log('Hoja de solicitudes: ' + sheetFile_().getUrl());
   MailApp.sendEmail(notifyTo_(), 'Redline booking connector is working ✅', 'Las solicitudes de cita llegarán a este email.');
   Logger.log('Test email sent to ' + notifyTo_());
 }
+
+// ================================================================ admin page (only you)
+// Open it with the second deployment ("Who has access: Only myself"), adding ?action=admin to its URL.
+// Google asks you to sign in, and every admin action re-checks that it's you.
+const ADMIN_STATUSES = ['Nuevo', 'Contestado', 'Cerrado'];
+
+function isOwner_() {
+  try {
+    const me = Session.getActiveUser().getEmail();
+    return !!me && me === Session.getEffectiveUser().getEmail();
+  } catch (e) { return false; }
+}
+function requireOwner_() { if (!isOwner_()) throw new Error('No autorizado'); }
+
+function adminPage_() {
+  if (!isOwner_()) {
+    return HtmlService.createHtmlOutput('<p style="font-family:sans-serif;padding:2rem">No autorizado. Abre el enlace de administración con tu cuenta de Google.</p>');
+  }
+  return HtmlService.createHtmlOutput(ADMIN_HTML_).setTitle('Redline Admin')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+
+/** The "Redline – Solicitudes" Google Sheet (created the first time). */
+function sheetFile_() {
+  const props = props_();
+  const id = props.getProperty('SHEET_ID');
+  if (id) { try { return SpreadsheetApp.openById(id); } catch (e) {} }
+  const ss = SpreadsheetApp.create('Redline – Solicitudes');
+  props.setProperty('SHEET_ID', ss.getId());
+  return ss;
+}
+function sheet_(name, headers) {
+  const ss = sheetFile_();
+  let sh = ss.getSheetByName(name);
+  if (!sh) { sh = ss.insertSheet(name); sh.appendRow(headers); sh.setFrozenRows(1); }
+  return sh;
+}
+const QUOTE_HEADERS_ = ['Fecha', 'Nombre', 'Teléfono', 'Email', 'Servicio', 'Presupuesto', 'Detalles', 'Estado'];
+const BOOKING_HEADERS_ = ['Recibida', 'Cita', 'Cliente', 'Teléfono', 'Dirección', 'Servicios', 'Total', 'Depósito', 'ID evento'];
+
+function logQuote_(q) {
+  try { sheet_('Cotizaciones', QUOTE_HEADERS_).appendRow([new Date(), q.name, q.phone, q.email, q.service, q.budget, q.details, 'Nuevo']); } catch (e) {}
+}
+function logBooking_(r) {
+  try { sheet_('Citas', BOOKING_HEADERS_).appendRow([new Date(), r.when, r.name, r.phone, r.address, r.services, r.total, r.deposit, r.eventId || '']); } catch (e) {}
+}
+
+/** Everything the admin page shows. */
+function adminData() {
+  requireOwner_();
+  const now = new Date();
+  const cal = googleCal_();
+  const bookings = [], daysOff = [];
+  cal.getEvents(new Date(now.getTime() - 864e5), new Date(now.getTime() + 120 * 864e5)).forEach(function (ev) {
+    const desc = ev.getDescription() || '';
+    const item = {
+      id: ev.getId(), title: ev.getTitle(), start: ev.getStartTime().getTime(), end: ev.getEndTime().getTime(),
+      location: ev.getLocation() || '', description: desc,
+    };
+    if (ev.isAllDayEvent()) { daysOff.push(item); return; }
+    item.pending = /PENDIENTE/.test(item.title);
+    item.confirmed = /CONFIRMADA|^✅/.test(item.title);
+    item.wa = (desc.match(/https:\/\/wa\.me\/\d+/) || [''])[0];
+    bookings.push(item);
+  });
+  let quotes = [];
+  try {
+    const rows = sheet_('Cotizaciones', QUOTE_HEADERS_).getDataRange().getValues();
+    for (let i = 1; i < rows.length; i++) {
+      const r = rows[i];
+      const phone = String(r[2] || ''), digits = phone.replace(/\D/g, '');
+      quotes.push({
+        row: i + 1, date: r[0] instanceof Date ? r[0].getTime() : null, name: String(r[1] || ''), phone: phone,
+        email: String(r[3] || ''), service: String(r[4] || ''), budget: String(r[5] || ''), details: String(r[6] || ''),
+        status: ADMIN_STATUSES.indexOf(String(r[7])) >= 0 ? String(r[7]) : 'Nuevo',
+        wa: digits ? 'https://wa.me/' + (digits.length === 10 ? '1' + digits : digits) : '',
+      });
+    }
+  } catch (e) {}
+  quotes.reverse();
+  let sheetUrl = '';
+  try { sheetUrl = sheetFile_().getUrl(); } catch (e) {}
+  return { calendar: cal.getName(), now: now.getTime(), bookings: bookings, daysOff: daysOff, quotes: quotes.slice(0, 100), statuses: ADMIN_STATUSES, sheetUrl: sheetUrl };
+}
+
+function adminEvent_(id) {
+  const ev = googleCal_().getEventById(String(id || ''));
+  if (!ev) throw new Error('No encontré ese evento (¿ya fue borrado?)');
+  return ev;
+}
+/** Deposit received: ⏳ PENDIENTE → ✅ CONFIRMADA, red. */
+function adminConfirm(id) {
+  requireOwner_();
+  const ev = adminEvent_(id);
+  ev.setTitle(ev.getTitle().replace('⏳ PENDIENTE', '✅ CONFIRMADA'));
+  ev.setDescription((ev.getDescription() || '').replace('(pendiente)', '(recibido)'));
+  ev.setColor(CalendarApp.EventColor.RED);
+  return true;
+}
+/** Cancel a booking: deletes the event, so the time frees up on the website. */
+function adminCancel(id) {
+  requireOwner_();
+  const ev = adminEvent_(id);
+  if (ev.isAllDayEvent()) throw new Error('Eso es un día libre, no una cita');
+  ev.deleteEvent();
+  return true;
+}
+/** Day off: an all-day event blocks the whole day on the website. */
+function adminAddDayOff(ds) {
+  requireOwner_();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(ds))) throw new Error('Fecha inválida');
+  googleCal_().createAllDayEvent('🚫 Día libre', Utilities.parseDate(ds, SETTINGS.TIMEZONE, 'yyyy-MM-dd'));
+  return true;
+}
+function adminRemoveDayOff(id) {
+  requireOwner_();
+  const ev = adminEvent_(id);
+  if (!ev.isAllDayEvent()) throw new Error('Eso es una cita, no un día libre');
+  ev.deleteEvent();
+  return true;
+}
+function adminQuoteStatus(row, status) {
+  requireOwner_();
+  if (ADMIN_STATUSES.indexOf(status) < 0) throw new Error('Estado inválido');
+  const sh = sheet_('Cotizaciones', QUOTE_HEADERS_);
+  const r = Number(row);
+  if (!(r >= 2 && r <= sh.getLastRow())) throw new Error('Fila inválida');
+  sh.getRange(r, 8).setValue(status);
+  return true;
+}
+
+// The admin page itself (served by adminPage_).
+const ADMIN_HTML_ = `<!doctype html>
+<html lang="es" data-theme="redline">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redline Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5.7.50/daisyui.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11"></script>
+<style>
+  [data-theme="redline"] { color-scheme: light; --color-base-100:#fff; --color-base-200:#f5f6f8; --color-base-300:#e6e8ec; --color-base-content:#101217;
+    --color-primary:#e3161d; --color-primary-content:#fff; --color-secondary:#6b737b; --color-secondary-content:#fff; --color-accent:#ff6a3d; --color-accent-content:#fff;
+    --color-neutral:#101217; --color-neutral-content:#f2f4f6; --color-info:#2f7bea; --color-info-content:#fff; --color-success:#16a34a; --color-success-content:#fff;
+    --color-warning:#f59e0b; --color-warning-content:#111; --color-error:#e3161d; --color-error-content:#fff;
+    --radius-selector:2rem; --radius-field:.75rem; --radius-box:1.25rem; --size-selector:.25rem; --size-field:.25rem; --border:1px; --depth:1; --noise:0; }
+  body { font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--color-base-200); }
+</style>
+</head>
+<body class="min-h-screen">
+  <header class="sticky top-0 z-10 border-b border-base-300 bg-base-100/90 backdrop-blur">
+    <div class="mx-auto flex max-w-4xl flex-wrap items-center gap-2 px-4 py-3">
+      <div class="min-w-0 flex-1">
+        <div class="text-lg font-extrabold">Redline <span class="text-primary">Admin</span></div>
+        <div id="sub" class="truncate text-xs text-base-content/60">Cargando…</div>
+      </div>
+      <a id="sheet" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" hidden>Hoja</a>
+      <a class="btn btn-ghost btn-sm" href="https://redlinehq.work" target="_blank" rel="noopener">Ver sitio</a>
+      <button id="refresh" class="btn btn-outline btn-sm">Actualizar</button>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-4xl px-4 py-5">
+    <div id="stats" class="mb-5 grid grid-cols-3 gap-3"></div>
+    <div role="tablist" class="tabs tabs-box mb-4 bg-base-100" id="tabs">
+      <button role="tab" class="tab tab-active" data-tab="citas">Citas</button>
+      <button role="tab" class="tab" data-tab="cotizaciones">Cotizaciones</button>
+      <button role="tab" class="tab" data-tab="libres">Días libres</button>
+    </div>
+    <section id="citas" class="grid gap-3"></section>
+    <section id="cotizaciones" class="grid gap-3" hidden></section>
+    <section id="libres" hidden>
+      <form id="dayoff-form" class="mb-4 flex flex-wrap items-end gap-2 rounded-box border border-base-300 bg-base-100 p-4">
+        <label class="flex flex-col gap-1 text-sm font-medium">Bloquear un día<input id="dayoff-date" type="date" class="input" required></label>
+        <button class="btn btn-primary">Añadir día libre</button>
+        <p class="w-full text-xs text-base-content/60">El día queda bloqueado en la página de citas al instante.</p>
+      </form>
+      <div id="dayoff-list" class="grid gap-2"></div>
+    </section>
+    <p id="err" class="mt-4 text-sm font-medium text-error"></p>
+  </main>
+  <div id="toast" class="toast toast-center hidden"><div class="alert alert-success"><span id="toast-text"></span></div></div>
+
+<script>
+  var TZ = "America/Puerto_Rico", D = null, armed = null;
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function fmt(ms, o) { return new Date(ms).toLocaleString("es-PR", Object.assign({ timeZone: TZ }, o)); }
+  function dayName(ms) { var s = fmt(ms, { weekday: "long", day: "numeric", month: "long" }); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function clock(ms) { return fmt(ms, { hour: "numeric", minute: "2-digit" }); }
+  function toast(t) { $("toast-text").textContent = t; $("toast").classList.remove("hidden"); setTimeout(function () { $("toast").classList.add("hidden"); }, 1800); }
+  function run(fn, args, done) {
+    $("err").textContent = "";
+    var r = google.script.run
+      .withSuccessHandler(function (res) { if (done) done(res); })
+      .withFailureHandler(function (e) { $("err").textContent = "Error: " + ((e && e.message) || e); });
+    r[fn].apply(r, args || []);
+  }
+  function load() { $("sub").textContent = "Cargando…"; run("adminData", [], function (d) { D = d; render(); }); }
+  function stat(n, label, tone) {
+    return '<div class="rounded-box border border-base-300 bg-base-100 p-4"><div class="text-2xl font-extrabold ' + (tone || "") + '">' + n + '</div><div class="text-xs text-base-content/60">' + label + '</div></div>';
+  }
+  function cleanTitle(t) { return t.replace(/^⏳ PENDIENTE · |^✅ CONFIRMADA · |^✅ ?/, ""); }
+
+  function render() {
+    var now = D.now;
+    var upcoming = D.bookings.filter(function (b) { return b.end >= now; }).sort(function (a, b) { return a.start - b.start; });
+    var pending = upcoming.filter(function (b) { return b.pending; }).length;
+    var fresh = D.quotes.filter(function (q) { return q.status === "Nuevo"; }).length;
+    $("sub").textContent = "Calendario: " + D.calendar + " · actualizado " + clock(now);
+    if (D.sheetUrl) { $("sheet").href = D.sheetUrl; $("sheet").hidden = false; }
+    var realBookings = upcoming.filter(function (b) { return b.pending || b.confirmed; }).length;
+    $("stats").innerHTML = stat(realBookings, "Próximas citas") + stat(pending, "Esperan depósito", pending ? "text-warning" : "") + stat(fresh, "Cotizaciones nuevas", fresh ? "text-primary" : "");
+
+    // bookings, grouped by day
+    var html = "", lastDay = "";
+    upcoming.forEach(function (b) {
+      var d = dayName(b.start);
+      if (d !== lastDay) { html += '<h3 class="mt-2 text-sm font-bold text-base-content/70">' + esc(d) + "</h3>"; lastDay = d; }
+      var isBooking = b.pending || b.confirmed;
+      var badge = b.pending ? '<span class="badge badge-warning badge-soft">Espera depósito</span>' : b.confirmed ? '<span class="badge badge-success badge-soft">Confirmada</span>' : '<span class="badge badge-ghost">Otro evento</span>';
+      html += '<div class="card border border-base-300 bg-base-100"><div class="card-body gap-2 p-4">' +
+        '<div class="flex flex-wrap items-center justify-between gap-2"><div class="font-bold">' + clock(b.start) + "–" + clock(b.end) + " · " + esc(cleanTitle(b.title)) + "</div>" + badge + "</div>" +
+        (b.location ? '<div class="text-sm text-base-content/70">' + esc(b.location) + "</div>" : "") +
+        (b.description ? '<details class="text-sm"><summary class="cursor-pointer text-base-content/60">Detalles</summary><pre class="mt-2 whitespace-pre-wrap rounded-lg bg-base-200 p-3 font-sans text-xs">' + esc(b.description) + "</pre></details>" : "") +
+        (isBooking ? '<div class="flex flex-wrap gap-2 pt-1">' +
+          (b.wa ? '<a class="btn btn-sm btn-success btn-soft" target="_blank" rel="noopener" href="' + esc(b.wa) + '">WhatsApp</a>' : "") +
+          (b.pending ? '<button class="btn btn-sm btn-primary" data-act="confirm" data-id="' + esc(b.id) + '">Depósito recibido ✓</button>' : "") +
+          '<button class="btn btn-sm btn-ghost text-error" data-act="cancel" data-id="' + esc(b.id) + '">Cancelar cita</button></div>' : "") +
+        "</div></div>";
+    });
+    $("citas").innerHTML = html || '<div class="rounded-box border border-dashed border-base-300 bg-base-100 p-8 text-center text-base-content/60">No hay citas próximas.</div>';
+
+    // quotes
+    $("cotizaciones").innerHTML = D.quotes.map(function (q) {
+      var opts = D.statuses.map(function (s) { return '<option' + (s === q.status ? " selected" : "") + ">" + s + "</option>"; }).join("");
+      return '<div class="card border border-base-300 bg-base-100"><div class="card-body gap-2 p-4">' +
+        '<div class="flex flex-wrap items-center justify-between gap-2"><div><div class="font-bold">' + esc(q.name) + '</div><div class="text-xs text-base-content/60">' + esc(q.service) + " · " + esc(q.budget) + (q.date ? " · " + dayName(q.date) + ", " + clock(q.date) : "") + "</div></div>" +
+        '<select class="select select-sm w-auto" data-act="status" data-row="' + q.row + '">' + opts + "</select></div>" +
+        '<p class="whitespace-pre-wrap text-sm">' + esc(q.details) + "</p>" +
+        '<div class="flex flex-wrap items-center gap-2 pt-1 text-sm">' +
+          (q.wa ? '<a class="btn btn-sm btn-success btn-soft" target="_blank" rel="noopener" href="' + esc(q.wa) + '">WhatsApp</a>' : "") +
+          (q.email ? '<a class="btn btn-sm btn-ghost" target="_blank" rel="noopener" href="mailto:' + esc(q.email) + '">Email</a>' : "") +
+          '<span class="text-base-content/60">' + esc(q.phone) + (q.email ? " · " + esc(q.email) : "") + "</span></div>" +
+        "</div></div>";
+    }).join("") || '<div class="rounded-box border border-dashed border-base-300 bg-base-100 p-8 text-center text-base-content/60">Todavía no hay cotizaciones.</div>';
+
+    // days off
+    var offs = D.daysOff.filter(function (o) { return o.end > now; }).sort(function (a, b) { return a.start - b.start; });
+    $("dayoff-list").innerHTML = offs.map(function (o) {
+      return '<div class="flex items-center justify-between gap-3 rounded-box border border-base-300 bg-base-100 px-4 py-3"><div><div class="font-semibold">' + dayName(o.start + 12 * 36e5) + '</div><div class="text-xs text-base-content/60">' + esc(o.title) + '</div></div><button class="btn btn-sm btn-ghost text-error" data-act="dayoff-remove" data-id="' + esc(o.id) + '">Quitar</button></div>';
+    }).join("") || '<p class="text-sm text-base-content/60">No hay días libres próximos.</p>';
+  }
+
+  document.addEventListener("click", function (e) {
+    var tab = e.target.closest("[data-tab]");
+    if (tab) {
+      document.querySelectorAll("[data-tab]").forEach(function (t) { t.classList.toggle("tab-active", t === tab); });
+      ["citas", "cotizaciones", "libres"].forEach(function (id) { $(id).hidden = id !== tab.dataset.tab; });
+      return;
+    }
+    var b = e.target.closest("button[data-act]"); if (!b) return;
+    var act = b.dataset.act, id = b.dataset.id;
+    if (act === "confirm") { b.disabled = true; run("adminConfirm", [id], function () { toast("Cita confirmada"); load(); }); }
+    if (act === "cancel" || act === "dayoff-remove") {
+      if (armed !== b) {                       // two taps so nothing gets deleted by accident
+        if (armed) { armed.textContent = armed.dataset.label; armed.classList.remove("btn-error"); }
+        armed = b; b.dataset.label = b.textContent; b.textContent = "¿Seguro? Toca otra vez"; b.classList.add("btn-error");
+        setTimeout(function () { if (armed === b) { b.textContent = b.dataset.label; b.classList.remove("btn-error"); armed = null; } }, 4000);
+        return;
+      }
+      armed = null; b.disabled = true;
+      run(act === "cancel" ? "adminCancel" : "adminRemoveDayOff", [id], function () { toast(act === "cancel" ? "Cita cancelada: la hora quedó libre" : "Día libre quitado"); load(); });
+    }
+  });
+  document.addEventListener("change", function (e) {
+    var s = e.target.closest("select[data-act=status]"); if (!s) return;
+    run("adminQuoteStatus", [Number(s.dataset.row), s.value], function () {
+      D.quotes.forEach(function (q) { if (q.row === Number(s.dataset.row)) q.status = s.value; });
+      render(); toast("Estado: " + s.value);
+    });
+  });
+  $("dayoff-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = $("dayoff-date").value; if (!v) return;
+    run("adminAddDayOff", [v], function () { $("dayoff-date").value = ""; toast("Día bloqueado"); load(); });
+  });
+  $("refresh").addEventListener("click", load);
+  load();
+</script>
+</body>
+</html>`;
