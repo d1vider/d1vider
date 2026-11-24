@@ -45,6 +45,7 @@ window.BUSINESS = {
   // ---------- DEPOSIT ----------
   currency: "$",
   deposit: 100,                     // never more than the job total
+  depositFrom: 175,                 // only bookings that total this much or more pay a deposit (0 = every booking)
   // How clients can pay. Deposit: ATH Móvil or PayPal. Balance: any of the three.
   payments: {
     athMovil: "(787) 910-0777",
@@ -224,16 +225,16 @@ window.BUSINESS = {
     es: [
       "Los precios son tarifas base. Si algo está muy sucio puede costar más, y te confirmo el precio final antes de empezar.",
       "Voy a donde estés. Solo necesito acceso a un enchufe y, para autos, un sitio cerca donde estacionar.",
-      "Tu cita queda separada cuando recibo el depósito. El depósito se descuenta del total.",
-      "Aceptamos ATH Móvil, PayPal y efectivo. El depósito se paga por ATH Móvil o PayPal; el balance, como prefieras el día del servicio.",
-      "¿Necesitas cancelar o mover la cita? Avísame con al menos 24 horas y te devuelvo el depósito o lo paso a la nueva fecha.",
+      "Los trabajos de $175 o más se separan con un depósito de $100 que se descuenta del total. Los trabajos más pequeños no llevan depósito: te confirmo por WhatsApp y pagas el día del servicio.",
+      "Aceptamos ATH Móvil, PayPal y efectivo. El depósito (si aplica) se paga por ATH Móvil o PayPal; el resto, como prefieras el día del servicio.",
+      "¿Necesitas cancelar o mover la cita? Avísame con al menos 24 horas. Si diste depósito, te lo devuelvo o lo paso a la nueva fecha.",
     ],
     en: [
       "Prices are starting rates. Heavily soiled items may cost more, and I'll confirm the final price before starting.",
       "I come to you. I just need access to a power outlet and, for cars, a spot to park nearby.",
-      "Your time is secured once I receive the deposit. The deposit comes off your total.",
-      "I take ATH Móvil, PayPal and cash. The deposit is paid by ATH Móvil or PayPal; the balance however you like on the day.",
-      "Need to cancel or move? Give me at least 24 hours' notice and I'll refund the deposit or move it to your new date.",
+      "Jobs of $175 or more are held with a $100 deposit that comes off your total. Smaller jobs need no deposit: I confirm on WhatsApp and you pay on the day.",
+      "I take ATH Móvil, PayPal and cash. The deposit (if any) is paid by ATH Móvil or PayPal; the rest however you like on the day.",
+      "Need to cancel or move? Give me at least 24 hours' notice. If you paid a deposit, I'll refund it or move it to your new date.",
     ],
   },
 };

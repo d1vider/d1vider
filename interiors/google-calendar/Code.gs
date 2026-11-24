@@ -189,7 +189,9 @@ function doPost(e) {
     const total = Number(b.total || 0), deposit = Number(b.deposit || 0);
     const whenText = fmt_(start, 'EEE d MMM yyyy, h:mm a') + ' – ' + fmt_(end, 'h:mm a');
     const description = [
-      'Depósito: $' + deposit + ' (pendiente)  ·  Total: $' + total + '  ·  Balance: $' + (total - deposit),
+      (deposit > 0
+        ? 'Depósito: $' + deposit + ' (pendiente)  ·  Total: $' + total + '  ·  Balance: $' + (total - deposit)
+        : 'Sin depósito  ·  Total: $' + total + ' (se paga el día del servicio)'),
       '', 'Cliente: ' + name, 'Teléfono: ' + phone, 'WhatsApp: ' + wa,
       'Dirección: ' + address + (town ? ', ' + town : ''),
       '', 'Servicios:', services.join('\n'),
@@ -208,7 +210,7 @@ function doPost(e) {
 
     if (SETTINGS.MODE === 'google') {
       const ev = googleCal_().createEvent('⏳ PENDIENTE · ' + name + ' · ' + (town || 'PR'), start, end,
-        { description: description + '\n\nAl recibir el depósito: cambia el título a ✅ y el color a rojo.', location: bk.location });
+        { description: description + (deposit > 0 ? '\n\nAl recibir el depósito: cambia el título a ✅ y el color a rojo.' : '\n\nSin depósito: confírmale al cliente por WhatsApp y cambia el título a ✅.'), location: bk.location });
       ev.setColor(CalendarApp.EventColor.YELLOW);
       ev.removeAllReminders();
       ev.addPopupReminder(24 * 60);
@@ -229,7 +231,7 @@ function doPost(e) {
       '&nbsp; <a href="' + wa + '" style="color:#d71920;font-weight:700">Escribir por WhatsApp</a></p>' +
       '<pre style="white-space:pre-wrap;font:14px/1.5 inherit;background:#f3f4f5;padding:14px;border-radius:8px">' + escHtml_(description) + '</pre>' +
       '<p style="color:#777;font-size:13px">' + (SETTINGS.MODE === 'google'
-        ? 'Ya está en tu calendario Redline como ⏳ PENDIENTE, con recordatorios 1 día y 1 hora antes. Cuando recibas el depósito, cambia el título a ✅. Si no llega, borra el evento y la hora queda libre en la página.'
+        ? 'Ya está en tu calendario Redline como ⏳ PENDIENTE, con recordatorios 1 día y 1 hora antes. ' + (deposit > 0 ? 'Cuando recibas el depósito, márcala como recibida en tu página de admin (o cambia el título a ✅). Si no llega, cancélala y la hora queda libre en la página.' : 'Este trabajo no lleva depósito: confírmale al cliente por WhatsApp y márcala como confirmada en tu página de admin.')
         : 'Esta hora queda bloqueada en la página por ' + SETTINGS.HOLD_HOURS + ' horas. Cuando recibas el depósito, toca "Añadir al Calendario" (o abre el archivo .ics adjunto) y guárdala en tu calendario Redline para que siga bloqueada. Si no llega el depósito, no hagas nada y la hora se libera sola.') +
       '</p></div>';
     MailApp.sendEmail({
@@ -355,6 +357,7 @@ function adminData() {
     item.pending = /PENDIENTE/.test(item.title);
     item.confirmed = /CONFIRMADA|^✅/.test(item.title);
     item.wa = (desc.match(/https:\/\/wa\.me\/\d+/) || [''])[0];
+    item.noDeposit = /^Sin depósito/.test(desc);
     bookings.push(item);
   });
   let quotes = [];
@@ -382,7 +385,7 @@ function adminEvent_(id) {
   if (!ev) throw new Error('No encontré ese evento (¿ya fue borrado?)');
   return ev;
 }
-/** Deposit received: ⏳ PENDIENTE → ✅ CONFIRMADA, red. */
+/** Deposit received (or no-deposit job confirmed): ⏳ PENDIENTE → ✅ CONFIRMADA, red. */
 function adminConfirm(id) {
   requireOwner_();
   const ev = adminEvent_(id);
@@ -500,12 +503,13 @@ const ADMIN_HTML_ = `<!doctype html>
   function render() {
     var now = D.now;
     var upcoming = D.bookings.filter(function (b) { return b.end >= now; }).sort(function (a, b) { return a.start - b.start; });
-    var pending = upcoming.filter(function (b) { return b.pending; }).length;
+    var pending = upcoming.filter(function (b) { return b.pending && !b.noDeposit; }).length;
+    var toConfirm = upcoming.filter(function (b) { return b.pending && b.noDeposit; }).length;
     var fresh = D.quotes.filter(function (q) { return q.status === "Nuevo"; }).length;
     $("sub").textContent = "Calendario: " + D.calendar + " · actualizado " + clock(now);
     if (D.sheetUrl) { $("sheet").href = D.sheetUrl; $("sheet").hidden = false; }
     var realBookings = upcoming.filter(function (b) { return b.pending || b.confirmed; }).length;
-    $("stats").innerHTML = stat(realBookings, "Próximas citas") + stat(pending, "Esperan depósito", pending ? "text-warning" : "") + stat(fresh, "Cotizaciones nuevas", fresh ? "text-primary" : "");
+    $("stats").innerHTML = stat(realBookings, "Próximas citas") + stat(pending, "Esperan depósito", pending ? "text-warning" : "") + (toConfirm ? stat(toConfirm, "Por confirmar", "text-warning") : "") + stat(fresh, "Cotizaciones nuevas", fresh ? "text-primary" : "");
 
     // bookings, grouped by day
     var html = "", lastDay = "";
@@ -513,14 +517,14 @@ const ADMIN_HTML_ = `<!doctype html>
       var d = dayName(b.start);
       if (d !== lastDay) { html += '<h3 class="mt-2 text-sm font-bold text-base-content/70">' + esc(d) + "</h3>"; lastDay = d; }
       var isBooking = b.pending || b.confirmed;
-      var badge = b.pending ? '<span class="badge badge-warning badge-soft">Espera depósito</span>' : b.confirmed ? '<span class="badge badge-success badge-soft">Confirmada</span>' : '<span class="badge badge-ghost">Otro evento</span>';
+      var badge = b.pending ? '<span class="badge badge-warning badge-soft">' + (b.noDeposit ? 'Por confirmar · sin depósito' : 'Espera depósito') + '</span>' : b.confirmed ? '<span class="badge badge-success badge-soft">Confirmada</span>' : '<span class="badge badge-ghost">Otro evento</span>';
       html += '<div class="card border border-base-300 bg-base-100"><div class="card-body gap-2 p-4">' +
         '<div class="flex flex-wrap items-center justify-between gap-2"><div class="font-bold">' + clock(b.start) + "–" + clock(b.end) + " · " + esc(cleanTitle(b.title)) + "</div>" + badge + "</div>" +
         (b.location ? '<div class="text-sm text-base-content/70">' + esc(b.location) + "</div>" : "") +
         (b.description ? '<details class="text-sm"><summary class="cursor-pointer text-base-content/60">Detalles</summary><pre class="mt-2 whitespace-pre-wrap rounded-lg bg-base-200 p-3 font-sans text-xs">' + esc(b.description) + "</pre></details>" : "") +
         (isBooking ? '<div class="flex flex-wrap gap-2 pt-1">' +
           (b.wa ? '<a class="btn btn-sm btn-success btn-soft" target="_blank" rel="noopener" href="' + esc(b.wa) + '">WhatsApp</a>' : "") +
-          (b.pending ? '<button class="btn btn-sm btn-primary" data-act="confirm" data-id="' + esc(b.id) + '">Depósito recibido ✓</button>' : "") +
+          (b.pending ? '<button class="btn btn-sm btn-primary" data-act="confirm" data-id="' + esc(b.id) + '">' + (b.noDeposit ? 'Confirmar cita ✓' : 'Depósito recibido ✓') + '</button>' : "") +
           '<button class="btn btn-sm btn-ghost text-error" data-act="cancel" data-id="' + esc(b.id) + '">Cancelar cita</button></div>' : "") +
         "</div></div>";
     });

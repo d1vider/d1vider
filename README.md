@@ -16,7 +16,7 @@ Built with **Tailwind CSS 4 + daisyUI 5** (Redline light/dark themes). The hub i
 | To change… | Edit |
 |---|---|
 | Phone, WhatsApp, email used across the site | `assets/site.js` (top of the file) |
-| Detailing prices, hours, days off, deposit, About text | `interiors/config.js` |
+| Detailing prices, hours, days off, deposit (and `depositFrom`: the job total from which a deposit is asked), About text | `interiors/config.js` |
 | Portfolio projects and photos | `portfolio/projects.js` (+ photos in `portfolio/img/`) |
 | Colours (light + dark themes) | `../hub-src/src/theme.css`, then rebuild (below) |
 | Hub text and layout | `../hub-src/src/App.jsx`, then rebuild |
