@@ -253,20 +253,20 @@ function doPost(e) {
 function quote_(b, str) {
   const name = str(b.name, 80), phone = str(b.phone, 30), email = str(b.email, 120), details = str(b.details, 1200);
   if (!name || !phone || !details) return json_({ ok: false, error: 'invalid' });
-  const service = str(b.service, 60) || 'Otro', budget = str(b.budget, 40) || 'No sé todavía';
+  const service = str(b.service, 60) || 'Otro', budget = str(b.budget, 40);
   const okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const digits = phone.replace(/\D/g, '');
   const wa = 'https://wa.me/' + (digits.length === 10 ? '1' + digits : digits);
   const text = [
-    'Servicio: ' + service, 'Presupuesto: ' + budget, '', details, '',
+    'Servicio: ' + service, budget ? 'Presupuesto: ' + budget : null, '', details, '',
     'Nombre: ' + name, 'Teléfono: ' + phone, 'WhatsApp: ' + wa,
     okEmail ? 'Email: ' + email : 'Email: (no lo dejó)',
     'Idioma: ' + (b.lang === 'en' ? 'English' : 'Español'),
-  ].join('\n');
+  ].filter(function (x) { return x !== null; }).join('\n');
   const html =
     '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px">' +
     '<h2 style="margin:0 0 4px">Nueva solicitud de cotización</h2>' +
-    '<p style="margin:0 0 16px;color:#555">' + escHtml_(service) + ' · ' + escHtml_(budget) + '</p>' +
+    '<p style="margin:0 0 16px;color:#555">' + escHtml_(service) + (budget ? ' · ' + escHtml_(budget) : '') + '</p>' +
     '<p><a href="' + wa + '" style="background:#d71920;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700;display:inline-block">Contestar por WhatsApp</a>' +
     (okEmail ? '&nbsp; <span style="color:#555">o toca Responder para contestar por email</span>' : '') + '</p>' +
     '<pre style="white-space:pre-wrap;font:14px/1.5 inherit;background:#f3f4f5;padding:14px;border-radius:8px">' + escHtml_(text) + '</pre></div>';
@@ -534,7 +534,7 @@ const ADMIN_HTML_ = `<!doctype html>
     $("cotizaciones").innerHTML = D.quotes.map(function (q) {
       var opts = D.statuses.map(function (s) { return '<option' + (s === q.status ? " selected" : "") + ">" + s + "</option>"; }).join("");
       return '<div class="card border border-base-300 bg-base-100"><div class="card-body gap-2 p-4">' +
-        '<div class="flex flex-wrap items-center justify-between gap-2"><div><div class="font-bold">' + esc(q.name) + '</div><div class="text-xs text-base-content/60">' + esc(q.service) + " · " + esc(q.budget) + (q.date ? " · " + dayName(q.date) + ", " + clock(q.date) : "") + "</div></div>" +
+        '<div class="flex flex-wrap items-center justify-between gap-2"><div><div class="font-bold">' + esc(q.name) + '</div><div class="text-xs text-base-content/60">' + esc(q.service) + (q.budget ? " · " + esc(q.budget) : "") + (q.date ? " · " + dayName(q.date) + ", " + clock(q.date) : "") + "</div></div>" +
         '<select class="select select-sm w-auto" data-act="status" data-row="' + q.row + '">' + opts + "</select></div>" +
         '<p class="whitespace-pre-wrap text-sm">' + esc(q.details) + "</p>" +
         '<div class="flex flex-wrap items-center gap-2 pt-1 text-sm">' +
