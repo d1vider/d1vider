@@ -28,7 +28,12 @@
       yourBooking: "Tu cita", cartEmpty: "No has añadido nada.", browse: "Ver servicios",
       estTime: "Tiempo estimado", when: "Cuándo", estTotal: "Total estimado", depositNow: "Depósito para separar", balance: "Balance el día del servicio",
       send: "Solicitar cita", sending: "Enviando…", sendEmail: "Enviar por email",
-      fine: (dep) => `Depósito de ${dep} por ATH Móvil o PayPal. Se descuenta del total.`,
+      fineAll: (dep) => `Depósito de ${dep} por ATH Móvil o PayPal. Se descuenta del total.`,
+      fine: (dep, from) => `Trabajos de ${from} o más: depósito de ${dep} por ATH Móvil o PayPal, que se descuenta del total. Trabajos más pequeños: sin depósito.`,
+      noDeposit: "No requiere", depositHero: (from) => `Depósito (${from}+)`,
+      doneBodyFree: (when) => `Tu hora del <strong>${when}</strong> está separada. Este trabajo <strong>no requiere depósito</strong>: te confirmo por WhatsApp.`,
+      payOnDay: (tot) => `Pagas <strong>${tot}</strong> el día del servicio en efectivo, ATH Móvil o PayPal.`,
+      doneWaFree: "Escribirme por WhatsApp", msgNoDeposit: "Sin depósito (trabajo menor)",
       payWith: "Pagos", payCash: "Efectivo", payPaypalAsk: "Te envío el enlace por WhatsApp", payBtn: (d) => `Pagar ${d} con PayPal`,
       payBalance: (bal) => `El balance de <strong>${bal}</strong> se paga el día del servicio en efectivo, ATH Móvil o PayPal.`,
       errCart: "Añade al menos un servicio.", errDay: "Escoge un día.", errTime: "Escoge una hora.",
@@ -69,7 +74,12 @@
       yourBooking: "Your booking", cartEmpty: "Nothing added yet.", browse: "Browse services",
       estTime: "Estimated time", when: "When", estTotal: "Estimated total", depositNow: "Deposit to book", balance: "Balance on service day",
       send: "Request booking", sending: "Sending…", sendEmail: "Send by email instead",
-      fine: (dep) => `${dep} deposit by ATH Móvil or PayPal. It comes off your total.`,
+      fineAll: (dep) => `${dep} deposit by ATH Móvil or PayPal. It comes off your total.`,
+      fine: (dep, from) => `Jobs of ${from} or more: ${dep} deposit by ATH Móvil or PayPal, which comes off your total. Smaller jobs: no deposit.`,
+      noDeposit: "Not needed", depositHero: (from) => `Deposit (${from}+)`,
+      doneBodyFree: (when) => `Your time on <strong>${when}</strong> is on hold. This job <strong>needs no deposit</strong>: I'll confirm on WhatsApp.`,
+      payOnDay: (tot) => `You pay <strong>${tot}</strong> on the day of service by cash, ATH Móvil or PayPal.`,
+      doneWaFree: "Message me on WhatsApp", msgNoDeposit: "No deposit (small job)",
       payWith: "Payment", payCash: "Cash", payPaypalAsk: "I'll send you the link on WhatsApp", payBtn: (d) => `Pay ${d} with PayPal`,
       payBalance: (bal) => `The <strong>${bal}</strong> balance is paid on the day of service by cash, ATH Móvil or PayPal.`,
       errCart: "Add at least one service.", errDay: "Pick a day.", errTime: "Pick a start time.",
@@ -223,11 +233,12 @@
   });
 
   // ---------- totals ----------
+  const DEP_FROM = Number(B.depositFrom) || 0;
   function totals() {
     let price = 0, minutes = 0;
     state.cart.forEach((c) => { const o = services[c.serviceId].options[c.optIdx]; price += o.price * c.qty; minutes += o.minutes * c.qty; });
     if (state.cart.length) B.addOns.forEach((a) => { if (state.addOns.has(a.id)) { price += a.price; minutes += a.minutes; } });
-    const deposit = Math.min(B.deposit, price);
+    const deposit = price >= DEP_FROM ? Math.min(B.deposit, price) : 0;
     return { price, minutes, deposit, balance: price - deposit };
   }
   const whenText = () => state.date && state.time != null ? `${fmtDate(state.date)}, ${fmtTime(state.time)}` : state.date ? fmtDate(state.date) : "—";
@@ -247,10 +258,10 @@
     const t = totals(), has = state.cart.length > 0;
     $("#sum-time").textContent = has ? `${S().about} ${fmtDur(t.minutes)}` : "—";
     $("#sum-total").textContent = has ? money(t.price) : "—";
-    $("#sum-deposit").textContent = has ? money(t.deposit) : money(B.deposit);
+    $("#sum-deposit").textContent = has ? (t.deposit ? money(t.deposit) : S().noDeposit) : money(B.deposit);
     $("#sum-balance").textContent = has ? money(t.balance) : "—";
     $("#sum-when").textContent = whenText();
-    document.querySelector('#send-actions .fine').textContent = S().fine(money(B.deposit));
+    document.querySelector('#send-actions .fine').textContent = DEP_FROM > 0 ? S().fine(money(B.deposit), money(DEP_FROM)) : S().fineAll(money(B.deposit));
     $("#sticky-bar").classList.toggle("show", has && !state.sent);
     $("#sticky-text").textContent = has ? `${S().items(state.cart.reduce((n, c) => n + c.qty, 0))} · ${money(t.price)}` : "";
   }
@@ -370,7 +381,7 @@
       `📅 ${fmtDate(state.date)} · ${fmtTime(state.time)}`, "",
       S().msgServices, ...serviceLines().map((l) => `• ${l}`), "",
       `${S().msgTotal}: ${money(t.price)} (${S().about} ${fmtDur(t.minutes)})`,
-      `${S().msgDeposit}: ${money(t.deposit)}`, "",
+      t.deposit ? `${S().msgDeposit}: ${money(t.deposit)}` : S().msgNoDeposit, "",
       `${S().msgName}: ${field("name")}`,
       `${S().msgPhone}: ${field("phone")}`,
       `${S().msgAddr}: ${field("address")}, ${town}`,
@@ -395,15 +406,8 @@
     return !msg;
   }
 
-  function showDone(viaApi) {
-    const t = totals();
-    state.sent = { when: whenText(), viaApi, wa: waUrl(viaApi ? S().msgReceipt : "") };
-    $("#send-actions").hidden = true;
-    const d = $("#done");
-    d.hidden = false;
-    d.innerHTML = `
-      <div class="done-icon">✓</div>
-      <h4>${viaApi ? S().doneTitleApi : S().doneTitleWa}</h4>
+  function paidBlock(t) {
+    return `
       <p>${S().doneBody(esc(state.sent.when), money(t.deposit), B.depositHoursToPay)}</p>
       <div class="pay-opts">
         <div class="pay-opt"><span class="pay-name">ATH Móvil</span><strong>${esc(B.payments.athMovil)}</strong></div>
@@ -412,7 +416,20 @@
           : `<div class="pay-opt"><span class="pay-name">PayPal</span><span>${S().payPaypalAsk}</span></div>`}
       </div>
       ${t.balance > 0 ? `<p>${S().payBalance(money(t.balance))}</p>` : ""}
-      <a class="btn btn-primary w-full" href="${state.sent.wa}" target="_blank" rel="noopener">${viaApi ? S().doneWaBtn : S().doneWaAgain}</a>
+`;
+  }
+  function showDone(viaApi) {
+    const t = totals();
+    state.sent = { when: whenText(), viaApi, wa: waUrl(viaApi && t.deposit ? S().msgReceipt : "") };
+    const free = !t.deposit;
+    $("#send-actions").hidden = true;
+    const d = $("#done");
+    d.hidden = false;
+    d.innerHTML = `
+      <div class="done-icon">✓</div>
+      <h4>${viaApi ? S().doneTitleApi : S().doneTitleWa}</h4>
+      ${free ? `<p>${S().doneBodyFree(esc(state.sent.when))}</p><p>${S().payOnDay(money(t.price))}</p>` : paidBlock(t)}
+      <a class="btn btn-primary w-full" href="${state.sent.wa}" target="_blank" rel="noopener">${!viaApi ? S().doneWaAgain : free ? S().doneWaFree : S().doneWaBtn}</a>
       <button class="btn btn-ghost w-full mt-2" id="again">${S().doneAgain}</button>`;
     $("#sticky-bar").classList.remove("show");
     d.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -487,6 +504,7 @@
     const prices = B.categories.flatMap((c) => c.services.flatMap((s) => s.options.map((o) => o.price)));
     $("#from-price").textContent = money(Math.min(...prices));
     $("#hero-deposit").textContent = money(B.deposit);
+    $("#hero-deposit-label").textContent = DEP_FROM > 0 ? S().depositHero(money(DEP_FROM)) : S().depositNow;
     $("#hero-hours").textContent = `${fmtTime(toMin(B.dayStart))}–${fmtTime(toMin(B.dayEnd))}`;
   }
   $("#next-pick").addEventListener("click", (e) => {
