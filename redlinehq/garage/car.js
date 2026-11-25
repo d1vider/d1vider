@@ -13,10 +13,10 @@ window.CAR = {
   model: "Kona N",
   color: { es: "Cyber Grey", en: "Cyber Grey" },
   tagline: {
-    es: "El carro detrás de RedlineHQ. De aquí salen los colores de la marca y las ganas de cuidar cada interior como si fuera el mío.",
-    en: "The car behind RedlineHQ. It's where the brand colors come from, and why I treat every interior like it's my own.",
+    es: "Aquí empezó todo. El Kona N que le dio nombre, colores y RPM a RedlineHQ.",
+    en: "Where it all started. The Kona N that gave RedlineHQ its name, its colors and its RPM.",
   },
-  instagram: "",   // e.g. "https://instagram.com/yourname"
+  instagram: "https://instagram.com/r3dline_n",
   pinkslip: "https://pinkslips.app/r3dline-n",
 
   hero: "img/kona-front.webp",
@@ -36,7 +36,7 @@ window.CAR = {
     { group: { es: "Motor", en: "Engine" }, items: [
       { name: "Woosh Motorsport Inlet" },
       { name: "Sonata HPFP" },
-      { name: "HKS Heat 9 Spark Plugs (.0022)" },
+      { name: "HKS Heat 9 Spark Plugs (.022\" gap)" },
       { name: "Forge Intake" },
       { name: "Woosh Ignition Coils" },
       { name: "HKS SQ4 BoV" },
