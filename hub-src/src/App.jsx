@@ -141,7 +141,7 @@ export default function App() {
       towns: B.municipalities || [],
       deposit: B.deposit || 100,
       notice: B.minNoticeHours || 24,
-      projects: (window.PROJECTS || []).length,
+      projects: (window.PROJECTS || []).filter((p) => !p.draft).length,
       popular: B.categories.flatMap((c) => c.services.filter((s) => s.popular)),
       notes: L(B.notes, lang) || [],
     };
