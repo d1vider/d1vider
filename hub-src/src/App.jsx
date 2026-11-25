@@ -28,6 +28,7 @@ const T = {
     faq: ["¿Qué pueblos cubren?", "¿Cuánto cuesta?", "¿Cómo separo mi cita?", "¿Cómo pago?", "¿Puedo cancelar o mover la cita?", "¿Qué necesitas de mí?"],
     other: "Otro pueblo: escríbeme y lo coordinamos.",
     bandH: "¿Listo para que tu interior quede como nuevo?", bandP: "Mira los precios y escoge tu hora en menos de un minuto.",
+    garage: { k: "Redline Garage", h: "Conoce el Kona N detrás de RedlineHQ.", p: "El carro que le dio nombre, colores y RPM a la marca.", mods: "modificaciones", soon: "en camino", cta: "Ver el Garage" },
     foot: { services: "Servicios", contact: "Contacto", about: "Detallado, tecnología y web en el Área Metropolitana de Puerto Rico." },
     closed: {
       nav: "Cotizar",
@@ -68,6 +69,7 @@ const T = {
     faq: ["Which towns do you cover?", "How much does it cost?", "How do I hold my booking?", "How do I pay?", "Can I cancel or move my booking?", "What do you need from me?"],
     other: "Another town: message me and we'll work it out.",
     bandH: "Ready for an interior that looks new again?", bandP: "See the prices and pick your time in under a minute.",
+    garage: { k: "Redline Garage", h: "Meet the Kona N behind RedlineHQ.", p: "The car that gave the brand its name, its colors and its RPM.", mods: "mods", soon: "on the way", cta: "See the Garage" },
     foot: { services: "Services", contact: "Contact", about: "Detailing, tech and web in the San Juan metro area, Puerto Rico." },
     closed: {
       nav: "Get a quote",
@@ -89,6 +91,9 @@ const T = {
 };
 
 const L = (v, lang) => (v && typeof v === "object" && !Array.isArray(v) ? v[lang] ?? v.es : v);
+const CAR = typeof window !== "undefined" && window.CAR && !window.CAR.draft ? window.CAR : null;
+const carMods = CAR ? CAR.mods.reduce((n, g) => n + g.items.length, 0) : 0;
+const carSoon = CAR ? CAR.mods.reduce((n, g) => n + g.items.filter((i) => i.soon).length, 0) : 0;
 const fade = (i = 0) => ({ initial: { opacity: 0, y: 20 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.55, delay: i * 0.07, ease: [0.2, 0.8, 0.2, 1] } });
 
 function usePersisted(key, initial) {
@@ -223,6 +228,29 @@ export default function App() {
               {(open ? t.trust : c.trust).map((x, i) => <li key={x} className="flex items-center gap-1.5">{[<MapPin key="a" className="size-4" />, <MessageCircle key="b" className="size-4" />, <ShieldCheck key="c" className="size-4" />][i]}{x}</li>)}
             </motion.ul>
           </div>
+
+          {/* Redline Garage feature (the car first, for Instagram visitors) */}
+          {CAR && (
+            <motion.a {...fade(5)} href="/garage/" className="group mx-auto mb-4 block max-w-6xl px-4">
+              <div className="card overflow-hidden bg-[#0b0c0f] text-white shadow-2xl shadow-primary/20 ring-1 ring-white/10 sm:grid sm:grid-cols-[1.25fr_1fr]">
+                <div className="relative card-body justify-center gap-3 p-7 sm:p-10">
+                  <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-primary/30 blur-3xl" />
+                  <p className="relative text-sm font-semibold text-primary">{t.garage.k}</p>
+                  <h2 className="relative text-2xl font-extrabold tracking-tight text-balance sm:text-4xl">{t.garage.h}</h2>
+                  <p className="relative text-white/70">{CAR.year} {CAR.make} {CAR.model} · {(CAR.color && (CAR.color[lang] || CAR.color.es)) || ""}. {t.garage.p}</p>
+                  <div className="relative flex gap-8 pt-1">
+                    <div><div className="text-3xl font-extrabold tabular-nums">{carMods - carSoon}</div><div className="text-xs text-white/60">{t.garage.mods}</div></div>
+                    {carSoon > 0 && <div><div className="text-3xl font-extrabold tabular-nums text-primary">{carSoon}</div><div className="text-xs text-white/60">{t.garage.soon}</div></div>}
+                  </div>
+                  <span className="relative mt-2 inline-flex items-center gap-2 self-start rounded-xl bg-primary px-5 py-3 font-semibold text-primary-content shadow-lg shadow-primary/30">{t.garage.cta}<ArrowRight className="size-5 transition group-hover:translate-x-1" /></span>
+                </div>
+                <div className="relative h-64 overflow-hidden sm:h-auto">
+                  <img src={"/garage/" + CAR.hero} alt={`${CAR.year} ${CAR.make} ${CAR.model}`} className="absolute inset-0 size-full object-cover object-center transition duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c0f]/60 to-transparent sm:bg-gradient-to-r sm:from-[#0b0c0f] sm:via-transparent" />
+                </div>
+              </div>
+            </motion.a>
+          )}
 
           {/* product showcase: real prices from the booking system (HeroUI-style floating cards) */}
           {open && <div className="mx-auto max-w-5xl px-4 pb-16">
