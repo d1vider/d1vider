@@ -9,10 +9,33 @@
  *  Photos, pick one style:
  *    image:  "img/my-photo.webp"                          one photo
  *    before: "img/x-before.jpg", after: "img/x-after.jpg"  before/after slider (best for detailing)
+ *      + sideBySide: true   two photos next to each other (when the angles differ)
+ *  gallery (optional): [{ src, caption }] extra photos shown as thumbnails
+ *  draft: true  hides the project; see it at /portfolio/?preview. Delete the line to publish.
  *  link (optional): a page to open, with linkLabel
  * ============================================================
  */
 window.PROJECTS = [
+  {
+    id: "kia-forte-floor",
+    category: "interiors",
+    date: "2026-11",
+    draft: true,               // only visible at redlinehq.work/portfolio/?preview. Delete this line to publish.
+    title: { es: "Kia Forte: alfombra completa, asientos fuera", en: "Kia Forte: full carpet, seats out" },
+    summary: {
+      es: "Saqué los asientos delanteros para llegar a todo lo que el aspirado normal no alcanza: monedas, arena y migas debajo de los asientos. Aspirado profundo, cepillo rotativo en la alfombra y extracción.",
+      en: "I took the front seats out to reach everything a normal vacuum misses: coins, sand and crumbs under the seats. Deep vacuum, rotary brush on the carpet and extraction.",
+    },
+    tags: [{ es: "Asientos fuera", en: "Seats out" }, { es: "Cepillo rotativo", en: "Rotary brush" }, { es: "Extracción", en: "Extraction" }],
+    before: "img/kia-floor-before.webp",
+    after: "img/kia-floor-after.webp",
+    sideBySide: true,          // the two photos were taken from different angles
+    gallery: [
+      { src: "img/kia-rear-before.webp", caption: { es: "Antes: toda la alfombra al descubierto", en: "Before: the whole carpet exposed" } },
+      { src: "img/kia-carpet-closeup.webp", caption: { es: "Antes: la arena que se acumula debajo del asiento", en: "Before: the sand that builds up under the seat" } },
+      { src: "img/kia-drill-brush.webp", caption: { es: "Cepillo rotativo para soltar la suciedad de la alfombra", en: "Rotary brush to loosen dirt from the carpet" } },
+    ],
+  },
   {
     id: "redlinehq",
     category: "web",
