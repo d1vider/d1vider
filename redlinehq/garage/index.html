@@ -136,6 +136,7 @@
         $("draft").hidden = false;
       }
       const all = C.mods.flatMap((g) => g.items), soon = all.filter((i) => i.soon).length;
+      const SOUND = '<svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>';
       const CHECK = '<svg class="mt-0.5 size-4 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
       const CLOCK = '<svg class="mt-0.5 size-4 shrink-0 text-base-content/40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 
@@ -153,20 +154,28 @@
               <div class="flex items-center justify-between gap-2"><h3 class="text-lg font-bold">${esc(L(g.group))}</h3><span class="badge badge-ghost badge-sm">${g.items.length}</span></div>
               <ul class="grid gap-2 border-t border-base-content/10 pt-3 text-sm">${g.items.map((i) => `<li class="flex gap-2.5 ${i.soon ? "text-base-content/55" : ""}">${i.soon ? CLOCK : CHECK}<span class="flex-1">${esc(i.name)}</span>${i.soon ? `<span class="badge badge-primary badge-soft badge-sm shrink-0">${es() ? "Próximamente" : "Coming soon"}</span>` : ""}</li>`).join("")}</ul>
             </div></div>`).join("");
-        $("gallery").innerHTML = C.photos.map((p) => `<button type="button" class="gal-thumb group relative aspect-[3/4] overflow-hidden rounded-2xl border border-base-content/10 bg-base-200" data-src="${esc(p.src)}" data-cap="${esc(L(p.caption) || "")}" aria-label="${esc(L(p.caption) || "")}">
-            <img src="${esc(p.src)}" alt="" loading="lazy" class="size-full object-cover transition duration-500 group-hover:scale-105">
+        $("gallery").innerHTML = C.photos.map((p) => `<button type="button" class="gal-thumb group relative aspect-[3/4] overflow-hidden rounded-2xl border border-base-content/10 bg-base-200" data-src="${esc(p.src)}" data-video="${p.video ? 1 : ""}" data-poster="${esc(p.poster || "")}" data-cap="${esc(L(p.caption) || "")}" aria-label="${esc(L(p.caption) || "")}">
+            ${p.video
+              ? `<video src="${esc(p.src)}" poster="${esc(p.poster || "")}" muted autoplay loop playsinline preload="metadata" class="size-full object-cover transition duration-500 group-hover:scale-105"></video><span class="badge badge-sm absolute top-3 right-3 border-0 bg-black/60 text-white">${SOUND} ${es() ? "Toca para oír" : "Tap for sound"}</span>`
+              : `<img src="${esc(p.src)}" alt="" loading="lazy" class="size-full object-cover transition duration-500 group-hover:scale-105">`}
             <span class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-left text-xs font-semibold text-white">${esc(L(p.caption) || "")}</span>
           </button>`).join("");
       }
       const box = document.createElement("dialog");
       box.className = "modal";
-      box.innerHTML = '<div class="modal-box max-w-2xl p-2"><img class="max-h-[80vh] w-full rounded-xl object-contain" alt=""><p class="px-3 py-2 text-sm text-base-content/70"></p></div><form method="dialog" class="modal-backdrop"><button>close</button></form>';
+      box.innerHTML = '<div class="modal-box max-w-2xl p-2"><img class="max-h-[80vh] w-full rounded-xl object-contain" alt=""><video class="max-h-[80vh] w-full rounded-xl bg-black" controls playsinline hidden></video><p class="px-3 py-2 text-sm text-base-content/70"></p></div><form method="dialog" class="modal-backdrop"><button>close</button></form>';
       document.body.appendChild(box);
       $("gallery").addEventListener("click", (e) => {
         const t = e.target.closest(".gal-thumb"); if (!t) return;
-        box.querySelector("img").src = t.dataset.src; box.querySelector("img").alt = t.dataset.cap;
+        const img = box.querySelector("img"), vid = box.querySelector("video"), isVid = !!t.dataset.video;
+        img.hidden = isVid; vid.hidden = !isVid;
+        box.querySelector(".modal-box").classList.toggle("max-w-sm", isVid);
+        if (isVid) { vid.poster = t.dataset.poster; vid.src = t.dataset.src; vid.currentTime = 0; vid.muted = false; }
+        else { img.src = t.dataset.src; img.alt = t.dataset.cap; }
         box.querySelector("p").textContent = t.dataset.cap; box.showModal();
+        if (isVid) vid.play().catch(() => {});
       });
+      box.addEventListener("close", () => { const v = box.querySelector("video"); v.pause(); });
       document.addEventListener("redline:lang", render);
       render();
     })();
