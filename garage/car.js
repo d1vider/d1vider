@@ -17,7 +17,7 @@ window.CAR = {
     en: "The car behind RedlineHQ. It's where the brand colors come from, and why I treat every interior like it's my own.",
   },
   instagram: "",   // e.g. "https://instagram.com/yourname"
-  pinkslip: "",    // your PinkSlip profile link
+  pinkslip: "https://pinkslips.app/r3dline-n",
 
   hero: "img/kona-front.webp",
   photos: [
