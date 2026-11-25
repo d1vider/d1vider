@@ -7,7 +7,7 @@
  * ============================================================
  */
 window.CAR = {
-  draft: true,   // hidden page: no menu link, and search engines are told to skip it. Set to false to publish.
+  draft: false,  // true hides the page again (yellow banner, search engines told to skip it)
   year: 2023,
   make: "Hyundai",
   model: "Kona N",

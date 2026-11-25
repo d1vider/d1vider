@@ -170,6 +170,7 @@ export default function App() {
             <li><a href="/interiors/">Interiors</a></li>
             <li><a href="/tech/">Technologies</a></li>
             <li><a href="/portfolio/">Portfolio</a></li>
+            <li><a href="/garage/">Garage</a></li>
           </ul>
           <div className="join">
             {["es", "en"].map((l) => (
@@ -186,10 +187,11 @@ export default function App() {
             ? <a href="/interiors/#book" className="btn btn-primary btn-sm hidden sm:inline-flex">{t.nav.book}</a>
             : <a href="/tech/#quote" className="btn btn-primary btn-sm hidden sm:inline-flex">{c.nav}</a>}
         </nav>
-        <ul className="menu menu-horizontal w-full justify-center gap-1 border-t border-base-content/5 py-1 text-sm md:hidden">
+        <ul className="menu menu-horizontal menu-sm w-full flex-nowrap justify-center gap-0 border-t border-base-content/5 py-1 text-[13px] md:hidden">
           <li><a href="/interiors/">Interiors</a></li>
           <li><a href="/tech/">Technologies</a></li>
           <li><a href="/portfolio/">Portfolio</a></li>
+            <li><a href="/garage/">Garage</a></li>
         </ul>
       </header>
 
@@ -484,6 +486,7 @@ export default function App() {
               <li><a className="link link-hover" href="/interiors/">Redline Interiors</a></li>
               <li><a className="link link-hover" href="/tech/">Redline Technologies</a></li>
               <li><a className="link link-hover" href="/portfolio/">Redline Portfolio</a></li>
+              <li><a className="link link-hover" href="/garage/">Redline Garage</a></li>
             </ul>
           </div>
           <div>
