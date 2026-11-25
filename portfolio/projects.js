@@ -34,6 +34,9 @@ window.PROJECTS = [
       { src: "img/kia-rear-before.webp", caption: { es: "Antes: toda la alfombra al descubierto", en: "Before: the whole carpet exposed" } },
       { src: "img/kia-carpet-closeup.webp", caption: { es: "Antes: la arena que se acumula debajo del asiento", en: "Before: the sand that builds up under the seat" } },
       { src: "img/kia-drill-brush.webp", caption: { es: "Cepillo rotativo para soltar la suciedad de la alfombra", en: "Rotary brush to loosen dirt from the carpet" } },
+      { src: "img/kia-rear-floor-after.webp", caption: { es: "Después: la alfombra limpia, todavía sin asientos", en: "After: clean carpet, seats still out" } },
+      { src: "img/kia-front-finished.webp", caption: { es: "Terminado: asientos de vuelta y listo para entregar", en: "Finished: seats back in and ready to hand over" } },
+      { src: "img/kia-rear-finished.webp", caption: { es: "Terminado: asientos traseros", en: "Finished: back seats" } },
     ],
   },
   {
