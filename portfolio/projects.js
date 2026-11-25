@@ -20,7 +20,6 @@ window.PROJECTS = [
     id: "kia-forte-floor",
     category: "interiors",
     date: "2026-11",
-    draft: true,               // only visible at redlinehq.work/portfolio/?preview. Delete this line to publish.
     title: { es: "Kia Forte: alfombra completa, asientos fuera", en: "Kia Forte: full carpet, seats out" },
     summary: {
       es: "Saqué los asientos delanteros para llegar a todo lo que el aspirado normal no alcanza: monedas, arena y migas debajo de los asientos. Aspirado profundo, cepillo rotativo en la alfombra y extracción.",
