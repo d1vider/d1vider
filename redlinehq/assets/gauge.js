@@ -4,6 +4,8 @@
  * 0–8 ×1000 r/min over 270°, redline from 6.5.
  *
  *   redlineGauge(svgElement, { value: 0.7, animate: true })
+ *   animate: blips to ~4k, drops to ~2k, pulls into the redline, settles at idle;
+ *   the meter (svg.parentElement, or opts.shake) rumbles while revving.
  */
 (function () {
   "use strict";
@@ -74,17 +76,48 @@
     const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!o.animate || reduce) { set(o.value); return; }
 
-    // rev: 0 → into the redline → drop back and settle at idle with a little bounce
-    const keys = [[0, 0], [0.42, 7.92], [0.5, 7.6], [0.82, o.value - 0.25], [0.92, o.value + 0.15], [1, o.value]];
-    const ease = (t) => 1 - Math.pow(1 - t, 3);
-    const DUR = 2400, start = performance.now() + 250;
-    set(0);
+    // Two revs: a blip to ~4k, falls to ~2k, then a pull into the redline
+    // (a quick bounce off the limiter), then back down to idle.
+    // [time ms, rpm ×1000, easing into this point]
+    const up = (t) => 1 - Math.pow(1 - t, 2.2);          // throttle: fast, then slowing
+    const down = (t) => t * t * (3 - 2 * t);              // revs falling off
+    const keys = [
+      [0, o.value], [350, o.value, down],
+      [700, 4.1, up], [1200, 2.0, down],
+      [1800, 7.85, up], [1880, 7.55, down], [1960, 7.9, up], [2060, 7.6, down],
+      [3100, o.value - 0.2, down], [3450, o.value, down],
+    ];
+    const END = keys[keys.length - 1][0];
+    const valueAt = (ms) => {
+      let i = 0; while (i < keys.length - 2 && ms > keys[i + 1][0]) i++;
+      const [t0, v0] = keys[i], [t1, v1, e] = keys[i + 1];
+      const p = Math.min(Math.max((ms - t0) / (t1 - t0), 0), 1);
+      return v0 + (v1 - v0) * (e || down)(p);
+    };
+
+    // Rumble: the meter shakes a little while the revs climb, more near the redline.
+    // Uses the `translate`/`rotate` properties so it never fights other transforms.
+    const shaker = o.shake === false ? null : o.shake || svg.parentElement;
+    let last = o.value;
+    const rumble = (v, ms) => {
+      if (!shaker) return;
+      const rising = Math.max(v - last, 0) * 60;                 // how hard the throttle is pushing
+      const amp = Math.min(0.15 + (v / MAX) * 1.1 + rising * 0.5, 2.2);
+      const s = Math.sin(ms * 0.11), c = Math.cos(ms * 0.173);   // engine-ish wobble
+      shaker.style.translate = `${(s * 0.6 + (Math.random() - 0.5)) * amp}px ${(c * 0.6 + (Math.random() - 0.5)) * amp}px`;
+      shaker.style.rotate = `${(Math.random() - 0.5) * amp * 0.25}deg`;
+    };
+    const still = () => { if (shaker) { shaker.style.translate = ""; shaker.style.rotate = ""; } };
+
+    const start = performance.now() + 300;
+    set(o.value);
     const tick = (now) => {
-      const t = Math.min(Math.max((now - start) / DUR, 0), 1);
-      let i = 0; while (i < keys.length - 2 && t > keys[i + 1][0]) i++;
-      const [t0, v0] = keys[i], [t1, v1] = keys[i + 1];
-      set(v0 + (v1 - v0) * ease((t - t0) / (t1 - t0)));
-      if (t < 1) requestAnimationFrame(tick);
+      const ms = now - start;
+      if (ms < 0) { requestAnimationFrame(tick); return; }
+      const v = valueAt(Math.min(ms, END));
+      set(v);
+      if (ms < END) { rumble(v, ms); last = v; requestAnimationFrame(tick); }
+      else still();
     };
     requestAnimationFrame(tick);
   };
