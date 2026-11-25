@@ -3,6 +3,7 @@
  *  REDLINE GARAGE: your car
  *  Edit the text and the mod list here. No rebuild needed.
  *  soon: true  shows a "Próximamente" badge on a mod that's on the way.
+ *  A video: { src: "img/x.mp4", video: true, poster: "img/x.webp", caption } loops silently in the grid and plays with sound when tapped.
  *  instagram / pinkslip: paste the full links; empty "" hides the button.
  * ============================================================
  */
@@ -25,7 +26,7 @@ window.CAR = {
     { src: "img/kona-3q.webp", caption: { es: "Tres cuartos", en: "Three-quarter" } },
     { src: "img/kona-wheel.webp", caption: { es: "Lip kit y frenos rojos", en: "Lip kit and red calipers" } },
     { src: "img/kona-rear-3q.webp", caption: { es: "Spoiler extender y difusor", en: "Spoiler extender and diffuser" } },
-    { src: "img/kona-rear.webp", caption: { es: "Escape AFE Takeda y difusor", en: "AFE Takeda exhaust and diffuser" } },
+    { src: "img/kona-exhaust.mp4", video: true, poster: "img/kona-exhaust-poster.webp", caption: { es: "Escape AFE Takeda y difusor (con sonido)", en: "AFE Takeda exhaust and diffuser (with sound)" } },
     { src: "img/kona-wheel-rear.webp", caption: { es: "Perfil trasero", en: "Rear profile" } },
     { src: "img/kona-lot.webp", caption: { es: "Lip kit y acentos rojos", en: "Lip kit and red accents" } },
     { src: "img/kona-meet.webp", caption: { es: "En línea con otros Kona N", en: "Lined up with other Kona Ns" } },
