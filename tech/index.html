@@ -9,6 +9,7 @@
   <meta property="og:description" content="Consultoría, PCs a la medida y páginas web. Cotización gratis.">
   <meta property="og:image" content="https://redlinehq.work/assets/img/og.jpg">
   <meta property="og:url" content="https://redlinehq.work/tech/">
+  <link rel="canonical" href="https://redlinehq.work/tech/">
   <meta name="theme-color" content="#e3161d">
   <link rel="icon" href="/assets/img/favicon.png">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
@@ -215,7 +216,7 @@
           <p class="error sm:col-span-2" id="q-error" role="alert"></p>
           <div id="q-done" role="status" class="alert alert-success alert-soft sm:col-span-2" hidden>
             <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-            <span><span lang="es">¡Recibido! Te contesto por WhatsApp o email lo antes posible.</span><span lang="en">Got it! I'll get back to you on WhatsApp or email as soon as I can.</span></span>
+            <span><span lang="es">¡Recibido! Te contesto por WhatsApp o email lo antes posible.</span><span lang="en">Got it! I'll get back to you on WhatsApp or email as soon as I can.</span><span id="q-confirmed" class="block text-sm opacity-80" hidden><span lang="es">Te envié una confirmación a tu email.</span><span lang="en">I sent a confirmation to your email.</span></span></span>
           </div>
           <div class="grid gap-3 sm:col-span-2 sm:grid-cols-2">
             <a class="btn btn-primary rounded-xl shadow-lg shadow-primary/20" id="q-wa" href="https://wa.me/17879100777" target="_blank" rel="noopener"><svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg><span lang="es">Enviar por WhatsApp</span><span lang="en">Send on WhatsApp</span></a>
@@ -254,6 +255,7 @@
   </footer>
 
   <script src="/assets/site.js"></script>
+  <script src="/assets/wa-float.js"></script>
   <script>
     (function () {
       const form = document.getElementById("quote-form");
@@ -332,7 +334,7 @@
             }),
           });
           const j = await r.json();
-          if (j.ok) { $("q-done").hidden = false; $("q-done").scrollIntoView({ behavior: "smooth", block: "center" }); form.reset(); refresh(); resetHuman(); return; }
+          if (j.ok) { $("q-confirmed").hidden = !j.confirmed; $("q-done").hidden = false; $("q-done").scrollIntoView({ behavior: "smooth", block: "center" }); form.reset(); refresh(); resetHuman(); return; }
           if (j.error === "captcha") { $("q-error").textContent = l === "es" ? "Confirma que no eres un robot (la casilla de arriba) y vuelve a intentar." : "Please confirm you're not a robot (the box above) and try again."; resetHuman(); return; }
           throw new Error(j.error || "server");
         } catch (e) {
