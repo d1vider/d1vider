@@ -162,9 +162,10 @@ function doPost(e) {
     }
 
     const cache = CacheService.getScriptCache();
-    const count = Number(cache.get('reqs') || 0);
+    const bucket = 'reqs_' + Math.floor(Date.now() / 36e5);          // counts per clock hour, then starts over
+    const count = Number(cache.get(bucket) || 0);
     if (count >= SETTINGS.MAX_REQUESTS_PER_HOUR) return json_({ ok: false, error: 'busy' });
-    cache.put('reqs', String(count + 1), 3600);
+    cache.put(bucket, String(count + 1), 3700);
 
     const str = (v, max) => String(v || '').trim().slice(0, max);
     if (b.type === 'quote') return quote_(b, str);   // Redline Technologies quote form
@@ -244,6 +245,7 @@ function doPost(e) {
     });
     return json_({ ok: true });
   } catch (err) {
+    console.error('doPost failed: ' + (err && err.stack || err));      // shows in script.google.com → Executions
     return json_({ ok: false, error: 'server' });
   } finally {
     lock.releaseLock();
