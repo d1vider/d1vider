@@ -340,7 +340,9 @@
         } catch (e) {
           $("q-error").innerHTML = (l === "es" ? "No se pudo enviar directo. " : "Couldn't send it directly. ") +
             `<a class="link" href="${$("q-mail").getAttribute("href")}">${l === "es" ? "Ábrelo en tu email" : "Open it in your email app"}</a>` +
-            (l === "es" ? " o envíalo por WhatsApp." : " or send it on WhatsApp.");
+            (l === "es" ? " o envíalo por WhatsApp." : " or send it on WhatsApp.") +
+            ` <small class="err-code">(${String((e && e.message) || "error").replace(/[^\w .:-]/g, "").slice(0, 60)})</small>`;
+          resetHuman();
         } finally {
           btn.classList.remove("btn-disabled"); btn.removeAttribute("aria-disabled"); btn.innerHTML = label;
         }
