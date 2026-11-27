@@ -42,6 +42,21 @@ One-time setup in script.google.com → Redline booking:
 
 Google asks you to sign in with your account, and anyone else gets "No autorizado". The public deployment the website uses stays as it is.
 
+### WhatsApp button
+Every page except `/links/` has a floating WhatsApp button (`assets/wa-float.js`). It opens a chat with a message saying which page the visitor was on, in their language. The number comes from `whatsapp` in `interiors/config.js`.
+
+### Quote confirmations to clients
+When a client leaves an email on the Technologies quote form, the booking script emails them "Recibí tu solicitud…" from **citas@redlinehq.work**. To keep your personal Gmail private, it only sends from that address, and only once Gmail can send as it:
+1. In Gmail: **Settings → See all settings → Accounts and Import → Send mail as → Add another email address**. Name `RedlineHQ`, email `citas@redlinehq.work`.
+2. SMTP server `smtp.mail.me.com`, port `587`, TLS. Username: your iCloud email address. Password: an **app-specific password** from account.apple.com (Sign-In and Security).
+3. Gmail emails a code to citas@ (iCloud Mail). Enter it.
+4. In the script editor, run `authorize` once (it now also asks for Gmail permission and logs "listo ✓"), then **Deploy → Manage deployments → ✏️ → New version** for both deployments.
+
+Until then, quotes still reach you as before; clients just don't get the confirmation. Turn it off with `CLIENT_EMAIL_FROM: ''`.
+
+### Google search
+The hub carries business details for search engines (services, towns, phone, Instagram), and `sitemap.xml` + `robots.txt` list the pages. In Google Search Console, add `redlinehq.work` and submit `https://redlinehq.work/sitemap.xml`. Update `sitemap.xml` when you add a page.
+
 ### Rebuilding after a design change
 From the `hub-src` folder:
 - `npm run build`: rebuilds the hub (`index.html` + `app/`)

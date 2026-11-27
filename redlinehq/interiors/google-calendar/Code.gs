@@ -23,6 +23,7 @@ const SETTINGS = {
   HOLD_HOURS: 48,                      // apple mode: a request blocks its time this long, until you add it to your calendar
   MAX_DAYS_AHEAD: 90,
   MAX_REQUESTS_PER_HOUR: 30,           // simple spam guard
+  CLIENT_EMAIL_FROM: 'citas@redlinehq.work', // quote confirmations to clients are sent from this address only ('' = off)
 };
 
 // ---------------------------------------------------------------- helpers
@@ -274,7 +275,41 @@ function quote_(b, str) {
   if (okEmail) msg.replyTo = email;
   MailApp.sendEmail(msg);
   logQuote_({ name: name, phone: phone, email: okEmail ? email : '', service: service, budget: budget, details: details });
-  return json_({ ok: true });
+  let confirmed = false;
+  try { if (okEmail) confirmed = confirmQuote_(email, name, service, details, b.lang); } catch (e) {}  // never fail the quote over this
+  return json_({ ok: true, confirmed: confirmed });
+}
+
+/**
+ * Sends the client a short "I got your request" email, but ONLY from your business
+ * address (SETTINGS.CLIENT_EMAIL_FROM), so your personal Gmail is never shown to clients.
+ * Gmail must have that address under Settings → Accounts → "Send mail as".
+ * Returns true if the email was sent.
+ */
+function confirmQuote_(to, name, service, details, lang) {
+  const from = SETTINGS.CLIENT_EMAIL_FROM;
+  if (!from) return false;
+  try {
+    if (GmailApp.getAliases().indexOf(from) === -1) { Logger.log('Client confirmation skipped: add ' + from + ' to Gmail "Send mail as".'); return false; }
+    const en = lang === 'en', first = name.split(/\s+/)[0];
+    const subject = en ? 'Got your request · RedlineHQ' : 'Recibí tu solicitud · RedlineHQ';
+    const lines = en
+      ? ['Hi ' + first + ',', '', 'Thanks for reaching out. I got your request and will reply on WhatsApp or by email within 24 hours.', '', 'Service: ' + service, 'What you need: ' + details, '', 'If it\'s urgent, message me on WhatsApp: https://wa.me/17879100777', '', '— RedlineHQ · redlinehq.work']
+      : ['Hola ' + first + ',', '', 'Gracias por escribirme. Recibí tu solicitud y te contesto por WhatsApp o email en menos de 24 horas.', '', 'Servicio: ' + service, 'Lo que necesitas: ' + details, '', 'Si es urgente, escríbeme por WhatsApp: https://wa.me/17879100777', '', '— RedlineHQ · redlinehq.work'];
+    const html =
+      '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:520px;color:#111">' +
+      '<div style="background:#0b0c0f;border-radius:12px;padding:18px 20px;margin-bottom:18px"><span style="color:#fff;font-weight:800;font-size:20px;letter-spacing:.5px">REDLINE<span style="color:#e3161d">HQ</span></span></div>' +
+      '<p>' + escHtml_(lines[0]) + '</p><p>' + escHtml_(lines[2]) + '</p>' +
+      '<div style="background:#f3f4f5;border-radius:10px;padding:14px 16px;margin:16px 0"><p style="margin:0 0 6px"><b>' + (en ? 'Service' : 'Servicio') + ':</b> ' + escHtml_(service) + '</p>' +
+      '<p style="margin:0;white-space:pre-wrap"><b>' + (en ? 'What you need' : 'Lo que necesitas') + ':</b> ' + escHtml_(details) + '</p></div>' +
+      '<p><a href="https://wa.me/17879100777" style="background:#1fae55;color:#fff;padding:11px 16px;border-radius:8px;text-decoration:none;font-weight:700;display:inline-block">' + (en ? 'Message me on WhatsApp' : 'Escríbeme por WhatsApp') + '</a></p>' +
+      '<p style="color:#777;font-size:13px;margin-top:22px">RedlineHQ · <a href="https://redlinehq.work" style="color:#e3161d">redlinehq.work</a> · ' + (en ? 'San Juan metro area, Puerto Rico' : 'Área Metropolitana, Puerto Rico') + '</p></div>';
+    GmailApp.sendEmail(to, subject, lines.join('\n'), { from: from, name: 'RedlineHQ', replyTo: from, htmlBody: html });
+    return true;
+  } catch (e) {
+    try { Logger.log('Client confirmation failed: ' + e); } catch (_) {}
+    return false;
+  }
 }
 
 /** Forget booking details older than 60 days. */
@@ -291,6 +326,7 @@ function authorize() {
   if (SETTINGS.MODE === 'google') Logger.log('Google Calendar: ' + googleCal_().getName());
   else Logger.log('iCloud busy times found: ' + icloudBusy_(new Date(), new Date(Date.now() + 30 * 864e5)).length);
   Logger.log('Hoja de solicitudes: ' + sheetFile_().getUrl());
+  if (SETTINGS.CLIENT_EMAIL_FROM) Logger.log('Confirmaciones a clientes desde ' + SETTINGS.CLIENT_EMAIL_FROM + ': ' + (GmailApp.getAliases().indexOf(SETTINGS.CLIENT_EMAIL_FROM) > -1 ? 'listo ✓' : 'falta añadirlo en Gmail → Configuración → Cuentas → Enviar como'));
   MailApp.sendEmail(notifyTo_(), 'Redline booking connector is working ✅', 'Las solicitudes de cita llegarán a este email.');
   Logger.log('Test email sent to ' + notifyTo_());
 }
